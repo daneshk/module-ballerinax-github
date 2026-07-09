@@ -1,6 +1,6 @@
 [package]
 distribution = "2201.13.0"
-org = "ballerinax"
+org = "daneshk"
 name = "github"
 version = "@toml.version@"
 authors = ["Ballerina"]
@@ -9,6 +9,7 @@ keywords = ["Type/Connector", "Cost/Freemium", "Vendor/GitHub", "Area/Developer 
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-github"
 license = ["Apache-2.0"]
+include = ["ui-schema.json"]
 
 [build-options]
 observabilityIncluded = false

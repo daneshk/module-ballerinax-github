@@ -72,3 +72,4 @@ build
 
 # Ignore all Dependencies.toml files in the examples directory
 examples/**/Dependencies.toml
+__pycache__/

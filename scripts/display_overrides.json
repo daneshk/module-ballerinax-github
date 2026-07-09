@@ -1,0 +1,139 @@
+{
+  "GET repos/{}/{}": {
+    "recommended": true,
+    "rank": 1,
+    "keywords": ["get repo", "repository details", "repo info", "fetch repository"]
+  },
+  "GET user/repos": {
+    "recommended": true,
+    "rank": 2,
+    "keywords": ["my repos", "list my repositories", "own repos"],
+    "hint": "Lists repositories owned by the authenticated user (the token owner). To list another user's repos use 'List repositories for a user'; for an organization use 'List organization repositories'."
+  },
+  "POST user/repos": {
+    "recommended": true,
+    "rank": 3,
+    "keywords": ["create repo", "new repository", "make repo"],
+    "hint": "Creates a repository under the authenticated user's account. To create one inside an organization use 'Create an organization repository'."
+  },
+  "GET repos/{}/{}/issues": {
+    "recommended": true,
+    "rank": 4,
+    "keywords": ["list issues", "open issues", "view issues", "get issues"]
+  },
+  "POST repos/{}/{}/issues": {
+    "recommended": true,
+    "rank": 5,
+    "keywords": ["create issue", "new issue", "open issue", "report bug"]
+  },
+  "PATCH repos/{}/{}/issues/{}": {
+    "recommended": true,
+    "rank": 6,
+    "keywords": ["update issue", "close issue", "edit issue", "reopen issue", "assign issue"],
+    "hint": "Also how you close or reopen an issue: set 'state' to closed/open. There is no separate close-issue operation. 'Lock an issue' only freezes the conversation, it does not close the issue."
+  },
+  "POST repos/{}/{}/issues/{}/comments": {
+    "recommended": true,
+    "rank": 7,
+    "keywords": ["add comment", "comment on issue", "reply to issue", "comment on pull request"],
+    "hint": "Works for both issues and pull requests (a PR is an issue). For inline review comments on a PR diff use the pulls review-comment operations."
+  },
+  "GET repos/{}/{}/pulls": {
+    "recommended": true,
+    "rank": 8,
+    "keywords": ["list PRs", "view pull requests", "open pull requests", "list merge requests"]
+  },
+  "POST repos/{}/{}/pulls": {
+    "recommended": true,
+    "rank": 9,
+    "keywords": ["create PR", "new pull request", "open pull request", "raise PR"]
+  },
+  "PUT repos/{}/{}/pulls/{}/merge": {
+    "recommended": true,
+    "rank": 10,
+    "keywords": ["merge PR", "merge pull request", "squash merge", "rebase merge"],
+    "hint": "Merges the PR into its base branch. Not to be confused with 'Update a pull request' (edits title/body/state) or 'Update a pull request branch' (pulls base changes INTO the PR branch)."
+  },
+  "PATCH repos/{}/{}/pulls/{}": {
+    "keywords": ["edit PR", "close pull request", "change PR title"],
+    "hint": "Edits PR title, body, base branch, or state (use state=closed to close WITHOUT merging). To merge use 'Merge a pull request'; to sync the branch with base use 'Update a pull request branch'."
+  },
+  "PUT repos/{}/{}/pulls/{}/update-branch": {
+    "hint": "Updates the PR's head branch with latest changes from the base branch (the 'Update branch' button in the GitHub UI). Does not merge the PR and does not edit PR fields."
+  },
+  "GET repos/{}/{}/commits": {
+    "recommended": true,
+    "rank": 11,
+    "keywords": ["list commits", "commit history", "recent commits", "changelog"]
+  },
+  "GET repos/{}/{}/branches": {
+    "recommended": true,
+    "rank": 12,
+    "keywords": ["list branches", "view branches", "get branches"]
+  },
+  "GET repos/{}/{}/contents/{}": {
+    "recommended": true,
+    "rank": 13,
+    "keywords": ["read file", "get file", "download file", "file contents", "list directory"],
+    "hint": "Returns file content (base64) or a directory listing for a path. For the rendered README use 'Get a repository README'; to download the whole repo use the tarball/zipball archive operations."
+  },
+  "PUT repos/{}/{}/contents/{}": {
+    "recommended": true,
+    "rank": 14,
+    "keywords": ["upload file", "commit file", "create file", "update file", "write file"],
+    "hint": "Creates a new file or replaces an existing one in a single commit. Updating an existing file requires its current blob SHA (get it via 'Get repository content')."
+  },
+  "POST repos/{}/{}/releases": {
+    "recommended": true,
+    "rank": 15,
+    "keywords": ["create release", "publish release", "tag release", "new version"]
+  },
+  "GET repos/{}/{}/releases/latest": {
+    "recommended": true,
+    "rank": 16,
+    "keywords": ["latest release", "newest version", "current release"],
+    "hint": "Returns the most recent non-prerelease, non-draft release. 'Get a release' fetches by release ID; 'Get a release by tag name' fetches by git tag (e.g. v1.2.0)."
+  },
+  "GET search/repositories": {
+    "recommended": true,
+    "rank": 17,
+    "keywords": ["search repos", "find repository", "discover projects"]
+  },
+  "GET search/issues": {
+    "recommended": true,
+    "rank": 18,
+    "keywords": ["search issues", "find issues", "search pull requests", "query issues"]
+  },
+  "GET user": {
+    "recommended": true,
+    "rank": 19,
+    "keywords": ["my profile", "who am I", "authenticated user", "current user"],
+    "hint": "Returns the profile of the token owner. To look up someone else by username use 'Get a user'."
+  },
+  "POST repos/{}/{}/forks": {
+    "recommended": true,
+    "rank": 20,
+    "keywords": ["fork repo", "copy repository", "fork project"]
+  },
+  "GET users/{}/repos": {
+    "hint": "Lists public repositories of any user by username. For the authenticated user's own repos (including private) use 'List repositories for the authenticated user'."
+  },
+  "GET orgs/{}/repos": {
+    "hint": "Lists repositories belonging to an organization. For a personal account use 'List repositories for a user' or 'List repositories for the authenticated user'."
+  },
+  "GET repos/{}/{}/readme": {
+    "hint": "Returns the repository README specifically (rendered from the default location). For any other file use 'Get repository content'."
+  },
+  "GET repos/{}/{}/releases/{}": {
+    "hint": "Fetches a release by its numeric release ID (not a tag name). Use 'Get a release by tag name' for tags like v1.2.0, or 'Get the latest release' for the newest one."
+  },
+  "GET repos/{}/{}/releases/tags/{}": {
+    "hint": "Fetches a release by its git tag name (e.g. v1.2.0). Use 'Get a release' if you have the numeric release ID."
+  },
+  "PUT repos/{}/{}/issues/{}/lock": {
+    "hint": "Locks the conversation (no new comments) but does NOT close the issue. To close an issue use 'Update an issue' with state=closed."
+  },
+  "DELETE repos/{}/{}/contents/{}": {
+    "hint": "Deletes a single file in a commit (requires the file's blob SHA). This does not delete directories or the repository itself."
+  }
+}
