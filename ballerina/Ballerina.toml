@@ -1,10 +1,10 @@
 [package]
 distribution = "2201.13.0"
 org = "daneshk"
-name = "github"
-version = "6.0.1"
+name = "githubx"
+version = "1.0.0"
 authors = ["Ballerina"]
-export = ["github"]
+export = ["githubx"]
 keywords = ["Type/Connector", "Cost/Freemium", "Vendor/GitHub", "Area/Developer Tools", "IT Operations/Source Control"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-github"

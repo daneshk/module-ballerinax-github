@@ -445,6 +445,117 @@ service on new http:Listener(MOCK_SERVICE_PORT) {
         ];
     }
 
+    resource function put repos/[string owner]/[string repo]/contents/[string path](http:Request req) returns json|error {
+        json payload = check req.getJsonPayload();
+        string message = check payload.message;
+        return {
+            "content": {
+                "name": "main.bal",
+                "path": path,
+                "sha": "def456",
+                "size": 100,
+                "url": "https://mock-url",
+                "html_url": "https://mock-url",
+                "git_url": "https://mock-url",
+                "download_url": "https://mock-url",
+                "type": "file",
+                "_links": {"git": "https://mock-url", "html": "https://mock-url", "self": "https://mock-url"}
+            },
+            "commit": {
+                "sha": "789abc",
+                "url": "https://mock-url",
+                "message": message,
+                "author": {"date": "2024-01-01T00:00:00Z", "name": "test", "email": "test@example.com"},
+                "committer": {"date": "2024-01-01T00:00:00Z", "name": "test", "email": "test@example.com"},
+                "tree": {"sha": "abc123", "url": "https://mock-url"},
+                "parents": []
+            }
+        };
+    }
+
+    resource function put repos/[string owner]/[string repo]/pulls/[int pullNumber]/merge(http:Request req) returns json {
+        return {
+            "sha": "6dcb09b5b57875f334f61aebed695e2e4193db5",
+            "merged": true,
+            "message": "Pull Request successfully merged"
+        };
+    }
+
+    resource function get repos/[string owner]/[string repo]/commits/[string ref]/status() returns json {
+        return {
+            "state": "success",
+            "statuses": [],
+            "sha": "abc123",
+            "total_count": 0,
+            "repository": repoJson(repo, owner),
+            "commit_url": "https://mock-url",
+            "url": "https://mock-url"
+        };
+    }
+
+    resource function get repos/[string owner]/[string repo]/commits/[string ref]/check\-runs() returns json {
+        return {"total_count": 0, "check_runs": []};
+    }
+
+    resource function post repos/[string owner]/[string repo]/hooks(http:Request req) returns json {
+        return {
+            "type": "Repository",
+            "id": 1,
+            "name": "web",
+            "active": true,
+            "events": ["push"],
+            "config": {"url": "https://example.com/hook", "content_type": "json"},
+            "url": "https://mock-url",
+            "test_url": "https://mock-url",
+            "ping_url": "https://mock-url",
+            "last_response": {"code": (), "status": "unused", "message": ()},
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        };
+    }
+
+    resource function post repos/[string owner]/[string repo]/hooks/[int hookId]/pings() returns http:NoContent {
+        return http:NO_CONTENT;
+    }
+
+    resource function post repos/[string owner]/[string repo]/deployments(http:Request req) returns json {
+        return {
+            "id": 1,
+            "node_id": "MDEwOkRlcGxveW1lbnQx",
+            "url": "https://mock-url",
+            "sha": "abc123",
+            "ref": "master",
+            "task": "deploy",
+            "payload": {},
+            "environment": "production",
+            "description": (),
+            "creator": simpleUserJson("testUser"),
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "statuses_url": "https://mock-url",
+            "repository_url": "https://mock-url"
+        };
+    }
+
+    resource function post repos/[string owner]/[string repo]/deployments/[int deploymentId]/statuses(http:Request req) returns json|error {
+        json payload = check req.getJsonPayload();
+        json state = check payload.state;
+        return {
+            "id": 1,
+            "node_id": "MDEwOkRlcGxveW1lbnRTdGF0dXMx",
+            "state": state,
+            "creator": simpleUserJson("testUser"),
+            "description": "",
+            "environment": "production",
+            "deployment_url": "https://mock-url",
+            "target_url": "",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "url": "https://mock-url",
+            "repository_url": "https://mock-url"
+        };
+    }
+
     resource function get repos/[string owner]/[string repo]/languages() returns json {
         return {"Ballerina": 1000, "Java": 500};
     }

@@ -14,29 +14,38 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/data.jsondata;
+import daneshk/githubx.oas;
 import ballerina/http;
 
-# GitHub's v3 REST API.
+# GitHub's v3 REST API, with additional composite operations for common
+# multi-step workflows (see scripts/composites.bal for the hand-maintained source).
+#
+# This client is a thin delegating wrapper generated from `ballerina/modules/oas`
+# (script-generated - see scripts/generate_wrapper_client.py, do not hand-edit the
+# wrapper methods below the marker; composite operations after the second marker are
+# hand-maintained in scripts/composites.bal and spliced in by the same script).
 public isolated client class Client {
-    final http:Client clientEp;
+    private final oas:Client genClient;
+
     # Gets invoked to initialize the `connector`.
     #
-    # + config - The configurations to be used when initializing the `connector` 
-    # + serviceUrl - URL of the target service 
-    # + return - An error if connector initialization failed 
-    public isolated function init(ConnectionConfig config, string serviceUrl = "https://api.github.com") returns error? {
-        http:ClientConfiguration httpClientConfig = {auth: config.auth, httpVersion: config.httpVersion, http1Settings: config.http1Settings, http2Settings: config.http2Settings, timeout: config.timeout, forwarded: config.forwarded, followRedirects: config.followRedirects, poolConfig: config.poolConfig, cache: config.cache, compression: config.compression, circuitBreaker: config.circuitBreaker, retryConfig: config.retryConfig, cookieConfig: config.cookieConfig, responseLimits: config.responseLimits, secureSocket: config.secureSocket, proxy: config.proxy, socketConfig: config.socketConfig, validation: config.validation, laxDataBinding: config.laxDataBinding};
-        self.clientEp = check new (serviceUrl, httpClientConfig);
+    # + config - The configurations to be used when initializing the `connector`
+    # + serviceUrl - URL of the target service
+    # + return - An error if connector initialization failed
+    public isolated function init(oas:ConnectionConfig config, string serviceUrl = "https://api.github.com") returns error? {
+        self.genClient = check new oas:Client(config, serviceUrl);
     }
 
+    // ============================================================
+    // GENERATED WRAPPER METHODS - do not hand-edit below this line.
+    // Regenerate with: python3 scripts/generate_wrapper_client.py
+    // ============================================================
     # GitHub API Root
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get .(map<string|string[]> headers = {}) returns Root|error {
-        string resourcePath = string `/`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get .(map<string|string[]> headers = {}) returns oas:Root|error {
+        return self.genClient->/.get(headers);
     }
 
     # List global security advisories
@@ -44,11 +53,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get advisories(map<string|string[]> headers = {}, *SecurityAdvisoriesListGlobalAdvisoriesQueries queries) returns GlobalAdvisory[]|error {
-        string resourcePath = string `/advisories`;
-        map<Encoding> queryParamEncoding = {"cwes": {style: FORM, explode: true}, "affects": {style: FORM, explode: true}};
-        resourcePath = resourcePath + check getPathForQueryParam(queries, queryParamEncoding);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get advisories(map<string|string[]> headers = {}, *oas:SecurityAdvisoriesListGlobalAdvisoriesQueries queries) returns oas:GlobalAdvisory[]|error {
+        return self.genClient->/advisories.get(headers, queries);
     }
 
     # Get a global security advisory
@@ -56,49 +62,40 @@ public isolated client class Client {
     # + ghsaId - The GHSA (GitHub Security Advisory) identifier of the advisory
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get advisories/[string ghsaId](map<string|string[]> headers = {}) returns GlobalAdvisory|error {
-        string resourcePath = string `/advisories/${getEncodedUri(ghsaId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get advisories/[string ghsaId](map<string|string[]> headers = {}) returns oas:GlobalAdvisory|error {
+        return self.genClient->/advisories/[ghsaId].get(headers);
     }
 
     # Get the authenticated app
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get app(map<string|string[]> headers = {}) returns Integration|error {
-        string resourcePath = string `/app`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get app(map<string|string[]> headers = {}) returns oas:Integration|error {
+        return self.genClient->/app.get(headers);
     }
 
     # Create a GitHub App from a manifest
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post app\-manifests/[string code]/conversions(map<string|string[]> headers = {}) returns ManifestConversions|error {
-        string resourcePath = string `/app-manifests/${getEncodedUri(code)}/conversions`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post app\-manifests/[string code]/conversions(map<string|string[]> headers = {}) returns oas:ManifestConversions|error {
+        return self.genClient->/app\-manifests/[code]/conversions.post(headers);
     }
 
     # Get a webhook configuration for an app
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get app/hook/config(map<string|string[]> headers = {}) returns WebhookConfig|error {
-        string resourcePath = string `/app/hook/config`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get app/hook/config(map<string|string[]> headers = {}) returns oas:WebhookConfig|error {
+        return self.genClient->/app/hook/config.get(headers);
     }
 
     # Update a webhook configuration for an app
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch app/hook/config(HookConfigBody payload, map<string|string[]> headers = {}) returns WebhookConfig|error {
-        string resourcePath = string `/app/hook/config`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch app/hook/config(oas:HookConfigBody payload, map<string|string[]> headers = {}) returns oas:WebhookConfig|error {
+        return self.genClient->/app/hook/config.patch(payload, headers);
     }
 
     # List deliveries for an app webhook
@@ -106,19 +103,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get app/hook/deliveries(map<string|string[]> headers = {}, *AppsListWebhookDeliveriesQueries queries) returns HookDeliveryItem[]|error {
-        string resourcePath = string `/app/hook/deliveries`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get app/hook/deliveries(map<string|string[]> headers = {}, *oas:AppsListWebhookDeliveriesQueries queries) returns oas:HookDeliveryItem[]|error {
+        return self.genClient->/app/hook/deliveries.get(headers, queries);
     }
 
     # Get a delivery for an app webhook
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get app/hook/deliveries/[int deliveryId](map<string|string[]> headers = {}) returns HookDelivery|error {
-        string resourcePath = string `/app/hook/deliveries/${getEncodedUri(deliveryId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get app/hook/deliveries/[int deliveryId](map<string|string[]> headers = {}) returns oas:HookDelivery|error {
+        return self.genClient->/app/hook/deliveries/[deliveryId].get(headers);
     }
 
     # Redeliver a delivery for an app webhook
@@ -126,9 +120,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Accepted 
     resource isolated function post app/hook/deliveries/[int deliveryId]/attempts(map<string|string[]> headers = {}) returns record {}|error {
-        string resourcePath = string `/app/hook/deliveries/${getEncodedUri(deliveryId)}/attempts`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/app/hook/deliveries/[deliveryId]/attempts.post(headers);
     }
 
     # List installation requests for the authenticated app
@@ -136,10 +128,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - List of integration installation requests 
-    resource isolated function get app/installation\-requests(map<string|string[]> headers = {}, *AppsListInstallationRequestsForAuthenticatedAppQueries queries) returns IntegrationInstallationRequest[]|error? {
-        string resourcePath = string `/app/installation-requests`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get app/installation\-requests(map<string|string[]> headers = {}, *oas:AppsListInstallationRequestsForAuthenticatedAppQueries queries) returns oas:IntegrationInstallationRequest[]|error? {
+        return self.genClient->/app/installation\-requests.get(headers, queries);
     }
 
     # List installations for the authenticated app
@@ -147,10 +137,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - The permissions the installation has are included under the permissions key 
-    resource isolated function get app/installations(map<string|string[]> headers = {}, *AppsListInstallationsQueries queries) returns Installation[]|error {
-        string resourcePath = string `/app/installations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get app/installations(map<string|string[]> headers = {}, *oas:AppsListInstallationsQueries queries) returns oas:Installation[]|error {
+        return self.genClient->/app/installations.get(headers, queries);
     }
 
     # Get an installation for the authenticated app
@@ -158,9 +146,8 @@ public isolated client class Client {
     # + installationId - The unique identifier of the installation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get app/installations/[int installationId](map<string|string[]> headers = {}) returns Installation|error {
-        string resourcePath = string `/app/installations/${getEncodedUri(installationId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get app/installations/[int installationId](map<string|string[]> headers = {}) returns oas:Installation|error {
+        return self.genClient->/app/installations/[installationId].get(headers);
     }
 
     # Delete an installation for the authenticated app
@@ -169,8 +156,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete app/installations/[int installationId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/app/installations/${getEncodedUri(installationId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/app/installations/[installationId].delete(headers);
     }
 
     # Create an installation access token for an app
@@ -178,12 +164,8 @@ public isolated client class Client {
     # + installationId - The unique identifier of the installation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post app/installations/[int installationId]/access_tokens(InstallationIdAccessTokensBody payload, map<string|string[]> headers = {}) returns InstallationToken|error {
-        string resourcePath = string `/app/installations/${getEncodedUri(installationId)}/access_tokens`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post app/installations/[int installationId]/access_tokens(oas:InstallationIdAccessTokensBody payload, map<string|string[]> headers = {}) returns oas:InstallationToken|error {
+        return self.genClient->/app/installations/[installationId]/access_tokens.post(payload, headers);
     }
 
     # Suspend an app installation
@@ -192,9 +174,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put app/installations/[int installationId]/suspended(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/app/installations/${getEncodedUri(installationId)}/suspended`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/app/installations/[installationId]/suspended.put(headers);
     }
 
     # Unsuspend an app installation
@@ -203,8 +183,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete app/installations/[int installationId]/suspended(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/app/installations/${getEncodedUri(installationId)}/suspended`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/app/installations/[installationId]/suspended.delete(headers);
     }
 
     # Delete an app authorization
@@ -212,12 +191,8 @@ public isolated client class Client {
     # + clientId - The client ID of the GitHub app
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete applications/[string clientId]/grant(ClientIdGrantBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/applications/${getEncodedUri(clientId)}/grant`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete applications/[string clientId]/grant(oas:ClientIdGrantBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/applications/[clientId]/grant.delete(payload, headers);
     }
 
     # Check a token
@@ -225,12 +200,8 @@ public isolated client class Client {
     # + clientId - The client ID of the GitHub app
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post applications/[string clientId]/token(ClientIdTokenBody payload, map<string|string[]> headers = {}) returns Authorization|error {
-        string resourcePath = string `/applications/${getEncodedUri(clientId)}/token`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post applications/[string clientId]/token(oas:ClientIdTokenBody payload, map<string|string[]> headers = {}) returns oas:Authorization|error {
+        return self.genClient->/applications/[clientId]/token.post(payload, headers);
     }
 
     # Delete an app token
@@ -238,12 +209,8 @@ public isolated client class Client {
     # + clientId - The client ID of the GitHub app
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete applications/[string clientId]/token(ClientIdGrantBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/applications/${getEncodedUri(clientId)}/token`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete applications/[string clientId]/token(oas:ClientIdGrantBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/applications/[clientId]/token.delete(payload, headers);
     }
 
     # Reset a token
@@ -251,12 +218,8 @@ public isolated client class Client {
     # + clientId - The client ID of the GitHub app
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch applications/[string clientId]/token(ClientIdTokenBody payload, map<string|string[]> headers = {}) returns Authorization|error {
-        string resourcePath = string `/applications/${getEncodedUri(clientId)}/token`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch applications/[string clientId]/token(oas:ClientIdTokenBody payload, map<string|string[]> headers = {}) returns oas:Authorization|error {
+        return self.genClient->/applications/[clientId]/token.patch(payload, headers);
     }
 
     # Create a scoped access token
@@ -264,21 +227,16 @@ public isolated client class Client {
     # + clientId - The client ID of the GitHub app
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post applications/[string clientId]/token/scoped(TokenScopedBody payload, map<string|string[]> headers = {}) returns Authorization|error {
-        string resourcePath = string `/applications/${getEncodedUri(clientId)}/token/scoped`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post applications/[string clientId]/token/scoped(oas:TokenScopedBody payload, map<string|string[]> headers = {}) returns oas:Authorization|error {
+        return self.genClient->/applications/[clientId]/token/scoped.post(payload, headers);
     }
 
     # Get an app
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get apps/[string appSlug](map<string|string[]> headers = {}) returns Integration|error {
-        string resourcePath = string `/apps/${getEncodedUri(appSlug)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get apps/[string appSlug](map<string|string[]> headers = {}) returns oas:Integration|error {
+        return self.genClient->/apps/[appSlug].get(headers);
     }
 
     # Get an assignment
@@ -286,9 +244,8 @@ public isolated client class Client {
     # + assignmentId - The unique identifier of the classroom assignment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get assignments/[int assignmentId](map<string|string[]> headers = {}) returns ClassroomAssignment|error {
-        string resourcePath = string `/assignments/${getEncodedUri(assignmentId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get assignments/[int assignmentId](map<string|string[]> headers = {}) returns oas:ClassroomAssignment|error {
+        return self.genClient->/assignments/[assignmentId].get(headers);
     }
 
     # List accepted assignments for an assignment
@@ -297,10 +254,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get assignments/[int assignmentId]/accepted_assignments(map<string|string[]> headers = {}, *ClassroomListAcceptedAssigmentsForAnAssignmentQueries queries) returns ClassroomAcceptedAssignment[]|error {
-        string resourcePath = string `/assignments/${getEncodedUri(assignmentId)}/accepted_assignments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get assignments/[int assignmentId]/accepted_assignments(map<string|string[]> headers = {}, *oas:ClassroomListAcceptedAssigmentsForAnAssignmentQueries queries) returns oas:ClassroomAcceptedAssignment[]|error {
+        return self.genClient->/assignments/[assignmentId]/accepted_assignments.get(headers, queries);
     }
 
     # Get assignment grades
@@ -308,9 +263,8 @@ public isolated client class Client {
     # + assignmentId - The unique identifier of the classroom assignment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get assignments/[int assignmentId]/grades(map<string|string[]> headers = {}) returns ClassroomAssignmentGrade[]|error {
-        string resourcePath = string `/assignments/${getEncodedUri(assignmentId)}/grades`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get assignments/[int assignmentId]/grades(map<string|string[]> headers = {}) returns oas:ClassroomAssignmentGrade[]|error {
+        return self.genClient->/assignments/[assignmentId]/grades.get(headers);
     }
 
     # List classrooms
@@ -318,10 +272,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get classrooms(map<string|string[]> headers = {}, *ClassroomListClassroomsQueries queries) returns SimpleClassroom[]|error {
-        string resourcePath = string `/classrooms`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get classrooms(map<string|string[]> headers = {}, *oas:ClassroomListClassroomsQueries queries) returns oas:SimpleClassroom[]|error {
+        return self.genClient->/classrooms.get(headers, queries);
     }
 
     # Get a classroom
@@ -329,9 +281,8 @@ public isolated client class Client {
     # + classroomId - The unique identifier of the classroom
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get classrooms/[int classroomId](map<string|string[]> headers = {}) returns Classroom|error {
-        string resourcePath = string `/classrooms/${getEncodedUri(classroomId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get classrooms/[int classroomId](map<string|string[]> headers = {}) returns oas:Classroom|error {
+        return self.genClient->/classrooms/[classroomId].get(headers);
     }
 
     # List assignments for a classroom
@@ -340,28 +291,24 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get classrooms/[int classroomId]/assignments(map<string|string[]> headers = {}, *ClassroomListAssignmentsForAClassroomQueries queries) returns SimpleClassroomAssignment[]|error {
-        string resourcePath = string `/classrooms/${getEncodedUri(classroomId)}/assignments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get classrooms/[int classroomId]/assignments(map<string|string[]> headers = {}, *oas:ClassroomListAssignmentsForAClassroomQueries queries) returns oas:SimpleClassroomAssignment[]|error {
+        return self.genClient->/classrooms/[classroomId]/assignments.get(headers, queries);
     }
 
     # Get all codes of conduct
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get codes_of_conduct(map<string|string[]> headers = {}) returns CodeOfConduct[]|error? {
-        string resourcePath = string `/codes_of_conduct`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get codes_of_conduct(map<string|string[]> headers = {}) returns oas:CodeOfConduct[]|error? {
+        return self.genClient->/codes_of_conduct.get(headers);
     }
 
     # Get a code of conduct
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get codes_of_conduct/[string 'key](map<string|string[]> headers = {}) returns CodeOfConduct|error? {
-        string resourcePath = string `/codes_of_conduct/${getEncodedUri('key)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get codes_of_conduct/[string 'key](map<string|string[]> headers = {}) returns oas:CodeOfConduct|error? {
+        return self.genClient->/codes_of_conduct/['key].get(headers);
     }
 
     # Get emojis
@@ -369,8 +316,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get emojis(map<string|string[]> headers = {}) returns record {|string...;|}|error? {
-        string resourcePath = string `/emojis`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/emojis.get(headers);
     }
 
     # List Dependabot alerts for an enterprise
@@ -379,10 +325,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get enterprises/[string enterprise]/dependabot/alerts(map<string|string[]> headers = {}, *DependabotListAlertsForEnterpriseQueries queries) returns DependabotAlertWithRepository[]|error? {
-        string resourcePath = string `/enterprises/${getEncodedUri(enterprise)}/dependabot/alerts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get enterprises/[string enterprise]/dependabot/alerts(map<string|string[]> headers = {}, *oas:DependabotListAlertsForEnterpriseQueries queries) returns oas:DependabotAlertWithRepository[]|error? {
+        return self.genClient->/enterprises/[enterprise]/dependabot/alerts.get(headers, queries);
     }
 
     # List secret scanning alerts for an enterprise
@@ -391,10 +335,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get enterprises/[string enterprise]/secret\-scanning/alerts(map<string|string[]> headers = {}, *SecretScanningListAlertsForEnterpriseQueries queries) returns OrganizationSecretScanningAlert[]|error {
-        string resourcePath = string `/enterprises/${getEncodedUri(enterprise)}/secret-scanning/alerts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get enterprises/[string enterprise]/secret\-scanning/alerts(map<string|string[]> headers = {}, *oas:SecretScanningListAlertsForEnterpriseQueries queries) returns oas:OrganizationSecretScanningAlert[]|error {
+        return self.genClient->/enterprises/[enterprise]/secret\-scanning/alerts.get(headers, queries);
     }
 
     # List public events
@@ -402,19 +344,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get events(map<string|string[]> headers = {}, *ActivityListPublicEventsQueries queries) returns Event[]|error? {
-        string resourcePath = string `/events`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get events(map<string|string[]> headers = {}, *oas:ActivityListPublicEventsQueries queries) returns oas:Event[]|error? {
+        return self.genClient->/events.get(headers, queries);
     }
 
     # Get feeds
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get feeds(map<string|string[]> headers = {}) returns Feed|error {
-        string resourcePath = string `/feeds`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get feeds(map<string|string[]> headers = {}) returns oas:Feed|error {
+        return self.genClient->/feeds.get(headers);
     }
 
     # List gists for the authenticated user
@@ -422,44 +361,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get gists(map<string|string[]> headers = {}, *GistsListQueries queries) returns BaseGist[]|error? {
-        string resourcePath = string `/gists`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get gists(map<string|string[]> headers = {}, *oas:GistsListQueries queries) returns oas:BaseGist[]|error? {
+        return self.genClient->/gists.get(headers, queries);
     }
 
     # Create a gist
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post gists(GistsBody payload, map<string|string[]> headers = {}) returns GistSimple|error? {
-        string resourcePath = string `/gists`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # List public gists
-    #
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get gists/'public(map<string|string[]> headers = {}, *GistsListPublicQueries queries) returns BaseGist[]|error? {
-        string resourcePath = string `/gists/public`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # List starred gists
-    #
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get gists/starred(map<string|string[]> headers = {}, *GistsListStarredQueries queries) returns BaseGist[]|error? {
-        string resourcePath = string `/gists/starred`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function post gists(oas:GistsBody payload, map<string|string[]> headers = {}) returns oas:GistSimple|error? {
+        return self.genClient->/gists.post(payload, headers);
     }
 
     # Get a gist
@@ -467,9 +378,8 @@ public isolated client class Client {
     # + gistId - The unique identifier of the gist
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get gists/[string gistId](map<string|string[]> headers = {}) returns GistSimple|error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get gists/[string gistId](map<string|string[]> headers = {}) returns oas:GistSimple|error? {
+        return self.genClient->/gists/[gistId].get(headers);
     }
 
     # Delete a gist
@@ -478,8 +388,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete gists/[string gistId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/gists/[gistId].delete(headers);
     }
 
     # Update a gist
@@ -487,37 +396,8 @@ public isolated client class Client {
     # + gistId - The unique identifier of the gist
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch gists/[string gistId](GistsgistIdBody payload, map<string|string[]> headers = {}) returns GistSimple|error {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
-    }
-
-    # List gist comments
-    #
-    # + gistId - The unique identifier of the gist
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get gists/[string gistId]/comments(map<string|string[]> headers = {}, *GistsListCommentsQueries queries) returns GistComment[]|error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/comments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Create a gist comment
-    #
-    # + gistId - The unique identifier of the gist
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post gists/[string gistId]/comments(GistIdCommentsBody payload, map<string|string[]> headers = {}) returns GistComment|error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/comments`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function patch gists/[string gistId](oas:GistsgistIdBody payload, map<string|string[]> headers = {}) returns oas:GistSimple|error {
+        return self.genClient->/gists/[gistId].patch(payload, headers);
     }
 
     # Get a gist comment
@@ -526,9 +406,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get gists/[string gistId]/comments/[int commentId](map<string|string[]> headers = {}) returns GistComment|error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/comments/${getEncodedUri(commentId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get gists/[string gistId]/comments/[int commentId](map<string|string[]> headers = {}) returns oas:GistComment|error? {
+        return self.genClient->/gists/[gistId]/comments/[commentId].get(headers);
     }
 
     # Delete a gist comment
@@ -538,8 +417,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete gists/[string gistId]/comments/[int commentId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/comments/${getEncodedUri(commentId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/gists/[gistId]/comments/[commentId].delete(headers);
     }
 
     # Update a gist comment
@@ -548,78 +426,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch gists/[string gistId]/comments/[int commentId](GistIdCommentsBody payload, map<string|string[]> headers = {}) returns GistComment|error {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/comments/${getEncodedUri(commentId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
-    }
-
-    # List gist commits
-    #
-    # + gistId - The unique identifier of the gist
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get gists/[string gistId]/commits(map<string|string[]> headers = {}, *GistsListCommitsQueries queries) returns GistCommit[]|error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/commits`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # List gist forks
-    #
-    # + gistId - The unique identifier of the gist
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get gists/[string gistId]/forks(map<string|string[]> headers = {}, *GistsListForksQueries queries) returns GistSimple[]|error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/forks`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Fork a gist
-    #
-    # + gistId - The unique identifier of the gist
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post gists/[string gistId]/forks(map<string|string[]> headers = {}) returns BaseGist|error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/forks`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Check if a gist is starred
-    #
-    # + gistId - The unique identifier of the gist
-    # + headers - Headers to be sent with the request 
-    # + return - Response if gist is starred 
-    resource isolated function get gists/[string gistId]/star(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/star`;
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Star a gist
-    #
-    # + gistId - The unique identifier of the gist
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function put gists/[string gistId]/star(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/star`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
-    }
-
-    # Unstar a gist
-    #
-    # + gistId - The unique identifier of the gist
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function delete gists/[string gistId]/star(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/star`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+    resource isolated function patch gists/[string gistId]/comments/[int commentId](oas:GistIdCommentsBody payload, map<string|string[]> headers = {}) returns oas:GistComment|error {
+        return self.genClient->/gists/[gistId]/comments/[commentId].patch(payload, headers);
     }
 
     # Get a gist revision
@@ -627,9 +435,8 @@ public isolated client class Client {
     # + gistId - The unique identifier of the gist
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get gists/[string gistId]/[string sha](map<string|string[]> headers = {}) returns GistSimple|error {
-        string resourcePath = string `/gists/${getEncodedUri(gistId)}/${getEncodedUri(sha)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get gists/[string gistId]/[string sha](map<string|string[]> headers = {}) returns oas:GistSimple|error {
+        return self.genClient->/gists/[gistId]/[sha].get(headers);
     }
 
     # Get all gitignore templates
@@ -637,17 +444,15 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get gitignore/templates(map<string|string[]> headers = {}) returns string[]|error? {
-        string resourcePath = string `/gitignore/templates`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/gitignore/templates.get(headers);
     }
 
     # Get a gitignore template
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get gitignore/templates/[string name](map<string|string[]> headers = {}) returns GitignoreTemplate|error? {
-        string resourcePath = string `/gitignore/templates/${getEncodedUri(name)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get gitignore/templates/[string name](map<string|string[]> headers = {}) returns oas:GitignoreTemplate|error? {
+        return self.genClient->/gitignore/templates/[name].get(headers);
     }
 
     # List repositories accessible to the app installation
@@ -655,10 +460,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get installation/repositories(map<string|string[]> headers = {}, *AppsListReposAccessibleToInstallationQueries queries) returns RepositoryResponse|error? {
-        string resourcePath = string `/installation/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get installation/repositories(map<string|string[]> headers = {}, *oas:AppsListReposAccessibleToInstallationQueries queries) returns oas:RepositoryResponse|error? {
+        return self.genClient->/installation/repositories.get(headers, queries);
     }
 
     # Revoke an installation access token
@@ -666,8 +469,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete installation/token(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/installation/token`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/installation/token.delete(headers);
     }
 
     # List issues assigned to the authenticated user
@@ -675,10 +477,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get issues(map<string|string[]> headers = {}, *IssuesListQueries queries) returns Issue[]|error? {
-        string resourcePath = string `/issues`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get issues(map<string|string[]> headers = {}, *oas:IssuesListQueries queries) returns oas:Issue[]|error? {
+        return self.genClient->/issues.get(headers, queries);
     }
 
     # Get all commonly used licenses
@@ -686,31 +486,24 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get licenses(map<string|string[]> headers = {}, *LicensesGetAllCommonlyUsedQueries queries) returns LicenseSimple[]|error? {
-        string resourcePath = string `/licenses`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get licenses(map<string|string[]> headers = {}, *oas:LicensesGetAllCommonlyUsedQueries queries) returns oas:LicenseSimple[]|error? {
+        return self.genClient->/licenses.get(headers, queries);
     }
 
     # Get a license
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get licenses/[string license](map<string|string[]> headers = {}) returns License|error? {
-        string resourcePath = string `/licenses/${getEncodedUri(license)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get licenses/[string license](map<string|string[]> headers = {}) returns oas:License|error? {
+        return self.genClient->/licenses/[license].get(headers);
     }
 
     # Render a Markdown document
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post markdown(MarkdownBody payload, map<string|string[]> headers = {}) returns string|error? {
-        string resourcePath = string `/markdown`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post markdown(oas:MarkdownBody payload, map<string|string[]> headers = {}) returns string|error? {
+        return self.genClient->/markdown.post(payload, headers);
     }
 
     # Render a Markdown document in raw mode
@@ -718,10 +511,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function post markdown/raw(string payload, map<string|string[]> headers = {}) returns string|error? {
-        string resourcePath = string `/markdown/raw`;
-        http:Request request = new;
-        request.setPayload(payload, "text/plain");
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/markdown/raw.post(payload, headers);
     }
 
     # Get a subscription plan for an account
@@ -729,9 +519,8 @@ public isolated client class Client {
     # + accountId - account_id parameter
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get marketplace_listing/accounts/[int accountId](map<string|string[]> headers = {}) returns MarketplacePurchase|error {
-        string resourcePath = string `/marketplace_listing/accounts/${getEncodedUri(accountId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get marketplace_listing/accounts/[int accountId](map<string|string[]> headers = {}) returns oas:MarketplacePurchase|error {
+        return self.genClient->/marketplace_listing/accounts/[accountId].get(headers);
     }
 
     # List plans
@@ -739,10 +528,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get marketplace_listing/plans(map<string|string[]> headers = {}, *AppsListPlansQueries queries) returns MarketplaceListingPlan[]|error {
-        string resourcePath = string `/marketplace_listing/plans`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get marketplace_listing/plans(map<string|string[]> headers = {}, *oas:AppsListPlansQueries queries) returns oas:MarketplaceListingPlan[]|error {
+        return self.genClient->/marketplace_listing/plans.get(headers, queries);
     }
 
     # List accounts for a plan
@@ -751,10 +538,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get marketplace_listing/plans/[int planId]/accounts(map<string|string[]> headers = {}, *AppsListAccountsForPlanQueries queries) returns MarketplacePurchase[]|error {
-        string resourcePath = string `/marketplace_listing/plans/${getEncodedUri(planId)}/accounts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get marketplace_listing/plans/[int planId]/accounts(map<string|string[]> headers = {}, *oas:AppsListAccountsForPlanQueries queries) returns oas:MarketplacePurchase[]|error {
+        return self.genClient->/marketplace_listing/plans/[planId]/accounts.get(headers, queries);
     }
 
     # Get a subscription plan for an account (stubbed)
@@ -762,9 +547,8 @@ public isolated client class Client {
     # + accountId - account_id parameter
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get marketplace_listing/stubbed/accounts/[int accountId](map<string|string[]> headers = {}) returns MarketplacePurchase|error {
-        string resourcePath = string `/marketplace_listing/stubbed/accounts/${getEncodedUri(accountId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get marketplace_listing/stubbed/accounts/[int accountId](map<string|string[]> headers = {}) returns oas:MarketplacePurchase|error {
+        return self.genClient->/marketplace_listing/stubbed/accounts/[accountId].get(headers);
     }
 
     # List plans (stubbed)
@@ -772,10 +556,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get marketplace_listing/stubbed/plans(map<string|string[]> headers = {}, *AppsListPlansStubbedQueries queries) returns MarketplaceListingPlan[]|error {
-        string resourcePath = string `/marketplace_listing/stubbed/plans`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get marketplace_listing/stubbed/plans(map<string|string[]> headers = {}, *oas:AppsListPlansStubbedQueries queries) returns oas:MarketplaceListingPlan[]|error {
+        return self.genClient->/marketplace_listing/stubbed/plans.get(headers, queries);
     }
 
     # List accounts for a plan (stubbed)
@@ -784,19 +566,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get marketplace_listing/stubbed/plans/[int planId]/accounts(map<string|string[]> headers = {}, *AppsListAccountsForPlanStubbedQueries queries) returns MarketplacePurchase[]|error {
-        string resourcePath = string `/marketplace_listing/stubbed/plans/${getEncodedUri(planId)}/accounts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get marketplace_listing/stubbed/plans/[int planId]/accounts(map<string|string[]> headers = {}, *oas:AppsListAccountsForPlanStubbedQueries queries) returns oas:MarketplacePurchase[]|error {
+        return self.genClient->/marketplace_listing/stubbed/plans/[planId]/accounts.get(headers, queries);
     }
 
     # Get GitHub meta information
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get meta(map<string|string[]> headers = {}) returns ApiOverview|error? {
-        string resourcePath = string `/meta`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get meta(map<string|string[]> headers = {}) returns oas:ApiOverview|error? {
+        return self.genClient->/meta.get(headers);
     }
 
     # List public events for a network of repositories
@@ -806,10 +585,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get networks/[string owner]/[string repo]/events(map<string|string[]> headers = {}, *ActivityListPublicEventsForRepoNetworkQueries queries) returns Event[]|error? {
-        string resourcePath = string `/networks/${getEncodedUri(owner)}/${getEncodedUri(repo)}/events`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get networks/[string owner]/[string repo]/events(map<string|string[]> headers = {}, *oas:ActivityListPublicEventsForRepoNetworkQueries queries) returns oas:Event[]|error? {
+        return self.genClient->/networks/[owner]/[repo]/events.get(headers, queries);
     }
 
     # List notifications for the authenticated user
@@ -817,22 +594,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get notifications(map<string|string[]> headers = {}, *ActivityListNotificationsForAuthenticatedUserQueries queries) returns NotificationThread[]|error? {
-        string resourcePath = string `/notifications`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get notifications(map<string|string[]> headers = {}, *oas:ActivityListNotificationsForAuthenticatedUserQueries queries) returns oas:NotificationThread[]|error? {
+        return self.genClient->/notifications.get(headers, queries);
     }
 
     # Mark notifications as read
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put notifications(NotificationsBody payload, map<string|string[]> headers = {}) returns NotificationRead|error? {
-        string resourcePath = string `/notifications`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put notifications(oas:NotificationsBody payload, map<string|string[]> headers = {}) returns oas:NotificationRead|error? {
+        return self.genClient->/notifications.put(payload, headers);
     }
 
     # Get a thread
@@ -840,9 +611,8 @@ public isolated client class Client {
     # + threadId - The unique identifier of the notification thread. This corresponds to the value returned in the id field when you retrieve notifications (for example with the [GET /notifications operation](https://docs.github.com/rest/activity/notifications#list-notifications-for-the-authenticated-user))
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get notifications/threads/[int threadId](map<string|string[]> headers = {}) returns NotificationThread|error? {
-        string resourcePath = string `/notifications/threads/${getEncodedUri(threadId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get notifications/threads/[int threadId](map<string|string[]> headers = {}) returns oas:NotificationThread|error? {
+        return self.genClient->/notifications/threads/[threadId].get(headers);
     }
 
     # Mark a thread as read
@@ -851,9 +621,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Reset Content 
     resource isolated function patch notifications/threads/[int threadId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/notifications/threads/${getEncodedUri(threadId)}`;
-        http:Request request = new;
-        return self.clientEp->patch(resourcePath, request, headers);
+        return self.genClient->/notifications/threads/[threadId].patch(headers);
     }
 
     # Get a thread subscription for the authenticated user
@@ -861,9 +629,8 @@ public isolated client class Client {
     # + threadId - The unique identifier of the notification thread. This corresponds to the value returned in the id field when you retrieve notifications (for example with the [GET /notifications operation](https://docs.github.com/rest/activity/notifications#list-notifications-for-the-authenticated-user))
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get notifications/threads/[int threadId]/subscription(map<string|string[]> headers = {}) returns ThreadSubscription|error? {
-        string resourcePath = string `/notifications/threads/${getEncodedUri(threadId)}/subscription`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get notifications/threads/[int threadId]/subscription(map<string|string[]> headers = {}) returns oas:ThreadSubscription|error? {
+        return self.genClient->/notifications/threads/[threadId]/subscription.get(headers);
     }
 
     # Set a thread subscription
@@ -871,12 +638,8 @@ public isolated client class Client {
     # + threadId - The unique identifier of the notification thread. This corresponds to the value returned in the id field when you retrieve notifications (for example with the [GET /notifications operation](https://docs.github.com/rest/activity/notifications#list-notifications-for-the-authenticated-user))
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put notifications/threads/[int threadId]/subscription(ThreadIdSubscriptionBody payload, map<string|string[]> headers = {}) returns ThreadSubscription|error? {
-        string resourcePath = string `/notifications/threads/${getEncodedUri(threadId)}/subscription`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put notifications/threads/[int threadId]/subscription(oas:ThreadIdSubscriptionBody payload, map<string|string[]> headers = {}) returns oas:ThreadSubscription|error? {
+        return self.genClient->/notifications/threads/[threadId]/subscription.put(payload, headers);
     }
 
     # Delete a thread subscription
@@ -885,8 +648,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete notifications/threads/[int threadId]/subscription(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/notifications/threads/${getEncodedUri(threadId)}/subscription`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/notifications/threads/[threadId]/subscription.delete(headers);
     }
 
     # Get Octocat
@@ -894,10 +656,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get octocat(map<string|string[]> headers = {}, *MetaGetOctocatQueries queries) returns http:Response|error {
-        string resourcePath = string `/octocat`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get octocat(map<string|string[]> headers = {}, *oas:MetaGetOctocatQueries queries) returns http:Response|error {
+        return self.genClient->/octocat.get(headers, queries);
     }
 
     # List organizations
@@ -905,10 +665,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get organizations(map<string|string[]> headers = {}, *OrgsListQueries queries) returns OrganizationSimple[]|error? {
-        string resourcePath = string `/organizations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get organizations(map<string|string[]> headers = {}, *oas:OrgsListQueries queries) returns oas:OrganizationSimple[]|error? {
+        return self.genClient->/organizations.get(headers, queries);
     }
 
     # Get an organization
@@ -916,9 +674,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org](map<string|string[]> headers = {}) returns OrganizationFull|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org](map<string|string[]> headers = {}) returns oas:OrganizationFull|error {
+        return self.genClient->/orgs/[org].get(headers);
     }
 
     # Delete an organization
@@ -927,8 +684,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Accepted 
     resource isolated function delete orgs/[string org](map<string|string[]> headers = {}) returns record {}|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org].delete(headers);
     }
 
     # Update an organization
@@ -936,12 +692,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch orgs/[string org](OrgsorgBody payload, map<string|string[]> headers = {}) returns OrganizationFull|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch orgs/[string org](oas:OrgsorgBody payload, map<string|string[]> headers = {}) returns oas:OrganizationFull|error {
+        return self.genClient->/orgs/[org].patch(payload, headers);
     }
 
     # Get GitHub Actions cache usage for an organization
@@ -949,9 +701,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/cache/usage(map<string|string[]> headers = {}) returns ActionsCacheUsageOrgEnterprise|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/cache/usage`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/cache/usage(map<string|string[]> headers = {}) returns oas:ActionsCacheUsageOrgEnterprise|error {
+        return self.genClient->/orgs/[org]/actions/cache/usage.get(headers);
     }
 
     # List repositories with GitHub Actions cache usage for an organization
@@ -960,10 +711,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/cache/usage\-by\-repository(map<string|string[]> headers = {}, *ActionsGetActionsCacheUsageByRepoForOrgQueries queries) returns ActionsCacheUsageByRepositoryResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/cache/usage-by-repository`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/cache/usage\-by\-repository(map<string|string[]> headers = {}, *oas:ActionsGetActionsCacheUsageByRepoForOrgQueries queries) returns oas:ActionsCacheUsageByRepositoryResponse|error {
+        return self.genClient->/orgs/[org]/actions/cache/usage\-by\-repository.get(headers, queries);
     }
 
     # Get the customization template for an OIDC subject claim for an organization
@@ -971,9 +720,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - A JSON serialized template for OIDC subject claim customization 
-    resource isolated function get orgs/[string org]/actions/oidc/customization/sub(map<string|string[]> headers = {}) returns OidcCustomSub|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/oidc/customization/sub`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/oidc/customization/sub(map<string|string[]> headers = {}) returns oas:OidcCustomSub|error {
+        return self.genClient->/orgs/[org]/actions/oidc/customization/sub.get(headers);
     }
 
     # Set the customization template for an OIDC subject claim for an organization
@@ -981,12 +729,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Empty response 
-    resource isolated function put orgs/[string org]/actions/oidc/customization/sub(OidcCustomSub payload, map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/oidc/customization/sub`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/actions/oidc/customization/sub(oas:OidcCustomSub payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/orgs/[org]/actions/oidc/customization/sub.put(payload, headers);
     }
 
     # Get GitHub Actions permissions for an organization
@@ -994,9 +738,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/permissions(map<string|string[]> headers = {}) returns ActionsOrganizationPermissions|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/permissions`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/permissions(map<string|string[]> headers = {}) returns oas:ActionsOrganizationPermissions|error {
+        return self.genClient->/orgs/[org]/actions/permissions.get(headers);
     }
 
     # Set GitHub Actions permissions for an organization
@@ -1004,12 +747,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/actions/permissions(ActionsPermissionsBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/permissions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/actions/permissions(oas:ActionsPermissionsBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/actions/permissions.put(payload, headers);
     }
 
     # List selected repositories enabled for GitHub Actions in an organization
@@ -1018,10 +757,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/permissions/repositories(map<string|string[]> headers = {}, *ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationQueries queries) returns RepositoryResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/permissions/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/permissions/repositories(map<string|string[]> headers = {}, *oas:ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationQueries queries) returns oas:RepositoryResponse|error {
+        return self.genClient->/orgs/[org]/actions/permissions/repositories.get(headers, queries);
     }
 
     # Set selected repositories enabled for GitHub Actions in an organization
@@ -1029,12 +766,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/actions/permissions/repositories(PermissionsRepositoriesBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/permissions/repositories`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/actions/permissions/repositories(oas:PermissionsRepositoriesBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/actions/permissions/repositories.put(payload, headers);
     }
 
     # Enable a selected repository for GitHub Actions in an organization
@@ -1044,9 +777,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put orgs/[string org]/actions/permissions/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/permissions/repositories/${getEncodedUri(repositoryId)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/actions/permissions/repositories/[repositoryId].put(headers);
     }
 
     # Disable a selected repository for GitHub Actions in an organization
@@ -1056,8 +787,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/actions/permissions/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/permissions/repositories/${getEncodedUri(repositoryId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/actions/permissions/repositories/[repositoryId].delete(headers);
     }
 
     # Get allowed actions and reusable workflows for an organization
@@ -1065,9 +795,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/permissions/selected\-actions(map<string|string[]> headers = {}) returns SelectedActions|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/permissions/selected-actions`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/permissions/selected\-actions(map<string|string[]> headers = {}) returns oas:SelectedActions|error {
+        return self.genClient->/orgs/[org]/actions/permissions/selected\-actions.get(headers);
     }
 
     # Set allowed actions and reusable workflows for an organization
@@ -1075,12 +804,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/actions/permissions/selected\-actions(SelectedActions payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/permissions/selected-actions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/actions/permissions/selected\-actions(oas:SelectedActions payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/actions/permissions/selected\-actions.put(payload, headers);
     }
 
     # Get default workflow permissions for an organization
@@ -1088,9 +813,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/permissions/workflow(map<string|string[]> headers = {}) returns ActionsGetDefaultWorkflowPermissions|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/permissions/workflow`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/permissions/workflow(map<string|string[]> headers = {}) returns oas:ActionsGetDefaultWorkflowPermissions|error {
+        return self.genClient->/orgs/[org]/actions/permissions/workflow.get(headers);
     }
 
     # Set default workflow permissions for an organization
@@ -1098,12 +822,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Success response 
-    resource isolated function put orgs/[string org]/actions/permissions/workflow(ActionsSetDefaultWorkflowPermissions payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/permissions/workflow`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/actions/permissions/workflow(oas:ActionsSetDefaultWorkflowPermissions payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/actions/permissions/workflow.put(payload, headers);
     }
 
     # List self-hosted runners for an organization
@@ -1112,55 +832,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/runners(map<string|string[]> headers = {}, *ActionsListSelfHostedRunnersForOrgQueries queries) returns RunnerResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # List runner applications for an organization
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get orgs/[string org]/actions/runners/downloads(map<string|string[]> headers = {}) returns RunnerApplication[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/downloads`;
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Create configuration for a just-in-time runner for an organization
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post orgs/[string org]/actions/runners/generate\-jitconfig(RunnersGenerateJitconfigBody payload, map<string|string[]> headers = {}) returns JitConfig|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/generate-jitconfig`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Create a registration token for an organization
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post orgs/[string org]/actions/runners/registration\-token(map<string|string[]> headers = {}) returns AuthenticationToken|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/registration-token`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Create a remove token for an organization
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post orgs/[string org]/actions/runners/remove\-token(map<string|string[]> headers = {}) returns AuthenticationToken|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/remove-token`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function get orgs/[string org]/actions/runners(map<string|string[]> headers = {}, *oas:ActionsListSelfHostedRunnersForOrgQueries queries) returns oas:RunnerResponse|error {
+        return self.genClient->/orgs/[org]/actions/runners.get(headers, queries);
     }
 
     # Get a self-hosted runner for an organization
@@ -1169,9 +842,8 @@ public isolated client class Client {
     # + runnerId - Unique identifier of the self-hosted runner
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/runners/[int runnerId](map<string|string[]> headers = {}) returns Runner|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/${getEncodedUri(runnerId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/runners/[int runnerId](map<string|string[]> headers = {}) returns oas:Runner|error {
+        return self.genClient->/orgs/[org]/actions/runners/[runnerId].get(headers);
     }
 
     # Delete a self-hosted runner from an organization
@@ -1181,8 +853,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/actions/runners/[int runnerId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/${getEncodedUri(runnerId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/actions/runners/[runnerId].delete(headers);
     }
 
     # List labels for a self-hosted runner for an organization
@@ -1191,9 +862,8 @@ public isolated client class Client {
     # + runnerId - Unique identifier of the self-hosted runner
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/runners/[int runnerId]/labels(map<string|string[]> headers = {}) returns RunnerLabelResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/${getEncodedUri(runnerId)}/labels`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/runners/[int runnerId]/labels(map<string|string[]> headers = {}) returns oas:RunnerLabelResponse|error {
+        return self.genClient->/orgs/[org]/actions/runners/[runnerId]/labels.get(headers);
     }
 
     # Set custom labels for a self-hosted runner for an organization
@@ -1202,12 +872,8 @@ public isolated client class Client {
     # + runnerId - Unique identifier of the self-hosted runner
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/actions/runners/[int runnerId]/labels(RunnerIdLabelsBody payload, map<string|string[]> headers = {}) returns RunnerLabelResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/${getEncodedUri(runnerId)}/labels`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/actions/runners/[int runnerId]/labels(oas:RunnerIdLabelsBody payload, map<string|string[]> headers = {}) returns oas:RunnerLabelResponse|error {
+        return self.genClient->/orgs/[org]/actions/runners/[runnerId]/labels.put(payload, headers);
     }
 
     # Add custom labels to a self-hosted runner for an organization
@@ -1216,12 +882,8 @@ public isolated client class Client {
     # + runnerId - Unique identifier of the self-hosted runner
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/actions/runners/[int runnerId]/labels(RunnerIdLabelsBody1 payload, map<string|string[]> headers = {}) returns RunnerLabelResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/${getEncodedUri(runnerId)}/labels`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/actions/runners/[int runnerId]/labels(oas:RunnerIdLabelsBody1 payload, map<string|string[]> headers = {}) returns oas:RunnerLabelResponse|error {
+        return self.genClient->/orgs/[org]/actions/runners/[runnerId]/labels.post(payload, headers);
     }
 
     # Remove all custom labels from a self-hosted runner for an organization
@@ -1230,9 +892,8 @@ public isolated client class Client {
     # + runnerId - Unique identifier of the self-hosted runner
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete orgs/[string org]/actions/runners/[int runnerId]/labels(map<string|string[]> headers = {}) returns RunnerLabelResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/${getEncodedUri(runnerId)}/labels`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+    resource isolated function delete orgs/[string org]/actions/runners/[int runnerId]/labels(map<string|string[]> headers = {}) returns oas:RunnerLabelResponse|error {
+        return self.genClient->/orgs/[org]/actions/runners/[runnerId]/labels.delete(headers);
     }
 
     # Remove a custom label from a self-hosted runner for an organization
@@ -1242,9 +903,8 @@ public isolated client class Client {
     # + name - The name of a self-hosted runner's custom label
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete orgs/[string org]/actions/runners/[int runnerId]/labels/[string name](map<string|string[]> headers = {}) returns RunnerLabelResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/runners/${getEncodedUri(runnerId)}/labels/${getEncodedUri(name)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+    resource isolated function delete orgs/[string org]/actions/runners/[int runnerId]/labels/[string name](map<string|string[]> headers = {}) returns oas:RunnerLabelResponse|error {
+        return self.genClient->/orgs/[org]/actions/runners/[runnerId]/labels/[name].delete(headers);
     }
 
     # List organization secrets
@@ -1253,20 +913,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/secrets(map<string|string[]> headers = {}, *ActionsListOrgSecretsQueries queries) returns OrganizationActionsSecretResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/secrets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Get an organization public key
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get orgs/[string org]/actions/secrets/public\-key(map<string|string[]> headers = {}) returns ActionsPublicKey|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/secrets/public-key`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/secrets(map<string|string[]> headers = {}, *oas:ActionsListOrgSecretsQueries queries) returns oas:OrganizationActionsSecretResponse|error {
+        return self.genClient->/orgs/[org]/actions/secrets.get(headers, queries);
     }
 
     # Get an organization secret
@@ -1275,9 +923,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/secrets/[string secretName](map<string|string[]> headers = {}) returns OrganizationActionsSecret|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/secrets/[string secretName](map<string|string[]> headers = {}) returns oas:OrganizationActionsSecret|error {
+        return self.genClient->/orgs/[org]/actions/secrets/[secretName].get(headers);
     }
 
     # Create or update an organization secret
@@ -1286,12 +933,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response when creating a secret 
-    resource isolated function put orgs/[string org]/actions/secrets/[string secretName](SecretssecretNameBody payload, map<string|string[]> headers = {}) returns EmptyObject|error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/secrets/${getEncodedUri(secretName)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/actions/secrets/[string secretName](oas:SecretssecretNameBody payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error? {
+        return self.genClient->/orgs/[org]/actions/secrets/[secretName].put(payload, headers);
     }
 
     # Delete an organization secret
@@ -1301,8 +944,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/actions/secrets/[string secretName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/actions/secrets/[secretName].delete(headers);
     }
 
     # List selected repositories for an organization secret
@@ -1312,10 +954,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/secrets/[string secretName]/repositories(map<string|string[]> headers = {}, *ActionsListSelectedReposForOrgSecretQueries queries) returns MinimalRepositoryResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/secrets/${getEncodedUri(secretName)}/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/secrets/[string secretName]/repositories(map<string|string[]> headers = {}, *oas:ActionsListSelectedReposForOrgSecretQueries queries) returns oas:MinimalRepositoryResponse|error {
+        return self.genClient->/orgs/[org]/actions/secrets/[secretName]/repositories.get(headers, queries);
     }
 
     # Set selected repositories for an organization secret
@@ -1324,12 +964,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/actions/secrets/[string secretName]/repositories(SecretNameRepositoriesBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/secrets/${getEncodedUri(secretName)}/repositories`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/actions/secrets/[string secretName]/repositories(oas:SecretNameRepositoriesBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/actions/secrets/[secretName]/repositories.put(payload, headers);
     }
 
     # Add selected repository to an organization secret
@@ -1339,9 +975,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - No Content when repository was added to the selected list 
     resource isolated function put orgs/[string org]/actions/secrets/[string secretName]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/secrets/${getEncodedUri(secretName)}/repositories/${getEncodedUri(repositoryId)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/actions/secrets/[secretName]/repositories/[repositoryId].put(headers);
     }
 
     # Remove selected repository from an organization secret
@@ -1351,8 +985,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response when repository was removed from the selected list 
     resource isolated function delete orgs/[string org]/actions/secrets/[string secretName]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/secrets/${getEncodedUri(secretName)}/repositories/${getEncodedUri(repositoryId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/actions/secrets/[secretName]/repositories/[repositoryId].delete(headers);
     }
 
     # List organization variables
@@ -1361,10 +994,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/variables(map<string|string[]> headers = {}, *ActionsListOrgVariablesQueries queries) returns OrganizationActionsVariableResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/variables`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/variables(map<string|string[]> headers = {}, *oas:ActionsListOrgVariablesQueries queries) returns oas:OrganizationActionsVariableResponse|error {
+        return self.genClient->/orgs/[org]/actions/variables.get(headers, queries);
     }
 
     # Create an organization variable
@@ -1372,12 +1003,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response when creating a variable 
-    resource isolated function post orgs/[string org]/actions/variables(ActionsVariablesBody payload, map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/variables`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/actions/variables(oas:ActionsVariablesBody payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/orgs/[org]/actions/variables.post(payload, headers);
     }
 
     # Get an organization variable
@@ -1386,9 +1013,8 @@ public isolated client class Client {
     # + name - The name of the variable
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/variables/[string name](map<string|string[]> headers = {}) returns OrganizationActionsVariable|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/variables/${getEncodedUri(name)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/variables/[string name](map<string|string[]> headers = {}) returns oas:OrganizationActionsVariable|error {
+        return self.genClient->/orgs/[org]/actions/variables/[name].get(headers);
     }
 
     # Delete an organization variable
@@ -1398,8 +1024,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/actions/variables/[string name](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/variables/${getEncodedUri(name)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/actions/variables/[name].delete(headers);
     }
 
     # Update an organization variable
@@ -1408,12 +1033,8 @@ public isolated client class Client {
     # + name - The name of the variable
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch orgs/[string org]/actions/variables/[string name](VariablesnameBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/variables/${getEncodedUri(name)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch orgs/[string org]/actions/variables/[string name](oas:VariablesnameBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/actions/variables/[name].patch(payload, headers);
     }
 
     # List selected repositories for an organization variable
@@ -1423,10 +1044,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/actions/variables/[string name]/repositories(map<string|string[]> headers = {}, *ActionsListSelectedReposForOrgVariableQueries queries) returns MinimalRepositoryResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/variables/${getEncodedUri(name)}/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/actions/variables/[string name]/repositories(map<string|string[]> headers = {}, *oas:ActionsListSelectedReposForOrgVariableQueries queries) returns oas:MinimalRepositoryResponse|error {
+        return self.genClient->/orgs/[org]/actions/variables/[name]/repositories.get(headers, queries);
     }
 
     # Set selected repositories for an organization variable
@@ -1435,12 +1054,8 @@ public isolated client class Client {
     # + name - The name of the variable
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/actions/variables/[string name]/repositories(NameRepositoriesBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/variables/${getEncodedUri(name)}/repositories`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/actions/variables/[string name]/repositories(oas:NameRepositoriesBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/actions/variables/[name]/repositories.put(payload, headers);
     }
 
     # Add selected repository to an organization variable
@@ -1450,9 +1065,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put orgs/[string org]/actions/variables/[string name]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/variables/${getEncodedUri(name)}/repositories/${getEncodedUri(repositoryId)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/actions/variables/[name]/repositories/[repositoryId].put(headers);
     }
 
     # Remove selected repository from an organization variable
@@ -1462,8 +1075,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/actions/variables/[string name]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/actions/variables/${getEncodedUri(name)}/repositories/${getEncodedUri(repositoryId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/actions/variables/[name]/repositories/[repositoryId].delete(headers);
     }
 
     # List users blocked by an organization
@@ -1472,10 +1084,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/blocks(map<string|string[]> headers = {}, *OrgsListBlockedUsersQueries queries) returns SimpleUser[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/blocks`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/blocks(map<string|string[]> headers = {}, *oas:OrgsListBlockedUsersQueries queries) returns oas:SimpleUser[]|error {
+        return self.genClient->/orgs/[org]/blocks.get(headers, queries);
     }
 
     # Check if a user is blocked by an organization
@@ -1485,8 +1095,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - If the user is blocked 
     resource isolated function get orgs/[string org]/blocks/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/blocks/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/orgs/[org]/blocks/[username].get(headers);
     }
 
     # Block a user from an organization
@@ -1496,9 +1105,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put orgs/[string org]/blocks/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/blocks/${getEncodedUri(username)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/blocks/[username].put(headers);
     }
 
     # Unblock a user from an organization
@@ -1508,8 +1115,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/blocks/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/blocks/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/blocks/[username].delete(headers);
     }
 
     # List secret scanning alerts for an organization
@@ -1518,10 +1124,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/code\-scanning/alerts(map<string|string[]> headers = {}, *CodeScanningListAlertsForOrgQueries queries) returns CodeScanningOrganizationAlertItems[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/code-scanning/alerts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/code\-scanning/alerts(map<string|string[]> headers = {}, *oas:CodeScanningListAlertsForOrgQueries queries) returns oas:CodeScanningOrganizationAlertItems[]|error {
+        return self.genClient->/orgs/[org]/code\-scanning/alerts.get(headers, queries);
     }
 
     # List codespaces for the organization
@@ -1530,58 +1134,20 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/codespaces(map<string|string[]> headers = {}, *CodespacesListInOrganizationQueries queries) returns CodespaceResponse|error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/codespaces(map<string|string[]> headers = {}, *oas:CodespacesListInOrganizationQueries queries) returns oas:CodespaceResponse|error? {
+        return self.genClient->/orgs/[org]/codespaces.get(headers, queries);
     }
 
-    # Manage access control for organization codespaces
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response when successfully modifying permissions 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function put orgs/[string org]/codespaces/access(CodespacesAccessBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/access`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/codespaces/access(oas:CodespacesAccessBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/codespaces/access.put(payload, headers);
     }
 
-    # Add users to Codespaces access for an organization
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response when successfully modifying permissions 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function post orgs/[string org]/codespaces/access/selected_users(AccessSelectedUsersBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/access/selected_users`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/codespaces/access/selected_users(oas:AccessSelectedUsersBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/codespaces/access/selected_users.post(payload, headers);
     }
 
-    # Remove users from Codespaces access for an organization
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response when successfully modifying permissions 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function delete orgs/[string org]/codespaces/access/selected_users(AccessSelectedUsersBody1 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/access/selected_users`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete orgs/[string org]/codespaces/access/selected_users(oas:AccessSelectedUsersBody1 payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/codespaces/access/selected_users.delete(payload, headers);
     }
 
     # List organization secrets
@@ -1590,20 +1156,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/codespaces/secrets(map<string|string[]> headers = {}, *CodespacesListOrgSecretsQueries queries) returns CodespacesOrgSecretResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/secrets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Get an organization public key
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get orgs/[string org]/codespaces/secrets/public\-key(map<string|string[]> headers = {}) returns CodespacesPublicKey|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/secrets/public-key`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/codespaces/secrets(map<string|string[]> headers = {}, *oas:CodespacesListOrgSecretsQueries queries) returns oas:CodespacesOrgSecretResponse|error {
+        return self.genClient->/orgs/[org]/codespaces/secrets.get(headers, queries);
     }
 
     # Get an organization secret
@@ -1612,9 +1166,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/codespaces/secrets/[string secretName](map<string|string[]> headers = {}) returns CodespacesOrgSecret|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/codespaces/secrets/[string secretName](map<string|string[]> headers = {}) returns oas:CodespacesOrgSecret|error {
+        return self.genClient->/orgs/[org]/codespaces/secrets/[secretName].get(headers);
     }
 
     # Create or update an organization secret
@@ -1623,12 +1176,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response when creating a secret 
-    resource isolated function put orgs/[string org]/codespaces/secrets/[string secretName](SecretssecretNameBody1 payload, map<string|string[]> headers = {}) returns EmptyObject|error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/secrets/${getEncodedUri(secretName)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/codespaces/secrets/[string secretName](oas:SecretssecretNameBody1 payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error? {
+        return self.genClient->/orgs/[org]/codespaces/secrets/[secretName].put(payload, headers);
     }
 
     # Delete an organization secret
@@ -1638,8 +1187,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/codespaces/secrets/[string secretName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/codespaces/secrets/[secretName].delete(headers);
     }
 
     # List selected repositories for an organization secret
@@ -1649,10 +1197,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/codespaces/secrets/[string secretName]/repositories(map<string|string[]> headers = {}, *CodespacesListSelectedReposForOrgSecretQueries queries) returns MinimalRepositoryResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/secrets/${getEncodedUri(secretName)}/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/codespaces/secrets/[string secretName]/repositories(map<string|string[]> headers = {}, *oas:CodespacesListSelectedReposForOrgSecretQueries queries) returns oas:MinimalRepositoryResponse|error {
+        return self.genClient->/orgs/[org]/codespaces/secrets/[secretName]/repositories.get(headers, queries);
     }
 
     # Set selected repositories for an organization secret
@@ -1661,12 +1207,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/codespaces/secrets/[string secretName]/repositories(SecretNameRepositoriesBody1 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/secrets/${getEncodedUri(secretName)}/repositories`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/codespaces/secrets/[string secretName]/repositories(oas:SecretNameRepositoriesBody1 payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/codespaces/secrets/[secretName]/repositories.put(payload, headers);
     }
 
     # Add selected repository to an organization secret
@@ -1676,9 +1218,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - No Content when repository was added to the selected list 
     resource isolated function put orgs/[string org]/codespaces/secrets/[string secretName]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/secrets/${getEncodedUri(secretName)}/repositories/${getEncodedUri(repositoryId)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/codespaces/secrets/[secretName]/repositories/[repositoryId].put(headers);
     }
 
     # Remove selected repository from an organization secret
@@ -1688,8 +1228,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response when repository was removed from the selected list 
     resource isolated function delete orgs/[string org]/codespaces/secrets/[string secretName]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/codespaces/secrets/${getEncodedUri(secretName)}/repositories/${getEncodedUri(repositoryId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/codespaces/secrets/[secretName]/repositories/[repositoryId].delete(headers);
     }
 
     # Get Copilot for Business seat information and settings for an organization
@@ -1697,9 +1236,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - OK 
-    resource isolated function get orgs/[string org]/copilot/billing(map<string|string[]> headers = {}) returns CopilotOrganizationDetails|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/copilot/billing`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/copilot/billing(map<string|string[]> headers = {}) returns oas:CopilotOrganizationDetails|error {
+        return self.genClient->/orgs/[org]/copilot/billing.get(headers);
     }
 
     # List all Copilot for Business seat assignments for an organization
@@ -1708,10 +1246,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/copilot/billing/seats(map<string|string[]> headers = {}, *CopilotListCopilotSeatsQueries queries) returns CopilotSeatDetailsResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/copilot/billing/seats`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/copilot/billing/seats(map<string|string[]> headers = {}, *oas:CopilotListCopilotSeatsQueries queries) returns oas:CopilotSeatDetailsResponse|error {
+        return self.genClient->/orgs/[org]/copilot/billing/seats.get(headers, queries);
     }
 
     # Add teams to the Copilot for Business subscription for an organization
@@ -1719,12 +1255,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - OK 
-    resource isolated function post orgs/[string org]/copilot/billing/selected_teams(BillingSelectedTeamsBody payload, map<string|string[]> headers = {}) returns CopilotSeatCreated|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/copilot/billing/selected_teams`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/copilot/billing/selected_teams(oas:BillingSelectedTeamsBody payload, map<string|string[]> headers = {}) returns oas:CopilotSeatCreated|error {
+        return self.genClient->/orgs/[org]/copilot/billing/selected_teams.post(payload, headers);
     }
 
     # Remove teams from the Copilot for Business subscription for an organization
@@ -1732,12 +1264,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - OK 
-    resource isolated function delete orgs/[string org]/copilot/billing/selected_teams(BillingSelectedTeamsBody1 payload, map<string|string[]> headers = {}) returns CopilotSeatCancelled|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/copilot/billing/selected_teams`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete orgs/[string org]/copilot/billing/selected_teams(oas:BillingSelectedTeamsBody1 payload, map<string|string[]> headers = {}) returns oas:CopilotSeatCancelled|error {
+        return self.genClient->/orgs/[org]/copilot/billing/selected_teams.delete(payload, headers);
     }
 
     # Add users to the Copilot for Business subscription for an organization
@@ -1745,12 +1273,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - OK 
-    resource isolated function post orgs/[string org]/copilot/billing/selected_users(BillingSelectedUsersBody payload, map<string|string[]> headers = {}) returns CopilotSeatCreated|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/copilot/billing/selected_users`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/copilot/billing/selected_users(oas:BillingSelectedUsersBody payload, map<string|string[]> headers = {}) returns oas:CopilotSeatCreated|error {
+        return self.genClient->/orgs/[org]/copilot/billing/selected_users.post(payload, headers);
     }
 
     # Remove users from the Copilot for Business subscription for an organization
@@ -1758,12 +1282,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - OK 
-    resource isolated function delete orgs/[string org]/copilot/billing/selected_users(BillingSelectedUsersBody1 payload, map<string|string[]> headers = {}) returns CopilotSeatCancelled|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/copilot/billing/selected_users`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete orgs/[string org]/copilot/billing/selected_users(oas:BillingSelectedUsersBody1 payload, map<string|string[]> headers = {}) returns oas:CopilotSeatCancelled|error {
+        return self.genClient->/orgs/[org]/copilot/billing/selected_users.delete(payload, headers);
     }
 
     # List Dependabot alerts for an organization
@@ -1772,10 +1292,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/dependabot/alerts(map<string|string[]> headers = {}, *DependabotListAlertsForOrgQueries queries) returns DependabotAlertWithRepository[]|error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/dependabot/alerts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/dependabot/alerts(map<string|string[]> headers = {}, *oas:DependabotListAlertsForOrgQueries queries) returns oas:DependabotAlertWithRepository[]|error? {
+        return self.genClient->/orgs/[org]/dependabot/alerts.get(headers, queries);
     }
 
     # List organization secrets
@@ -1784,20 +1302,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/dependabot/secrets(map<string|string[]> headers = {}, *DependabotListOrgSecretsQueries queries) returns OrganizationDependabotSecretResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/dependabot/secrets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Get an organization public key
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get orgs/[string org]/dependabot/secrets/public\-key(map<string|string[]> headers = {}) returns DependabotPublicKey|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/dependabot/secrets/public-key`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/dependabot/secrets(map<string|string[]> headers = {}, *oas:DependabotListOrgSecretsQueries queries) returns oas:OrganizationDependabotSecretResponse|error {
+        return self.genClient->/orgs/[org]/dependabot/secrets.get(headers, queries);
     }
 
     # Get an organization secret
@@ -1806,9 +1312,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/dependabot/secrets/[string secretName](map<string|string[]> headers = {}) returns OrganizationDependabotSecret|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/dependabot/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/dependabot/secrets/[string secretName](map<string|string[]> headers = {}) returns oas:OrganizationDependabotSecret|error {
+        return self.genClient->/orgs/[org]/dependabot/secrets/[secretName].get(headers);
     }
 
     # Create or update an organization secret
@@ -1817,12 +1322,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response when creating a secret 
-    resource isolated function put orgs/[string org]/dependabot/secrets/[string secretName](SecretssecretNameBody2 payload, map<string|string[]> headers = {}) returns EmptyObject|error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/dependabot/secrets/${getEncodedUri(secretName)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/dependabot/secrets/[string secretName](oas:SecretssecretNameBody2 payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error? {
+        return self.genClient->/orgs/[org]/dependabot/secrets/[secretName].put(payload, headers);
     }
 
     # Delete an organization secret
@@ -1832,8 +1333,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/dependabot/secrets/[string secretName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/dependabot/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/dependabot/secrets/[secretName].delete(headers);
     }
 
     # List selected repositories for an organization secret
@@ -1843,10 +1343,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/dependabot/secrets/[string secretName]/repositories(map<string|string[]> headers = {}, *DependabotListSelectedReposForOrgSecretQueries queries) returns MinimalRepositoryResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/dependabot/secrets/${getEncodedUri(secretName)}/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/dependabot/secrets/[string secretName]/repositories(map<string|string[]> headers = {}, *oas:DependabotListSelectedReposForOrgSecretQueries queries) returns oas:MinimalRepositoryResponse|error {
+        return self.genClient->/orgs/[org]/dependabot/secrets/[secretName]/repositories.get(headers, queries);
     }
 
     # Set selected repositories for an organization secret
@@ -1855,12 +1353,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/dependabot/secrets/[string secretName]/repositories(SecretNameRepositoriesBody2 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/dependabot/secrets/${getEncodedUri(secretName)}/repositories`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/dependabot/secrets/[string secretName]/repositories(oas:SecretNameRepositoriesBody2 payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/dependabot/secrets/[secretName]/repositories.put(payload, headers);
     }
 
     # Add selected repository to an organization secret
@@ -1870,9 +1364,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - No Content when repository was added to the selected list 
     resource isolated function put orgs/[string org]/dependabot/secrets/[string secretName]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/dependabot/secrets/${getEncodedUri(secretName)}/repositories/${getEncodedUri(repositoryId)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/dependabot/secrets/[secretName]/repositories/[repositoryId].put(headers);
     }
 
     # Remove selected repository from an organization secret
@@ -1882,8 +1374,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response when repository was removed from the selected list 
     resource isolated function delete orgs/[string org]/dependabot/secrets/[string secretName]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/dependabot/secrets/${getEncodedUri(secretName)}/repositories/${getEncodedUri(repositoryId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/dependabot/secrets/[secretName]/repositories/[repositoryId].delete(headers);
     }
 
     # Get list of conflicting packages during Docker migration for organization
@@ -1891,9 +1382,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/docker/conflicts(map<string|string[]> headers = {}) returns Package[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/docker/conflicts`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/docker/conflicts(map<string|string[]> headers = {}) returns oas:Package[]|error {
+        return self.genClient->/orgs/[org]/docker/conflicts.get(headers);
     }
 
     # List public organization events
@@ -1902,10 +1392,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/events(map<string|string[]> headers = {}, *ActivityListPublicOrgEventsQueries queries) returns Event[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/events`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/events(map<string|string[]> headers = {}, *oas:ActivityListPublicOrgEventsQueries queries) returns oas:Event[]|error {
+        return self.genClient->/orgs/[org]/events.get(headers, queries);
     }
 
     # List failed organization invitations
@@ -1914,10 +1402,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/failed_invitations(map<string|string[]> headers = {}, *OrgsListFailedInvitationsQueries queries) returns OrganizationInvitation[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/failed_invitations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/failed_invitations(map<string|string[]> headers = {}, *oas:OrgsListFailedInvitationsQueries queries) returns oas:OrganizationInvitation[]|error {
+        return self.genClient->/orgs/[org]/failed_invitations.get(headers, queries);
     }
 
     # List organization webhooks
@@ -1926,10 +1412,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/hooks(map<string|string[]> headers = {}, *OrgsListWebhooksQueries queries) returns OrgHook[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/hooks(map<string|string[]> headers = {}, *oas:OrgsListWebhooksQueries queries) returns oas:OrgHook[]|error {
+        return self.genClient->/orgs/[org]/hooks.get(headers, queries);
     }
 
     # Create an organization webhook
@@ -1937,12 +1421,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/hooks(OrgHooksBody payload, map<string|string[]> headers = {}) returns OrgHook|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/hooks(oas:OrgHooksBody payload, map<string|string[]> headers = {}) returns oas:OrgHook|error {
+        return self.genClient->/orgs/[org]/hooks.post(payload, headers);
     }
 
     # Get an organization webhook
@@ -1951,9 +1431,8 @@ public isolated client class Client {
     # + hookId - The unique identifier of the hook. You can find this value in the X-GitHub-Hook-ID header of a webhook delivery
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/hooks/[int hookId](map<string|string[]> headers = {}) returns OrgHook|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks/${getEncodedUri(hookId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/hooks/[int hookId](map<string|string[]> headers = {}) returns oas:OrgHook|error {
+        return self.genClient->/orgs/[org]/hooks/[hookId].get(headers);
     }
 
     # Delete an organization webhook
@@ -1963,8 +1442,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/hooks/[int hookId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks/${getEncodedUri(hookId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/hooks/[hookId].delete(headers);
     }
 
     # Update an organization webhook
@@ -1973,12 +1451,8 @@ public isolated client class Client {
     # + hookId - The unique identifier of the hook. You can find this value in the X-GitHub-Hook-ID header of a webhook delivery
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch orgs/[string org]/hooks/[int hookId](HookshookIdBody payload, map<string|string[]> headers = {}) returns OrgHook|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks/${getEncodedUri(hookId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch orgs/[string org]/hooks/[int hookId](oas:HookshookIdBody payload, map<string|string[]> headers = {}) returns oas:OrgHook|error {
+        return self.genClient->/orgs/[org]/hooks/[hookId].patch(payload, headers);
     }
 
     # Get a webhook configuration for an organization
@@ -1987,9 +1461,8 @@ public isolated client class Client {
     # + hookId - The unique identifier of the hook. You can find this value in the X-GitHub-Hook-ID header of a webhook delivery
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/hooks/[int hookId]/config(map<string|string[]> headers = {}) returns WebhookConfig|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks/${getEncodedUri(hookId)}/config`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/hooks/[int hookId]/config(map<string|string[]> headers = {}) returns oas:WebhookConfig|error {
+        return self.genClient->/orgs/[org]/hooks/[hookId]/config.get(headers);
     }
 
     # Update a webhook configuration for an organization
@@ -1998,12 +1471,8 @@ public isolated client class Client {
     # + hookId - The unique identifier of the hook. You can find this value in the X-GitHub-Hook-ID header of a webhook delivery
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch orgs/[string org]/hooks/[int hookId]/config(HookConfigBody payload, map<string|string[]> headers = {}) returns WebhookConfig|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks/${getEncodedUri(hookId)}/config`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch orgs/[string org]/hooks/[int hookId]/config(oas:HookConfigBody payload, map<string|string[]> headers = {}) returns oas:WebhookConfig|error {
+        return self.genClient->/orgs/[org]/hooks/[hookId]/config.patch(payload, headers);
     }
 
     # List deliveries for an organization webhook
@@ -2013,10 +1482,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/hooks/[int hookId]/deliveries(map<string|string[]> headers = {}, *OrgsListWebhookDeliveriesQueries queries) returns HookDeliveryItem[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks/${getEncodedUri(hookId)}/deliveries`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/hooks/[int hookId]/deliveries(map<string|string[]> headers = {}, *oas:OrgsListWebhookDeliveriesQueries queries) returns oas:HookDeliveryItem[]|error {
+        return self.genClient->/orgs/[org]/hooks/[hookId]/deliveries.get(headers, queries);
     }
 
     # Get a webhook delivery for an organization webhook
@@ -2025,9 +1492,8 @@ public isolated client class Client {
     # + hookId - The unique identifier of the hook. You can find this value in the X-GitHub-Hook-ID header of a webhook delivery
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/hooks/[int hookId]/deliveries/[int deliveryId](map<string|string[]> headers = {}) returns HookDelivery|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks/${getEncodedUri(hookId)}/deliveries/${getEncodedUri(deliveryId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/hooks/[int hookId]/deliveries/[int deliveryId](map<string|string[]> headers = {}) returns oas:HookDelivery|error {
+        return self.genClient->/orgs/[org]/hooks/[hookId]/deliveries/[deliveryId].get(headers);
     }
 
     # Redeliver a delivery for an organization webhook
@@ -2037,9 +1503,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Accepted 
     resource isolated function post orgs/[string org]/hooks/[int hookId]/deliveries/[int deliveryId]/attempts(map<string|string[]> headers = {}) returns record {}|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks/${getEncodedUri(hookId)}/deliveries/${getEncodedUri(deliveryId)}/attempts`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/hooks/[hookId]/deliveries/[deliveryId]/attempts.post(headers);
     }
 
     # Ping an organization webhook
@@ -2049,9 +1513,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function post orgs/[string org]/hooks/[int hookId]/pings(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/hooks/${getEncodedUri(hookId)}/pings`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/hooks/[hookId]/pings.post(headers);
     }
 
     # Get an organization installation for the authenticated app
@@ -2059,9 +1521,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/installation(map<string|string[]> headers = {}) returns Installation|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/installation`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/installation(map<string|string[]> headers = {}) returns oas:Installation|error {
+        return self.genClient->/orgs/[org]/installation.get(headers);
     }
 
     # List app installations for an organization
@@ -2070,10 +1531,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/installations(map<string|string[]> headers = {}, *OrgsListAppInstallationsQueries queries) returns InstallationResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/installations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/installations(map<string|string[]> headers = {}, *oas:OrgsListAppInstallationsQueries queries) returns oas:InstallationResponse|error {
+        return self.genClient->/orgs/[org]/installations.get(headers, queries);
     }
 
     # Get interaction restrictions for an organization
@@ -2081,9 +1540,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/interaction\-limits(map<string|string[]> headers = {}) returns InteractionLimitResponseAny|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/interaction-limits`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/interaction\-limits(map<string|string[]> headers = {}) returns oas:InteractionLimitResponseAny|error {
+        return self.genClient->/orgs/[org]/interaction\-limits.get(headers);
     }
 
     # Set interaction restrictions for an organization
@@ -2091,12 +1549,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/interaction\-limits(InteractionLimit payload, map<string|string[]> headers = {}) returns InteractionLimitResponse|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/interaction-limits`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/interaction\-limits(oas:InteractionLimit payload, map<string|string[]> headers = {}) returns oas:InteractionLimitResponse|error {
+        return self.genClient->/orgs/[org]/interaction\-limits.put(payload, headers);
     }
 
     # Remove interaction restrictions for an organization
@@ -2105,8 +1559,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/interaction\-limits(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/interaction-limits`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/interaction\-limits.delete(headers);
     }
 
     # List pending organization invitations
@@ -2115,10 +1568,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/invitations(map<string|string[]> headers = {}, *OrgsListPendingInvitationsQueries queries) returns OrganizationInvitation[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/invitations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/invitations(map<string|string[]> headers = {}, *oas:OrgsListPendingInvitationsQueries queries) returns oas:OrganizationInvitation[]|error {
+        return self.genClient->/orgs/[org]/invitations.get(headers, queries);
     }
 
     # Create an organization invitation
@@ -2126,12 +1577,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/invitations(OrgInvitationsBody payload, map<string|string[]> headers = {}) returns OrganizationInvitation|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/invitations`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/invitations(oas:OrgInvitationsBody payload, map<string|string[]> headers = {}) returns oas:OrganizationInvitation|error {
+        return self.genClient->/orgs/[org]/invitations.post(payload, headers);
     }
 
     # Cancel an organization invitation
@@ -2141,8 +1588,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/invitations/[int invitationId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/invitations/${getEncodedUri(invitationId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/invitations/[invitationId].delete(headers);
     }
 
     # List organization invitation teams
@@ -2152,10 +1598,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/invitations/[int invitationId]/teams(map<string|string[]> headers = {}, *OrgsListInvitationTeamsQueries queries) returns Team[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/invitations/${getEncodedUri(invitationId)}/teams`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/invitations/[int invitationId]/teams(map<string|string[]> headers = {}, *oas:OrgsListInvitationTeamsQueries queries) returns oas:Team[]|error {
+        return self.genClient->/orgs/[org]/invitations/[invitationId]/teams.get(headers, queries);
     }
 
     # List organization issues assigned to the authenticated user
@@ -2164,10 +1608,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/issues(map<string|string[]> headers = {}, *IssuesListForOrgQueries queries) returns Issue[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/issues`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/issues(map<string|string[]> headers = {}, *oas:IssuesListForOrgQueries queries) returns oas:Issue[]|error {
+        return self.genClient->/orgs/[org]/issues.get(headers, queries);
     }
 
     # List organization members
@@ -2176,10 +1618,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/members(map<string|string[]> headers = {}, *OrgsListMembersQueries queries) returns SimpleUser[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/members`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/members(map<string|string[]> headers = {}, *oas:OrgsListMembersQueries queries) returns oas:SimpleUser[]|error {
+        return self.genClient->/orgs/[org]/members.get(headers, queries);
     }
 
     # Check organization membership for a user
@@ -2189,8 +1629,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response if requester is an organization member and user is a member 
     resource isolated function get orgs/[string org]/members/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/members/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/orgs/[org]/members/[username].get(headers);
     }
 
     # Remove an organization member
@@ -2200,8 +1639,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/members/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/members/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/members/[username].delete(headers);
     }
 
     # List codespaces for a user in organization
@@ -2211,10 +1649,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/members/[string username]/codespaces(map<string|string[]> headers = {}, *CodespacesGetCodespacesForUserInOrgQueries queries) returns CodespaceResponse|error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/members/${getEncodedUri(username)}/codespaces`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/members/[string username]/codespaces(map<string|string[]> headers = {}, *oas:CodespacesGetCodespacesForUserInOrgQueries queries) returns oas:CodespaceResponse|error? {
+        return self.genClient->/orgs/[org]/members/[username]/codespaces.get(headers, queries);
     }
 
     # Delete a codespace from the organization
@@ -2225,8 +1661,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Accepted 
     resource isolated function delete orgs/[string org]/members/[string username]/codespaces/[string codespaceName](map<string|string[]> headers = {}) returns record {}|error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/members/${getEncodedUri(username)}/codespaces/${getEncodedUri(codespaceName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/members/[username]/codespaces/[codespaceName].delete(headers);
     }
 
     # Stop a codespace for an organization user
@@ -2236,10 +1671,8 @@ public isolated client class Client {
     # + codespaceName - The name of the codespace
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/members/[string username]/codespaces/[string codespaceName]/stop(map<string|string[]> headers = {}) returns Codespace|error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/members/${getEncodedUri(username)}/codespaces/${getEncodedUri(codespaceName)}/stop`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/members/[string username]/codespaces/[string codespaceName]/stop(map<string|string[]> headers = {}) returns oas:Codespace|error? {
+        return self.genClient->/orgs/[org]/members/[username]/codespaces/[codespaceName]/stop.post(headers);
     }
 
     # Get Copilot for Business seat assignment details for a user
@@ -2248,9 +1681,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - The user's GitHub Copilot seat details, including usage 
-    resource isolated function get orgs/[string org]/members/[string username]/copilot(map<string|string[]> headers = {}) returns CopilotSeatDetails|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/members/${getEncodedUri(username)}/copilot`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/members/[string username]/copilot(map<string|string[]> headers = {}) returns oas:CopilotSeatDetails|error {
+        return self.genClient->/orgs/[org]/members/[username]/copilot.get(headers);
     }
 
     # Get organization membership for a user
@@ -2259,9 +1691,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/memberships/[string username](map<string|string[]> headers = {}) returns OrgMembership|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/memberships/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/memberships/[string username](map<string|string[]> headers = {}) returns oas:OrgMembership|error {
+        return self.genClient->/orgs/[org]/memberships/[username].get(headers);
     }
 
     # Set organization membership for a user
@@ -2270,12 +1701,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/memberships/[string username](MembershipsusernameBody payload, map<string|string[]> headers = {}) returns OrgMembership|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/memberships/${getEncodedUri(username)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/memberships/[string username](oas:MembershipsusernameBody payload, map<string|string[]> headers = {}) returns oas:OrgMembership|error {
+        return self.genClient->/orgs/[org]/memberships/[username].put(payload, headers);
     }
 
     # Remove organization membership for a user
@@ -2285,8 +1712,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/memberships/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/memberships/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/memberships/[username].delete(headers);
     }
 
     # List organization migrations
@@ -2295,11 +1721,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/migrations(map<string|string[]> headers = {}, *MigrationsListForOrgQueries queries) returns Migration[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/migrations`;
-        map<Encoding> queryParamEncoding = {"exclude": {style: FORM, explode: true}};
-        resourcePath = resourcePath + check getPathForQueryParam(queries, queryParamEncoding);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/migrations(map<string|string[]> headers = {}, *oas:MigrationsListForOrgQueries queries) returns oas:Migration[]|error {
+        return self.genClient->/orgs/[org]/migrations.get(headers, queries);
     }
 
     # Start an organization migration
@@ -2307,12 +1730,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/migrations(OrgMigrationsBody payload, map<string|string[]> headers = {}) returns Migration|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/migrations`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/migrations(oas:OrgMigrationsBody payload, map<string|string[]> headers = {}) returns oas:Migration|error {
+        return self.genClient->/orgs/[org]/migrations.post(payload, headers);
     }
 
     # Get an organization migration status
@@ -2322,11 +1741,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - *   pending, which means the migration hasn't started yet. *   exporting, which means the migration is in progress. *   exported, which means the migration finished successfully. *   failed, which means the migration failed 
-    resource isolated function get orgs/[string org]/migrations/[int migrationId](map<string|string[]> headers = {}, *MigrationsGetStatusForOrgQueries queries) returns Migration|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/migrations/${getEncodedUri(migrationId)}`;
-        map<Encoding> queryParamEncoding = {"exclude": {style: FORM, explode: true}};
-        resourcePath = resourcePath + check getPathForQueryParam(queries, queryParamEncoding);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/migrations/[int migrationId](map<string|string[]> headers = {}, *oas:MigrationsGetStatusForOrgQueries queries) returns oas:Migration|error {
+        return self.genClient->/orgs/[org]/migrations/[migrationId].get(headers, queries);
     }
 
     # Download an organization migration archive
@@ -2336,8 +1752,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get orgs/[string org]/migrations/[int migrationId]/archive(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/migrations/${getEncodedUri(migrationId)}/archive`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/orgs/[org]/migrations/[migrationId]/archive.get(headers);
     }
 
     # Delete an organization migration archive
@@ -2347,8 +1762,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/migrations/[int migrationId]/archive(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/migrations/${getEncodedUri(migrationId)}/archive`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/migrations/[migrationId]/archive.delete(headers);
     }
 
     # Unlock an organization repository
@@ -2359,8 +1773,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/migrations/[int migrationId]/repos/[string repoName]/'lock(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/migrations/${getEncodedUri(migrationId)}/repos/${getEncodedUri(repoName)}/lock`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/migrations/[migrationId]/repos/[repoName]/'lock.delete(headers);
     }
 
     # List repositories in an organization migration
@@ -2370,10 +1783,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/migrations/[int migrationId]/repositories(map<string|string[]> headers = {}, *MigrationsListReposForOrgQueries queries) returns MinimalRepository[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/migrations/${getEncodedUri(migrationId)}/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/migrations/[int migrationId]/repositories(map<string|string[]> headers = {}, *oas:MigrationsListReposForOrgQueries queries) returns oas:MinimalRepository[]|error {
+        return self.genClient->/orgs/[org]/migrations/[migrationId]/repositories.get(headers, queries);
     }
 
     # List outside collaborators for an organization
@@ -2382,10 +1793,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/outside_collaborators(map<string|string[]> headers = {}, *OrgsListOutsideCollaboratorsQueries queries) returns SimpleUser[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/outside_collaborators`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/outside_collaborators(map<string|string[]> headers = {}, *oas:OrgsListOutsideCollaboratorsQueries queries) returns oas:SimpleUser[]|error {
+        return self.genClient->/orgs/[org]/outside_collaborators.get(headers, queries);
     }
 
     # Convert an organization member to outside collaborator
@@ -2394,12 +1803,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - User is getting converted asynchronously 
-    resource isolated function put orgs/[string org]/outside_collaborators/[string username](OutsideCollaboratorsusernameBody payload, map<string|string[]> headers = {}) returns record {||}|error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/outside_collaborators/${getEncodedUri(username)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/outside_collaborators/[string username](oas:OutsideCollaboratorsusernameBody payload, map<string|string[]> headers = {}) returns record {||}|error? {
+        return self.genClient->/orgs/[org]/outside_collaborators/[username].put(payload, headers);
     }
 
     # Remove outside collaborator from an organization
@@ -2409,8 +1814,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/outside_collaborators/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/outside_collaborators/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/outside_collaborators/[username].delete(headers);
     }
 
     # List packages for an organization
@@ -2419,10 +1823,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/packages(map<string|string[]> headers = {}, *PackagesListPackagesForOrganizationQueries queries) returns Package[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/packages`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/packages(map<string|string[]> headers = {}, *oas:PackagesListPackagesForOrganizationQueries queries) returns oas:Package[]|error {
+        return self.genClient->/orgs/[org]/packages.get(headers, queries);
     }
 
     # Get a package for an organization
@@ -2432,9 +1834,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName](map<string|string[]> headers = {}) returns Package|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName](map<string|string[]> headers = {}) returns oas:Package|error {
+        return self.genClient->/orgs/[org]/packages/[packageType]/[packageName].get(headers);
     }
 
     # Delete a package for an organization
@@ -2445,8 +1846,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/packages/[packageType]/[packageName].delete(headers);
     }
 
     # Restore a package for an organization
@@ -2457,11 +1857,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/restore(map<string|string[]> headers = {}, *PackagesRestorePackageForOrgQueries queries) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/restore`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/restore(map<string|string[]> headers = {}, *oas:PackagesRestorePackageForOrgQueries queries) returns error? {
+        return self.genClient->/orgs/[org]/packages/[packageType]/[packageName]/restore.post(headers, queries);
     }
 
     # List package versions for a package owned by an organization
@@ -2472,10 +1869,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions(map<string|string[]> headers = {}, *PackagesGetAllPackageVersionsForPackageOwnedByOrgQueries queries) returns PackageVersion[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions(map<string|string[]> headers = {}, *oas:PackagesGetAllPackageVersionsForPackageOwnedByOrgQueries queries) returns oas:PackageVersion[]|error {
+        return self.genClient->/orgs/[org]/packages/[packageType]/[packageName]/versions.get(headers, queries);
     }
 
     # Get a package version for an organization
@@ -2486,9 +1881,8 @@ public isolated client class Client {
     # + packageVersionId - Unique identifier of the package version
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId](map<string|string[]> headers = {}) returns PackageVersion|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions/${getEncodedUri(packageVersionId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId](map<string|string[]> headers = {}) returns oas:PackageVersion|error {
+        return self.genClient->/orgs/[org]/packages/[packageType]/[packageName]/versions/[packageVersionId].get(headers);
     }
 
     # Delete package version for an organization
@@ -2500,8 +1894,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions/${getEncodedUri(packageVersionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/packages/[packageType]/[packageName]/versions/[packageVersionId].delete(headers);
     }
 
     # Restore package version for an organization
@@ -2513,9 +1906,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function post orgs/[string org]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId]/restore(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions/${getEncodedUri(packageVersionId)}/restore`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/packages/[packageType]/[packageName]/versions/[packageVersionId]/restore.post(headers);
     }
 
     # List requests to access organization resources with fine-grained personal access tokens
@@ -2524,11 +1915,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Internal Error 
-    resource isolated function get orgs/[string org]/personal\-access\-token\-requests(map<string|string[]> headers = {}, *OrgsListPatGrantRequestsQueries queries) returns OrganizationProgrammaticAccessGrantRequest[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/personal-access-token-requests`;
-        map<Encoding> queryParamEncoding = {"owner": {style: FORM, explode: true}};
-        resourcePath = resourcePath + check getPathForQueryParam(queries, queryParamEncoding);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/personal\-access\-token\-requests(map<string|string[]> headers = {}, *oas:OrgsListPatGrantRequestsQueries queries) returns oas:OrganizationProgrammaticAccessGrantRequest[]|error {
+        return self.genClient->/orgs/[org]/personal\-access\-token\-requests.get(headers, queries);
     }
 
     # Review requests to access organization resources with fine-grained personal access tokens
@@ -2536,12 +1924,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Internal Error 
-    resource isolated function post orgs/[string org]/personal\-access\-token\-requests(OrgPersonalAccessTokenRequestsBody payload, map<string|string[]> headers = {}) returns record {}|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/personal-access-token-requests`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/personal\-access\-token\-requests(oas:OrgPersonalAccessTokenRequestsBody payload, map<string|string[]> headers = {}) returns record {}|error {
+        return self.genClient->/orgs/[org]/personal\-access\-token\-requests.post(payload, headers);
     }
 
     # Update the access a fine-grained personal access token has to organization resources
@@ -2550,12 +1934,8 @@ public isolated client class Client {
     # + patId - The unique identifier of the fine-grained personal access token
     # + headers - Headers to be sent with the request 
     # + return - Internal Error 
-    resource isolated function post orgs/[string org]/personal\-access\-token\-requests/[int patRequestId](PersonalAccessTokenRequestspatRequestIdBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/personal-access-token-requests/${getEncodedUri(patRequestId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/personal\-access\-token\-requests/[int patRequestId](oas:PersonalAccessTokenRequestspatRequestIdBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/personal\-access\-token\-requests/[patRequestId].post(payload, headers);
     }
 
     # List repositories a fine-grained personal access token has access to
@@ -2565,10 +1945,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Internal Error 
-    resource isolated function get orgs/[string org]/personal\-access\-token\-requests/[int patRequestId]/repositories(map<string|string[]> headers = {}, *OrgsListPatGrantRequestRepositoriesQueries queries) returns MinimalRepository[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/personal-access-token-requests/${getEncodedUri(patRequestId)}/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/personal\-access\-token\-requests/[int patRequestId]/repositories(map<string|string[]> headers = {}, *oas:OrgsListPatGrantRequestRepositoriesQueries queries) returns oas:MinimalRepository[]|error {
+        return self.genClient->/orgs/[org]/personal\-access\-token\-requests/[patRequestId]/repositories.get(headers, queries);
     }
 
     # List fine-grained personal access tokens with access to organization resources
@@ -2577,11 +1955,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Internal Error 
-    resource isolated function get orgs/[string org]/personal\-access\-tokens(map<string|string[]> headers = {}, *OrgsListPatGrantsQueries queries) returns OrganizationProgrammaticAccessGrant[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/personal-access-tokens`;
-        map<Encoding> queryParamEncoding = {"owner": {style: FORM, explode: true}};
-        resourcePath = resourcePath + check getPathForQueryParam(queries, queryParamEncoding);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/personal\-access\-tokens(map<string|string[]> headers = {}, *oas:OrgsListPatGrantsQueries queries) returns oas:OrganizationProgrammaticAccessGrant[]|error {
+        return self.genClient->/orgs/[org]/personal\-access\-tokens.get(headers, queries);
     }
 
     # Update the access to organization resources via fine-grained personal access tokens
@@ -2589,12 +1964,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Internal Error 
-    resource isolated function post orgs/[string org]/personal\-access\-tokens(OrgPersonalAccessTokensBody payload, map<string|string[]> headers = {}) returns record {}|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/personal-access-tokens`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/personal\-access\-tokens(oas:OrgPersonalAccessTokensBody payload, map<string|string[]> headers = {}) returns record {}|error {
+        return self.genClient->/orgs/[org]/personal\-access\-tokens.post(payload, headers);
     }
 
     # Update the access a fine-grained personal access token has to organization resources
@@ -2603,12 +1974,8 @@ public isolated client class Client {
     # + patId - The unique identifier of the fine-grained personal access token
     # + headers - Headers to be sent with the request 
     # + return - Internal Error 
-    resource isolated function post orgs/[string org]/personal\-access\-tokens/[int patId](PersonalAccessTokenspatIdBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/personal-access-tokens/${getEncodedUri(patId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/personal\-access\-tokens/[int patId](oas:PersonalAccessTokenspatIdBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/personal\-access\-tokens/[patId].post(payload, headers);
     }
 
     # List repositories a fine-grained personal access token has access to
@@ -2618,35 +1985,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Internal Error 
-    resource isolated function get orgs/[string org]/personal\-access\-tokens/[int patId]/repositories(map<string|string[]> headers = {}, *OrgsListPatGrantRepositoriesQueries queries) returns MinimalRepository[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/personal-access-tokens/${getEncodedUri(patId)}/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # List organization projects
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get orgs/[string org]/projects(map<string|string[]> headers = {}, *ProjectsListForOrgQueries queries) returns Project[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/projects`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Create an organization project
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post orgs/[string org]/projects(OrgProjectsBody payload, map<string|string[]> headers = {}) returns Project|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/projects`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function get orgs/[string org]/personal\-access\-tokens/[int patId]/repositories(map<string|string[]> headers = {}, *oas:OrgsListPatGrantRepositoriesQueries queries) returns oas:MinimalRepository[]|error {
+        return self.genClient->/orgs/[org]/personal\-access\-tokens/[patId]/repositories.get(headers, queries);
     }
 
     # List public organization members
@@ -2655,10 +1995,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/public_members(map<string|string[]> headers = {}, *OrgsListPublicMembersQueries queries) returns SimpleUser[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/public_members`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/public_members(map<string|string[]> headers = {}, *oas:OrgsListPublicMembersQueries queries) returns oas:SimpleUser[]|error {
+        return self.genClient->/orgs/[org]/public_members.get(headers, queries);
     }
 
     # Check public organization membership for a user
@@ -2668,8 +2006,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response if user is a public member 
     resource isolated function get orgs/[string org]/public_members/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/public_members/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/orgs/[org]/public_members/[username].get(headers);
     }
 
     # Set public organization membership for the authenticated user
@@ -2679,9 +2016,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put orgs/[string org]/public_members/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/public_members/${getEncodedUri(username)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/public_members/[username].put(headers);
     }
 
     # Remove public organization membership for the authenticated user
@@ -2691,8 +2026,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/public_members/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/public_members/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/public_members/[username].delete(headers);
     }
 
     # List organization repositories
@@ -2701,10 +2035,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/repos(map<string|string[]> headers = {}, *ReposListForOrgQueries queries) returns MinimalRepository[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/repos`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/repos(map<string|string[]> headers = {}, *oas:ReposListForOrgQueries queries) returns oas:MinimalRepository[]|error {
+        return self.genClient->/orgs/[org]/repos.get(headers, queries);
     }
 
     # Create an organization repository
@@ -2712,12 +2044,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/repos(OrgReposBody payload, map<string|string[]> headers = {}) returns Repository|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/repos`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/repos(oas:OrgReposBody payload, map<string|string[]> headers = {}) returns oas:Repository|error {
+        return self.genClient->/orgs/[org]/repos.post(payload, headers);
     }
 
     # Get all organization repository rulesets
@@ -2726,10 +2054,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/rulesets(map<string|string[]> headers = {}, *ReposGetOrgRulesetsQueries queries) returns RepositoryRuleset[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/rulesets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/rulesets(map<string|string[]> headers = {}, *oas:ReposGetOrgRulesetsQueries queries) returns oas:RepositoryRuleset[]|error {
+        return self.genClient->/orgs/[org]/rulesets.get(headers, queries);
     }
 
     # Create an organization repository ruleset
@@ -2738,24 +2064,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + payload - Request body 
     # + return - Response 
-    resource isolated function post orgs/[string org]/rulesets(OrgRulesetsBody payload, map<string|string[]> headers = {}) returns RepositoryRuleset|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/rulesets`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # List organization rule suites
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get orgs/[string org]/rulesets/rule\-suites(map<string|string[]> headers = {}, *ReposGetOrgRuleSuitesQueries queries) returns RuleSuites|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/rulesets/rule-suites`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function post orgs/[string org]/rulesets(oas:OrgRulesetsBody payload, map<string|string[]> headers = {}) returns oas:RepositoryRuleset|error {
+        return self.genClient->/orgs/[org]/rulesets.post(payload, headers);
     }
 
     # Get an organization rule suite
@@ -2767,9 +2077,8 @@ public isolated client class Client {
     # for organizations
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/rulesets/rule\-suites/[int ruleSuiteId](map<string|string[]> headers = {}) returns RuleSuite|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/rulesets/rule-suites/${getEncodedUri(ruleSuiteId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/rulesets/rule\-suites/[int ruleSuiteId](map<string|string[]> headers = {}) returns oas:RuleSuite|error {
+        return self.genClient->/orgs/[org]/rulesets/rule\-suites/[ruleSuiteId].get(headers);
     }
 
     # Get an organization repository ruleset
@@ -2778,9 +2087,8 @@ public isolated client class Client {
     # + rulesetId - The ID of the ruleset
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/rulesets/[int rulesetId](map<string|string[]> headers = {}) returns RepositoryRuleset|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/rulesets/${getEncodedUri(rulesetId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/rulesets/[int rulesetId](map<string|string[]> headers = {}) returns oas:RepositoryRuleset|error {
+        return self.genClient->/orgs/[org]/rulesets/[rulesetId].get(headers);
     }
 
     # Update an organization repository ruleset
@@ -2790,12 +2098,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + payload - Request body 
     # + return - Response 
-    resource isolated function put orgs/[string org]/rulesets/[int rulesetId](RulesetsrulesetIdBody payload, map<string|string[]> headers = {}) returns RepositoryRuleset|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/rulesets/${getEncodedUri(rulesetId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/rulesets/[int rulesetId](oas:RulesetsrulesetIdBody payload, map<string|string[]> headers = {}) returns oas:RepositoryRuleset|error {
+        return self.genClient->/orgs/[org]/rulesets/[rulesetId].put(payload, headers);
     }
 
     # Delete an organization repository ruleset
@@ -2805,8 +2109,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/rulesets/[int rulesetId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/rulesets/${getEncodedUri(rulesetId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/rulesets/[rulesetId].delete(headers);
     }
 
     # List secret scanning alerts for an organization
@@ -2815,10 +2118,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/secret\-scanning/alerts(map<string|string[]> headers = {}, *SecretScanningListAlertsForOrgQueries queries) returns OrganizationSecretScanningAlert[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/secret-scanning/alerts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/secret\-scanning/alerts(map<string|string[]> headers = {}, *oas:SecretScanningListAlertsForOrgQueries queries) returns oas:OrganizationSecretScanningAlert[]|error {
+        return self.genClient->/orgs/[org]/secret\-scanning/alerts.get(headers, queries);
     }
 
     # List repository security advisories for an organization
@@ -2827,10 +2128,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/security\-advisories(map<string|string[]> headers = {}, *SecurityAdvisoriesListOrgRepositoryAdvisoriesQueries queries) returns RepositoryAdvisory[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/security-advisories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/security\-advisories(map<string|string[]> headers = {}, *oas:SecurityAdvisoriesListOrgRepositoryAdvisoriesQueries queries) returns oas:RepositoryAdvisory[]|error {
+        return self.genClient->/orgs/[org]/security\-advisories.get(headers, queries);
     }
 
     # List security manager teams
@@ -2838,9 +2137,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/security\-managers(map<string|string[]> headers = {}) returns TeamSimple[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/security-managers`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/security\-managers(map<string|string[]> headers = {}) returns oas:TeamSimple[]|error {
+        return self.genClient->/orgs/[org]/security\-managers.get(headers);
     }
 
     # Add a security manager team
@@ -2850,9 +2148,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put orgs/[string org]/security\-managers/teams/[string teamSlug](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/security-managers/teams/${getEncodedUri(teamSlug)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/orgs/[org]/security\-managers/teams/[teamSlug].put(headers);
     }
 
     # Remove a security manager team
@@ -2862,8 +2158,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/security\-managers/teams/[string teamSlug](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/security-managers/teams/${getEncodedUri(teamSlug)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/security\-managers/teams/[teamSlug].delete(headers);
     }
 
     # Get GitHub Actions billing for an organization
@@ -2871,9 +2166,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/settings/billing/actions(map<string|string[]> headers = {}) returns ActionsBillingUsage|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/settings/billing/actions`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/settings/billing/actions(map<string|string[]> headers = {}) returns oas:ActionsBillingUsage|error {
+        return self.genClient->/orgs/[org]/settings/billing/actions.get(headers);
     }
 
     # Get GitHub Packages billing for an organization
@@ -2881,9 +2175,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/settings/billing/packages(map<string|string[]> headers = {}) returns PackagesBillingUsage|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/settings/billing/packages`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/settings/billing/packages(map<string|string[]> headers = {}) returns oas:PackagesBillingUsage|error {
+        return self.genClient->/orgs/[org]/settings/billing/packages.get(headers);
     }
 
     # Get shared storage billing for an organization
@@ -2891,9 +2184,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/settings/billing/shared\-storage(map<string|string[]> headers = {}) returns CombinedBillingUsage|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/settings/billing/shared-storage`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/settings/billing/shared\-storage(map<string|string[]> headers = {}) returns oas:CombinedBillingUsage|error {
+        return self.genClient->/orgs/[org]/settings/billing/shared\-storage.get(headers);
     }
 
     # List teams
@@ -2902,10 +2194,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams(map<string|string[]> headers = {}, *TeamsListQueries queries) returns Team[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams(map<string|string[]> headers = {}, *oas:TeamsListQueries queries) returns oas:Team[]|error {
+        return self.genClient->/orgs/[org]/teams.get(headers, queries);
     }
 
     # Create a team
@@ -2913,12 +2203,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/teams(OrgTeamsBody payload, map<string|string[]> headers = {}) returns TeamFull|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/teams(oas:OrgTeamsBody payload, map<string|string[]> headers = {}) returns oas:TeamFull|error {
+        return self.genClient->/orgs/[org]/teams.post(payload, headers);
     }
 
     # Get a team by name
@@ -2927,9 +2213,8 @@ public isolated client class Client {
     # + teamSlug - The slug of the team name
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug](map<string|string[]> headers = {}) returns TeamFull|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug](map<string|string[]> headers = {}) returns oas:TeamFull|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug].get(headers);
     }
 
     # Delete a team
@@ -2939,8 +2224,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/teams/[string teamSlug](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/teams/[teamSlug].delete(headers);
     }
 
     # Update a team
@@ -2949,12 +2233,8 @@ public isolated client class Client {
     # + teamSlug - The slug of the team name
     # + headers - Headers to be sent with the request 
     # + return - Response when the updated information already exists 
-    resource isolated function patch orgs/[string org]/teams/[string teamSlug](TeamsteamSlugBody payload, map<string|string[]> headers = {}) returns TeamFull|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch orgs/[string org]/teams/[string teamSlug](oas:TeamsteamSlugBody payload, map<string|string[]> headers = {}) returns oas:TeamFull|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug].patch(payload, headers);
     }
 
     # List discussions
@@ -2964,10 +2244,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions(map<string|string[]> headers = {}, *TeamsListDiscussionsInOrgQueries queries) returns TeamDiscussion[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions(map<string|string[]> headers = {}, *oas:TeamsListDiscussionsInOrgQueries queries) returns oas:TeamDiscussion[]|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions.get(headers, queries);
     }
 
     # Create a discussion
@@ -2976,12 +2254,8 @@ public isolated client class Client {
     # + teamSlug - The slug of the team name
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/teams/[string teamSlug]/discussions(TeamSlugDiscussionsBody payload, map<string|string[]> headers = {}) returns TeamDiscussion|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/teams/[string teamSlug]/discussions(oas:TeamSlugDiscussionsBody payload, map<string|string[]> headers = {}) returns oas:TeamDiscussion|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions.post(payload, headers);
     }
 
     # Get a discussion
@@ -2991,9 +2265,8 @@ public isolated client class Client {
     # + discussionNumber - The number that identifies the discussion
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber](map<string|string[]> headers = {}) returns TeamDiscussion|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber](map<string|string[]> headers = {}) returns oas:TeamDiscussion|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber].get(headers);
     }
 
     # Delete a discussion
@@ -3004,8 +2277,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber].delete(headers);
     }
 
     # Update a discussion
@@ -3015,12 +2287,8 @@ public isolated client class Client {
     # + discussionNumber - The number that identifies the discussion
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber](DiscussionsdiscussionNumberBody payload, map<string|string[]> headers = {}) returns TeamDiscussion|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber](oas:DiscussionsdiscussionNumberBody payload, map<string|string[]> headers = {}) returns oas:TeamDiscussion|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber].patch(payload, headers);
     }
 
     # List discussion comments
@@ -3031,10 +2299,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments(map<string|string[]> headers = {}, *TeamsListDiscussionCommentsInOrgQueries queries) returns TeamDiscussionComment[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/comments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments(map<string|string[]> headers = {}, *oas:TeamsListDiscussionCommentsInOrgQueries queries) returns oas:TeamDiscussionComment[]|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/comments.get(headers, queries);
     }
 
     # Create a discussion comment
@@ -3044,12 +2310,8 @@ public isolated client class Client {
     # + discussionNumber - The number that identifies the discussion
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments(DiscussionNumberCommentsBody payload, map<string|string[]> headers = {}) returns TeamDiscussionComment|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/comments`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments(oas:DiscussionNumberCommentsBody payload, map<string|string[]> headers = {}) returns oas:TeamDiscussionComment|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/comments.post(payload, headers);
     }
 
     # Get a discussion comment
@@ -3060,9 +2322,8 @@ public isolated client class Client {
     # + commentNumber - The number that identifies the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments/[int commentNumber](map<string|string[]> headers = {}) returns TeamDiscussionComment|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments/[int commentNumber](map<string|string[]> headers = {}) returns oas:TeamDiscussionComment|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/comments/[commentNumber].get(headers);
     }
 
     # Delete a discussion comment
@@ -3074,8 +2335,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments/[int commentNumber](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/comments/[commentNumber].delete(headers);
     }
 
     # Update a discussion comment
@@ -3086,12 +2346,8 @@ public isolated client class Client {
     # + commentNumber - The number that identifies the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments/[int commentNumber](DiscussionNumberCommentsBody payload, map<string|string[]> headers = {}) returns TeamDiscussionComment|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments/[int commentNumber](oas:DiscussionNumberCommentsBody payload, map<string|string[]> headers = {}) returns oas:TeamDiscussionComment|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/comments/[commentNumber].patch(payload, headers);
     }
 
     # List reactions for a team discussion comment
@@ -3103,10 +2359,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments/[int commentNumber]/reactions(map<string|string[]> headers = {}, *ReactionsListForTeamDiscussionCommentInOrgQueries queries) returns Reaction[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}/reactions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments/[int commentNumber]/reactions(map<string|string[]> headers = {}, *oas:ReactionsListForTeamDiscussionCommentInOrgQueries queries) returns oas:Reaction[]|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/comments/[commentNumber]/reactions.get(headers, queries);
     }
 
     # Create reaction for a team discussion comment
@@ -3117,12 +2371,8 @@ public isolated client class Client {
     # + commentNumber - The number that identifies the comment
     # + headers - Headers to be sent with the request 
     # + return - Response when the reaction type has already been added to this team discussion comment 
-    resource isolated function post orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments/[int commentNumber]/reactions(CommentNumberReactionsBody payload, map<string|string[]> headers = {}) returns Reaction|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}/reactions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments/[int commentNumber]/reactions(oas:CommentNumberReactionsBody payload, map<string|string[]> headers = {}) returns oas:Reaction|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/comments/[commentNumber]/reactions.post(payload, headers);
     }
 
     # Delete team discussion comment reaction
@@ -3135,8 +2385,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/comments/[int commentNumber]/reactions/[int reactionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}/reactions/${getEncodedUri(reactionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/comments/[commentNumber]/reactions/[reactionId].delete(headers);
     }
 
     # List reactions for a team discussion
@@ -3147,10 +2396,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/reactions(map<string|string[]> headers = {}, *ReactionsListForTeamDiscussionInOrgQueries queries) returns Reaction[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/reactions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/reactions(map<string|string[]> headers = {}, *oas:ReactionsListForTeamDiscussionInOrgQueries queries) returns oas:Reaction[]|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/reactions.get(headers, queries);
     }
 
     # Create reaction for a team discussion
@@ -3160,12 +2407,8 @@ public isolated client class Client {
     # + discussionNumber - The number that identifies the discussion
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/reactions(DiscussionNumberReactionsBody payload, map<string|string[]> headers = {}) returns Reaction|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/reactions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/reactions(oas:DiscussionNumberReactionsBody payload, map<string|string[]> headers = {}) returns oas:Reaction|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/reactions.post(payload, headers);
     }
 
     # Delete team discussion reaction
@@ -3177,8 +2420,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/teams/[string teamSlug]/discussions/[int discussionNumber]/reactions/[int reactionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/discussions/${getEncodedUri(discussionNumber)}/reactions/${getEncodedUri(reactionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/discussions/[discussionNumber]/reactions/[reactionId].delete(headers);
     }
 
     # List pending team invitations
@@ -3188,10 +2430,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/invitations(map<string|string[]> headers = {}, *TeamsListPendingInvitationsInOrgQueries queries) returns OrganizationInvitation[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/invitations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/invitations(map<string|string[]> headers = {}, *oas:TeamsListPendingInvitationsInOrgQueries queries) returns oas:OrganizationInvitation[]|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/invitations.get(headers, queries);
     }
 
     # List team members
@@ -3201,10 +2441,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/members(map<string|string[]> headers = {}, *TeamsListMembersInOrgQueries queries) returns SimpleUser[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/members`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/members(map<string|string[]> headers = {}, *oas:TeamsListMembersInOrgQueries queries) returns oas:SimpleUser[]|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/members.get(headers, queries);
     }
 
     # Get team membership for a user
@@ -3214,9 +2452,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/memberships/[string username](map<string|string[]> headers = {}) returns TeamMembership|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/memberships/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/memberships/[string username](map<string|string[]> headers = {}) returns oas:TeamMembership|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/memberships/[username].get(headers);
     }
 
     # Add or update team membership for a user
@@ -3226,12 +2463,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/teams/[string teamSlug]/memberships/[string username](MembershipsusernameBody1 payload, map<string|string[]> headers = {}) returns TeamMembership|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/memberships/${getEncodedUri(username)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/teams/[string teamSlug]/memberships/[string username](oas:MembershipsusernameBody1 payload, map<string|string[]> headers = {}) returns oas:TeamMembership|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/memberships/[username].put(payload, headers);
     }
 
     # Remove team membership for a user
@@ -3242,60 +2475,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/teams/[string teamSlug]/memberships/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/memberships/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
-    }
-
-    # List team projects
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + teamSlug - The slug of the team name
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/projects(map<string|string[]> headers = {}, *TeamsListProjectsInOrgQueries queries) returns TeamProject[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/projects`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Check team permissions for a project
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + teamSlug - The slug of the team name
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/projects/[int projectId](map<string|string[]> headers = {}) returns TeamProject|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/projects/${getEncodedUri(projectId)}`;
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Add or update team project permissions
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + teamSlug - The slug of the team name
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function put orgs/[string org]/teams/[string teamSlug]/projects/[int projectId](ProjectsprojectIdBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/projects/${getEncodedUri(projectId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
-    }
-
-    # Remove a project from a team
-    #
-    # + org - The organization name. The name is not case sensitive
-    # + teamSlug - The slug of the team name
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function delete orgs/[string org]/teams/[string teamSlug]/projects/[int projectId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/projects/${getEncodedUri(projectId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/memberships/[username].delete(headers);
     }
 
     # List team repositories
@@ -3305,10 +2485,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/repos(map<string|string[]> headers = {}, *TeamsListReposInOrgQueries queries) returns MinimalRepository[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/repos`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/repos(map<string|string[]> headers = {}, *oas:TeamsListReposInOrgQueries queries) returns oas:MinimalRepository[]|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/repos.get(headers, queries);
     }
 
     # Check team permissions for a repository
@@ -3319,9 +2497,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Alternative response with repository permissions 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/repos/[string owner]/[string repo](map<string|string[]> headers = {}) returns TeamRepository|error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/repos/[string owner]/[string repo](map<string|string[]> headers = {}) returns oas:TeamRepository|error? {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/repos/[owner]/[repo].get(headers);
     }
 
     # Add or update team repository permissions
@@ -3332,12 +2509,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put orgs/[string org]/teams/[string teamSlug]/repos/[string owner]/[string repo](OwnerrepoBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put orgs/[string org]/teams/[string teamSlug]/repos/[string owner]/[string repo](oas:OwnerrepoBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/repos/[owner]/[repo].put(payload, headers);
     }
 
     # Remove a repository from a team
@@ -3349,8 +2522,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete orgs/[string org]/teams/[string teamSlug]/repos/[string owner]/[string repo](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/repos/[owner]/[repo].delete(headers);
     }
 
     # List child teams
@@ -3360,10 +2532,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - if child teams exist 
-    resource isolated function get orgs/[string org]/teams/[string teamSlug]/teams(map<string|string[]> headers = {}, *TeamsListChildInOrgQueries queries) returns Team[]|error {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/teams/${getEncodedUri(teamSlug)}/teams`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get orgs/[string org]/teams/[string teamSlug]/teams(map<string|string[]> headers = {}, *oas:TeamsListChildInOrgQueries queries) returns oas:Team[]|error {
+        return self.genClient->/orgs/[org]/teams/[teamSlug]/teams.get(headers, queries);
     }
 
     # Enable or disable a security feature for an organization
@@ -3375,244 +2545,16 @@ public isolated client class Client {
     # disable_all means to disable the specified security feature for all repositories in the organization
     # + headers - Headers to be sent with the request 
     # + return - Action started 
-    resource isolated function post orgs/[string org]/["dependency_graph"|"dependabot_alerts"|"dependabot_security_updates"|"advanced_security"|"code_scanning_default_setup"|"secret_scanning"|"secret_scanning_push_protection" securityProduct]/["enable_all"|"disable_all" enablement](SecurityProductenablementBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/orgs/${getEncodedUri(org)}/${getEncodedUri(securityProduct)}/${getEncodedUri(enablement)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Get a project card
-    #
-    # + cardId - The unique identifier of the card
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get projects/columns/cards/[int cardId](map<string|string[]> headers = {}) returns ProjectCard|error? {
-        string resourcePath = string `/projects/columns/cards/${getEncodedUri(cardId)}`;
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Delete a project card
-    #
-    # + cardId - The unique identifier of the card
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function delete projects/columns/cards/[int cardId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/projects/columns/cards/${getEncodedUri(cardId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
-    }
-
-    # Update an existing project card
-    #
-    # + cardId - The unique identifier of the card
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function patch projects/columns/cards/[int cardId](CardscardIdBody payload, map<string|string[]> headers = {}) returns ProjectCard|error? {
-        string resourcePath = string `/projects/columns/cards/${getEncodedUri(cardId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
-    }
-
-    # Move a project card
-    #
-    # + cardId - The unique identifier of the card
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post projects/columns/cards/[int cardId]/moves(CardIdMovesBody payload, map<string|string[]> headers = {}) returns record {||}|error? {
-        string resourcePath = string `/projects/columns/cards/${getEncodedUri(cardId)}/moves`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Get a project column
-    #
-    # + columnId - The unique identifier of the column
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get projects/columns/[int columnId](map<string|string[]> headers = {}) returns ProjectColumn|error? {
-        string resourcePath = string `/projects/columns/${getEncodedUri(columnId)}`;
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Delete a project column
-    #
-    # + columnId - The unique identifier of the column
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function delete projects/columns/[int columnId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/projects/columns/${getEncodedUri(columnId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
-    }
-
-    # Update an existing project column
-    #
-    # + columnId - The unique identifier of the column
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function patch projects/columns/[int columnId](ColumnscolumnIdBody payload, map<string|string[]> headers = {}) returns ProjectColumn|error? {
-        string resourcePath = string `/projects/columns/${getEncodedUri(columnId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
-    }
-
-    # List project cards
-    #
-    # + columnId - The unique identifier of the column
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get projects/columns/[int columnId]/cards(map<string|string[]> headers = {}, *ProjectsListCardsQueries queries) returns ProjectCard[]|error? {
-        string resourcePath = string `/projects/columns/${getEncodedUri(columnId)}/cards`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Create a project card
-    #
-    # + columnId - The unique identifier of the column
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post projects/columns/[int columnId]/cards(ColumnIdCardsBody payload, map<string|string[]> headers = {}) returns ProjectCard|error? {
-        string resourcePath = string `/projects/columns/${getEncodedUri(columnId)}/cards`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Move a project column
-    #
-    # + columnId - The unique identifier of the column
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post projects/columns/[int columnId]/moves(ColumnIdMovesBody payload, map<string|string[]> headers = {}) returns record {||}|error? {
-        string resourcePath = string `/projects/columns/${getEncodedUri(columnId)}/moves`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Get a project
-    #
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get projects/[int projectId](map<string|string[]> headers = {}) returns Project|error? {
-        string resourcePath = string `/projects/${getEncodedUri(projectId)}`;
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Delete a project
-    #
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + return - Delete Success 
-    resource isolated function delete projects/[int projectId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/projects/${getEncodedUri(projectId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
-    }
-
-    # Update a project
-    #
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function patch projects/[int projectId](ProjectsprojectIdBody1 payload, map<string|string[]> headers = {}) returns Project|error? {
-        string resourcePath = string `/projects/${getEncodedUri(projectId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
-    }
-
-    # List project collaborators
-    #
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get projects/[int projectId]/collaborators(map<string|string[]> headers = {}, *ProjectsListCollaboratorsQueries queries) returns SimpleUser[]|error? {
-        string resourcePath = string `/projects/${getEncodedUri(projectId)}/collaborators`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Add project collaborator
-    #
-    # + projectId - The unique identifier of the project
-    # + username - The handle for the GitHub user account
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function put projects/[int projectId]/collaborators/[string username](CollaboratorsusernameBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/projects/${getEncodedUri(projectId)}/collaborators/${getEncodedUri(username)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
-    }
-
-    # Remove user as a collaborator
-    #
-    # + projectId - The unique identifier of the project
-    # + username - The handle for the GitHub user account
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function delete projects/[int projectId]/collaborators/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/projects/${getEncodedUri(projectId)}/collaborators/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
-    }
-
-    # Get project permission for a user
-    #
-    # + projectId - The unique identifier of the project
-    # + username - The handle for the GitHub user account
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get projects/[int projectId]/collaborators/[string username]/permission(map<string|string[]> headers = {}) returns ProjectCollaboratorPermission|error? {
-        string resourcePath = string `/projects/${getEncodedUri(projectId)}/collaborators/${getEncodedUri(username)}/permission`;
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # List project columns
-    #
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get projects/[int projectId]/columns(map<string|string[]> headers = {}, *ProjectsListColumnsQueries queries) returns ProjectColumn[]|error? {
-        string resourcePath = string `/projects/${getEncodedUri(projectId)}/columns`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Create a project column
-    #
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post projects/[int projectId]/columns(ColumnscolumnIdBody payload, map<string|string[]> headers = {}) returns ProjectColumn|error? {
-        string resourcePath = string `/projects/${getEncodedUri(projectId)}/columns`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post orgs/[string org]/["dependency_graph"|"dependabot_alerts"|"dependabot_security_updates"|"advanced_security"|"code_scanning_default_setup"|"secret_scanning"|"secret_scanning_push_protection" securityProduct]/["enable_all"|"disable_all" enablement](oas:SecurityProductenablementBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/orgs/[org]/[securityProduct]/[enablement].post(payload, headers);
     }
 
     # Get rate limit status for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get rate_limit(map<string|string[]> headers = {}) returns RateLimitOverview|error? {
-        string resourcePath = string `/rate_limit`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get rate_limit(map<string|string[]> headers = {}) returns oas:RateLimitOverview|error? {
+        return self.genClient->/rate_limit.get(headers);
     }
 
     # Get a repository
@@ -3621,9 +2563,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo](map<string|string[]> headers = {}) returns FullRepository|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo](map<string|string[]> headers = {}) returns oas:FullRepository|error {
+        return self.genClient->/repos/[owner]/[repo].get(headers);
     }
 
     # Delete a repository
@@ -3633,8 +2574,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo].delete(headers);
     }
 
     # Update a repository
@@ -3643,12 +2583,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo](OwnerrepoBody1 payload, map<string|string[]> headers = {}) returns FullRepository|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo](oas:OwnerrepoBody1 payload, map<string|string[]> headers = {}) returns oas:FullRepository|error {
+        return self.genClient->/repos/[owner]/[repo].patch(payload, headers);
     }
 
     # List artifacts for a repository
@@ -3658,10 +2594,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/artifacts(map<string|string[]> headers = {}, *ActionsListArtifactsForRepoQueries queries) returns ArtifactResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/artifacts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/artifacts(map<string|string[]> headers = {}, *oas:ActionsListArtifactsForRepoQueries queries) returns oas:ArtifactResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/artifacts.get(headers, queries);
     }
 
     # Get an artifact
@@ -3671,9 +2605,8 @@ public isolated client class Client {
     # + artifactId - The unique identifier of the artifact
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/artifacts/[int artifactId](map<string|string[]> headers = {}) returns Artifact|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/artifacts/${getEncodedUri(artifactId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/artifacts/[int artifactId](map<string|string[]> headers = {}) returns oas:Artifact|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/artifacts/[artifactId].get(headers);
     }
 
     # Delete an artifact
@@ -3684,8 +2617,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/actions/artifacts/[int artifactId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/artifacts/${getEncodedUri(artifactId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/artifacts/[artifactId].delete(headers);
     }
 
     # Download an artifact
@@ -3696,8 +2628,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get repos/[string owner]/[string repo]/actions/artifacts/[int artifactId]/[string archiveFormat](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/artifacts/${getEncodedUri(artifactId)}/${getEncodedUri(archiveFormat)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/artifacts/[artifactId]/[archiveFormat].get(headers);
     }
 
     # Get GitHub Actions cache usage for a repository
@@ -3706,9 +2637,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/cache/usage(map<string|string[]> headers = {}) returns ActionsCacheUsageByRepository|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/cache/usage`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/cache/usage(map<string|string[]> headers = {}) returns oas:ActionsCacheUsageByRepository|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/cache/usage.get(headers);
     }
 
     # List GitHub Actions caches for a repository
@@ -3718,10 +2648,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/caches(map<string|string[]> headers = {}, *ActionsGetActionsCacheListQueries queries) returns ActionsCacheList|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/caches`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/caches(map<string|string[]> headers = {}, *oas:ActionsGetActionsCacheListQueries queries) returns oas:ActionsCacheList|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/caches.get(headers, queries);
     }
 
     # Delete GitHub Actions caches for a repository (using a cache key)
@@ -3731,10 +2659,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/actions/caches(map<string|string[]> headers = {}, *ActionsDeleteActionsCacheByKeyQueries queries) returns ActionsCacheList|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/caches`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->delete(resourcePath, headers = headers);
+    resource isolated function delete repos/[string owner]/[string repo]/actions/caches(map<string|string[]> headers = {}, *oas:ActionsDeleteActionsCacheByKeyQueries queries) returns oas:ActionsCacheList|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/caches.delete(headers, queries);
     }
 
     # Delete a GitHub Actions cache for a repository (using a cache ID)
@@ -3745,8 +2671,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/actions/caches/[int cacheId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/caches/${getEncodedUri(cacheId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/caches/[cacheId].delete(headers);
     }
 
     # Get a job for a workflow run
@@ -3756,9 +2681,8 @@ public isolated client class Client {
     # + jobId - The unique identifier of the job
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/jobs/[int jobId](map<string|string[]> headers = {}) returns Job|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/jobs/${getEncodedUri(jobId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/jobs/[int jobId](map<string|string[]> headers = {}) returns oas:Job|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/jobs/[jobId].get(headers);
     }
 
     # Download job logs for a workflow run
@@ -3769,8 +2693,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get repos/[string owner]/[string repo]/actions/jobs/[int jobId]/logs(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/jobs/${getEncodedUri(jobId)}/logs`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/jobs/[jobId]/logs.get(headers);
     }
 
     # Re-run a job from a workflow run
@@ -3780,12 +2703,8 @@ public isolated client class Client {
     # + jobId - The unique identifier of the job
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/jobs/[int jobId]/rerun(JobIdRerunBody payload, map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/jobs/${getEncodedUri(jobId)}/rerun`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/jobs/[int jobId]/rerun(oas:JobIdRerunBody payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/jobs/[jobId]/rerun.post(payload, headers);
     }
 
     # Get the customization template for an OIDC subject claim for a repository
@@ -3794,9 +2713,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Status response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/oidc/customization/sub(map<string|string[]> headers = {}) returns OidcCustomSubRepo|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/oidc/customization/sub`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/oidc/customization/sub(map<string|string[]> headers = {}) returns oas:OidcCustomSubRepo|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/oidc/customization/sub.get(headers);
     }
 
     # Set the customization template for an OIDC subject claim for a repository
@@ -3805,12 +2723,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Empty response 
-    resource isolated function put repos/[string owner]/[string repo]/actions/oidc/customization/sub(ActionsOIDCSubjectCustomizationForARepository payload, map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/oidc/customization/sub`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/actions/oidc/customization/sub(oas:ActionsOIDCSubjectCustomizationForARepository payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/oidc/customization/sub.put(payload, headers);
     }
 
     # List repository organization secrets
@@ -3820,10 +2734,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/organization\-secrets(map<string|string[]> headers = {}, *ActionsListRepoOrganizationSecretsQueries queries) returns ActionsSecretResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/organization-secrets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/organization\-secrets(map<string|string[]> headers = {}, *oas:ActionsListRepoOrganizationSecretsQueries queries) returns oas:ActionsSecretResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/organization\-secrets.get(headers, queries);
     }
 
     # List repository organization variables
@@ -3833,10 +2745,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/organization\-variables(map<string|string[]> headers = {}, *ActionsListRepoOrganizationVariablesQueries queries) returns ActionsVariableResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/organization-variables`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/organization\-variables(map<string|string[]> headers = {}, *oas:ActionsListRepoOrganizationVariablesQueries queries) returns oas:ActionsVariableResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/organization\-variables.get(headers, queries);
     }
 
     # Get GitHub Actions permissions for a repository
@@ -3845,9 +2755,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/permissions(map<string|string[]> headers = {}) returns ActionsRepositoryPermissions|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/permissions`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/permissions(map<string|string[]> headers = {}) returns oas:ActionsRepositoryPermissions|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/permissions.get(headers);
     }
 
     # Set GitHub Actions permissions for a repository
@@ -3856,12 +2765,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/actions/permissions(ActionsPermissionsBody1 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/permissions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/actions/permissions(oas:ActionsPermissionsBody1 payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/actions/permissions.put(payload, headers);
     }
 
     # Get the level of access for workflows outside of the repository
@@ -3870,9 +2775,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/permissions/access(map<string|string[]> headers = {}) returns ActionsWorkflowAccessToRepository|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/permissions/access`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/permissions/access(map<string|string[]> headers = {}) returns oas:ActionsWorkflowAccessToRepository|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/permissions/access.get(headers);
     }
 
     # Set the level of access for workflows outside of the repository
@@ -3881,12 +2785,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/actions/permissions/access(ActionsWorkflowAccessToRepository payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/permissions/access`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/actions/permissions/access(oas:ActionsWorkflowAccessToRepository payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/actions/permissions/access.put(payload, headers);
     }
 
     # Get allowed actions and reusable workflows for a repository
@@ -3895,9 +2795,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/permissions/selected\-actions(map<string|string[]> headers = {}) returns SelectedActions|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/permissions/selected-actions`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/permissions/selected\-actions(map<string|string[]> headers = {}) returns oas:SelectedActions|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/permissions/selected\-actions.get(headers);
     }
 
     # Set allowed actions and reusable workflows for a repository
@@ -3906,12 +2805,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/actions/permissions/selected\-actions(SelectedActions payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/permissions/selected-actions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/actions/permissions/selected\-actions(oas:SelectedActions payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/actions/permissions/selected\-actions.put(payload, headers);
     }
 
     # Get default workflow permissions for a repository
@@ -3920,9 +2815,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/permissions/workflow(map<string|string[]> headers = {}) returns ActionsGetDefaultWorkflowPermissions|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/permissions/workflow`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/permissions/workflow(map<string|string[]> headers = {}) returns oas:ActionsGetDefaultWorkflowPermissions|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/permissions/workflow.get(headers);
     }
 
     # Set default workflow permissions for a repository
@@ -3931,12 +2825,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Success response 
-    resource isolated function put repos/[string owner]/[string repo]/actions/permissions/workflow(ActionsSetDefaultWorkflowPermissions payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/permissions/workflow`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/actions/permissions/workflow(oas:ActionsSetDefaultWorkflowPermissions payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/actions/permissions/workflow.put(payload, headers);
     }
 
     # List self-hosted runners for a repository
@@ -3946,59 +2836,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runners(map<string|string[]> headers = {}, *ActionsListSelfHostedRunnersForRepoQueries queries) returns RunnerResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # List runner applications for a repository
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runners/downloads(map<string|string[]> headers = {}) returns RunnerApplication[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/downloads`;
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Create configuration for a just-in-time runner for a repository
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runners/generate\-jitconfig(RunnersGenerateJitconfigBody payload, map<string|string[]> headers = {}) returns JitConfig|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/generate-jitconfig`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Create a registration token for a repository
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runners/registration\-token(map<string|string[]> headers = {}) returns AuthenticationToken|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/registration-token`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Create a remove token for a repository
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runners/remove\-token(map<string|string[]> headers = {}) returns AuthenticationToken|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/remove-token`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runners(map<string|string[]> headers = {}, *oas:ActionsListSelfHostedRunnersForRepoQueries queries) returns oas:RunnerResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runners.get(headers, queries);
     }
 
     # Get a self-hosted runner for a repository
@@ -4008,9 +2847,8 @@ public isolated client class Client {
     # + runnerId - Unique identifier of the self-hosted runner
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runners/[int runnerId](map<string|string[]> headers = {}) returns Runner|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/${getEncodedUri(runnerId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runners/[int runnerId](map<string|string[]> headers = {}) returns oas:Runner|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runners/[runnerId].get(headers);
     }
 
     # Delete a self-hosted runner from a repository
@@ -4021,8 +2859,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/actions/runners/[int runnerId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/${getEncodedUri(runnerId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/runners/[runnerId].delete(headers);
     }
 
     # List labels for a self-hosted runner for a repository
@@ -4032,9 +2869,8 @@ public isolated client class Client {
     # + runnerId - Unique identifier of the self-hosted runner
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runners/[int runnerId]/labels(map<string|string[]> headers = {}) returns RunnerLabelResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/${getEncodedUri(runnerId)}/labels`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runners/[int runnerId]/labels(map<string|string[]> headers = {}) returns oas:RunnerLabelResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runners/[runnerId]/labels.get(headers);
     }
 
     # Set custom labels for a self-hosted runner for a repository
@@ -4044,12 +2880,8 @@ public isolated client class Client {
     # + runnerId - Unique identifier of the self-hosted runner
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/actions/runners/[int runnerId]/labels(RunnerIdLabelsBody payload, map<string|string[]> headers = {}) returns RunnerLabelResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/${getEncodedUri(runnerId)}/labels`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/actions/runners/[int runnerId]/labels(oas:RunnerIdLabelsBody payload, map<string|string[]> headers = {}) returns oas:RunnerLabelResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runners/[runnerId]/labels.put(payload, headers);
     }
 
     # Add custom labels to a self-hosted runner for a repository
@@ -4059,12 +2891,8 @@ public isolated client class Client {
     # + runnerId - Unique identifier of the self-hosted runner
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runners/[int runnerId]/labels(RunnerIdLabelsBody1 payload, map<string|string[]> headers = {}) returns RunnerLabelResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/${getEncodedUri(runnerId)}/labels`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/runners/[int runnerId]/labels(oas:RunnerIdLabelsBody1 payload, map<string|string[]> headers = {}) returns oas:RunnerLabelResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runners/[runnerId]/labels.post(payload, headers);
     }
 
     # Remove all custom labels from a self-hosted runner for a repository
@@ -4074,9 +2902,8 @@ public isolated client class Client {
     # + runnerId - Unique identifier of the self-hosted runner
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/actions/runners/[int runnerId]/labels(map<string|string[]> headers = {}) returns RunnerLabelResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/${getEncodedUri(runnerId)}/labels`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+    resource isolated function delete repos/[string owner]/[string repo]/actions/runners/[int runnerId]/labels(map<string|string[]> headers = {}) returns oas:RunnerLabelResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runners/[runnerId]/labels.delete(headers);
     }
 
     # Remove a custom label from a self-hosted runner for a repository
@@ -4087,9 +2914,8 @@ public isolated client class Client {
     # + name - The name of a self-hosted runner's custom label
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/actions/runners/[int runnerId]/labels/[string name](map<string|string[]> headers = {}) returns RunnerLabelResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runners/${getEncodedUri(runnerId)}/labels/${getEncodedUri(name)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+    resource isolated function delete repos/[string owner]/[string repo]/actions/runners/[int runnerId]/labels/[string name](map<string|string[]> headers = {}) returns oas:RunnerLabelResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runners/[runnerId]/labels/[name].delete(headers);
     }
 
     # List workflow runs for a repository
@@ -4099,10 +2925,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runs(map<string|string[]> headers = {}, *ActionsListWorkflowRunsForRepoQueries queries) returns WorkflowRunResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runs(map<string|string[]> headers = {}, *oas:ActionsListWorkflowRunsForRepoQueries queries) returns oas:WorkflowRunResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs.get(headers, queries);
     }
 
     # Get a workflow run
@@ -4113,10 +2937,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId](map<string|string[]> headers = {}, *ActionsGetWorkflowRunQueries queries) returns WorkflowRun|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId](map<string|string[]> headers = {}, *oas:ActionsGetWorkflowRunQueries queries) returns oas:WorkflowRun|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId].get(headers, queries);
     }
 
     # Delete a workflow run
@@ -4127,8 +2949,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/actions/runs/[int runId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId].delete(headers);
     }
 
     # Get the review history for a workflow run
@@ -4138,9 +2959,8 @@ public isolated client class Client {
     # + runId - The unique identifier of the workflow run
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/approvals(map<string|string[]> headers = {}) returns EnvironmentApprovals[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/approvals`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/approvals(map<string|string[]> headers = {}) returns oas:EnvironmentApprovals[]|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/approvals.get(headers);
     }
 
     # Approve a workflow run for a fork pull request
@@ -4150,10 +2970,8 @@ public isolated client class Client {
     # + runId - The unique identifier of the workflow run
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/approve(map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/approve`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/approve(map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/approve.post(headers);
     }
 
     # List workflow run artifacts
@@ -4164,10 +2982,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/artifacts(map<string|string[]> headers = {}, *ActionsListWorkflowRunArtifactsQueries queries) returns ArtifactResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/artifacts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/artifacts(map<string|string[]> headers = {}, *oas:ActionsListWorkflowRunArtifactsQueries queries) returns oas:ArtifactResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/artifacts.get(headers, queries);
     }
 
     # Get a workflow run attempt
@@ -4179,10 +2995,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/attempts/[int attemptNumber](map<string|string[]> headers = {}, *ActionsGetWorkflowRunAttemptQueries queries) returns WorkflowRun|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/attempts/${getEncodedUri(attemptNumber)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/attempts/[int attemptNumber](map<string|string[]> headers = {}, *oas:ActionsGetWorkflowRunAttemptQueries queries) returns oas:WorkflowRun|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/attempts/[attemptNumber].get(headers, queries);
     }
 
     # List jobs for a workflow run attempt
@@ -4194,10 +3008,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/attempts/[int attemptNumber]/jobs(map<string|string[]> headers = {}, *ActionsListJobsForWorkflowRunAttemptQueries queries) returns JobResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/attempts/${getEncodedUri(attemptNumber)}/jobs`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/attempts/[int attemptNumber]/jobs(map<string|string[]> headers = {}, *oas:ActionsListJobsForWorkflowRunAttemptQueries queries) returns oas:JobResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/attempts/[attemptNumber]/jobs.get(headers, queries);
     }
 
     # Download workflow run attempt logs
@@ -4209,8 +3021,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/attempts/[int attemptNumber]/logs(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/attempts/${getEncodedUri(attemptNumber)}/logs`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/attempts/[attemptNumber]/logs.get(headers);
     }
 
     # Cancel a workflow run
@@ -4220,10 +3031,8 @@ public isolated client class Client {
     # + runId - The unique identifier of the workflow run
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/cancel(map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/cancel`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/cancel(map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/cancel.post(headers);
     }
 
     # Review custom deployment protection rules for a workflow run
@@ -4233,12 +3042,8 @@ public isolated client class Client {
     # + runId - The unique identifier of the workflow run
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/deployment_protection_rule(RunIdDeploymentProtectionRuleBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/deployment_protection_rule`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/deployment_protection_rule(oas:RunIdDeploymentProtectionRuleBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/deployment_protection_rule.post(payload, headers);
     }
 
     # Force cancel a workflow run
@@ -4248,10 +3053,8 @@ public isolated client class Client {
     # + runId - The unique identifier of the workflow run
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/force\-cancel(map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/force-cancel`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/force\-cancel(map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/force\-cancel.post(headers);
     }
 
     # List jobs for a workflow run
@@ -4262,10 +3065,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/jobs(map<string|string[]> headers = {}, *ActionsListJobsForWorkflowRunQueries queries) returns JobResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/jobs`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/jobs(map<string|string[]> headers = {}, *oas:ActionsListJobsForWorkflowRunQueries queries) returns oas:JobResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/jobs.get(headers, queries);
     }
 
     # Download workflow run logs
@@ -4276,8 +3077,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/logs(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/logs`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/logs.get(headers);
     }
 
     # Delete workflow run logs
@@ -4288,8 +3088,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/actions/runs/[int runId]/logs(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/logs`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/logs.delete(headers);
     }
 
     # Get pending deployments for a workflow run
@@ -4299,9 +3098,8 @@ public isolated client class Client {
     # + runId - The unique identifier of the workflow run
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/pending_deployments(map<string|string[]> headers = {}) returns PendingDeployment[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/pending_deployments`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/pending_deployments(map<string|string[]> headers = {}) returns oas:PendingDeployment[]|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/pending_deployments.get(headers);
     }
 
     # Review pending deployments for a workflow run
@@ -4311,12 +3109,8 @@ public isolated client class Client {
     # + runId - The unique identifier of the workflow run
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/pending_deployments(RunIdPendingDeploymentsBody payload, map<string|string[]> headers = {}) returns Deployment[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/pending_deployments`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/pending_deployments(oas:RunIdPendingDeploymentsBody payload, map<string|string[]> headers = {}) returns oas:Deployment[]|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/pending_deployments.post(payload, headers);
     }
 
     # Re-run a workflow
@@ -4326,12 +3120,8 @@ public isolated client class Client {
     # + runId - The unique identifier of the workflow run
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/rerun(JobIdRerunBody payload, map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/rerun`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/rerun(oas:JobIdRerunBody payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/rerun.post(payload, headers);
     }
 
     # Re-run failed jobs from a workflow run
@@ -4341,12 +3131,8 @@ public isolated client class Client {
     # + runId - The unique identifier of the workflow run
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/rerun\-failed\-jobs(JobIdRerunBody payload, map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/rerun-failed-jobs`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/runs/[int runId]/rerun\-failed\-jobs(oas:JobIdRerunBody payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/rerun\-failed\-jobs.post(payload, headers);
     }
 
     # Get workflow run usage
@@ -4356,9 +3142,8 @@ public isolated client class Client {
     # + runId - The unique identifier of the workflow run
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/timing(map<string|string[]> headers = {}) returns WorkflowRunUsage|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/runs/${getEncodedUri(runId)}/timing`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/runs/[int runId]/timing(map<string|string[]> headers = {}) returns oas:WorkflowRunUsage|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/runs/[runId]/timing.get(headers);
     }
 
     # List repository secrets
@@ -4368,21 +3153,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/secrets(map<string|string[]> headers = {}, *ActionsListRepoSecretsQueries queries) returns ActionsSecretResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/secrets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Get a repository public key
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/secrets/public\-key(map<string|string[]> headers = {}) returns ActionsPublicKey|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/secrets/public-key`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/secrets(map<string|string[]> headers = {}, *oas:ActionsListRepoSecretsQueries queries) returns oas:ActionsSecretResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/secrets.get(headers, queries);
     }
 
     # Get a repository secret
@@ -4392,9 +3164,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/secrets/[string secretName](map<string|string[]> headers = {}) returns ActionsSecret|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/secrets/[string secretName](map<string|string[]> headers = {}) returns oas:ActionsSecret|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/secrets/[secretName].get(headers);
     }
 
     # Create or update a repository secret
@@ -4404,12 +3175,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response when creating a secret 
-    resource isolated function put repos/[string owner]/[string repo]/actions/secrets/[string secretName](SecretssecretNameBody3 payload, map<string|string[]> headers = {}) returns EmptyObject|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/secrets/${getEncodedUri(secretName)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/actions/secrets/[string secretName](oas:SecretssecretNameBody3 payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error? {
+        return self.genClient->/repos/[owner]/[repo]/actions/secrets/[secretName].put(payload, headers);
     }
 
     # Delete a repository secret
@@ -4420,8 +3187,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/actions/secrets/[string secretName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/secrets/[secretName].delete(headers);
     }
 
     # List repository variables
@@ -4431,10 +3197,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/variables(map<string|string[]> headers = {}, *ActionsListRepoVariablesQueries queries) returns ActionsVariableResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/variables`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/variables(map<string|string[]> headers = {}, *oas:ActionsListRepoVariablesQueries queries) returns oas:ActionsVariableResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/variables.get(headers, queries);
     }
 
     # Create a repository variable
@@ -4443,12 +3207,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/variables(ActionsVariablesBody1 payload, map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/variables`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/variables(oas:ActionsVariablesBody1 payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/variables.post(payload, headers);
     }
 
     # Get a repository variable
@@ -4458,9 +3218,8 @@ public isolated client class Client {
     # + name - The name of the variable
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/variables/[string name](map<string|string[]> headers = {}) returns ActionsVariable|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/variables/${getEncodedUri(name)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/variables/[string name](map<string|string[]> headers = {}) returns oas:ActionsVariable|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/variables/[name].get(headers);
     }
 
     # Delete a repository variable
@@ -4471,8 +3230,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/actions/variables/[string name](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/variables/${getEncodedUri(name)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/actions/variables/[name].delete(headers);
     }
 
     # Update a repository variable
@@ -4482,12 +3240,8 @@ public isolated client class Client {
     # + name - The name of the variable
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/actions/variables/[string name](VariablesnameBody1 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/variables/${getEncodedUri(name)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/actions/variables/[string name](oas:VariablesnameBody1 payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/actions/variables/[name].patch(payload, headers);
     }
 
     # List repository workflows
@@ -4497,10 +3251,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/workflows(map<string|string[]> headers = {}, *ActionsListRepoWorkflowsQueries queries) returns WorkflowResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/workflows`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/workflows(map<string|string[]> headers = {}, *oas:ActionsListRepoWorkflowsQueries queries) returns oas:WorkflowResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/workflows.get(headers, queries);
     }
 
     # Get a workflow
@@ -4510,9 +3262,8 @@ public isolated client class Client {
     # + workflowId - The ID of the workflow. You can also pass the workflow file name as a string
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/workflows/[workflowId workflowId](map<string|string[]> headers = {}) returns Workflow|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/workflows/${getEncodedUri(workflowId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/workflows/[oas:workflowId workflowId](map<string|string[]> headers = {}) returns oas:Workflow|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/workflows/[workflowId].get(headers);
     }
 
     # Disable a workflow
@@ -4522,10 +3273,8 @@ public isolated client class Client {
     # + workflowId - The ID of the workflow. You can also pass the workflow file name as a string
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/actions/workflows/[workflowId workflowId]/disable(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/workflows/${getEncodedUri(workflowId)}/disable`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/actions/workflows/[oas:workflowId workflowId]/disable(map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/actions/workflows/[workflowId]/disable.put(headers);
     }
 
     # Create a workflow dispatch event
@@ -4535,12 +3284,8 @@ public isolated client class Client {
     # + workflowId - The ID of the workflow. You can also pass the workflow file name as a string
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/actions/workflows/[workflowId workflowId]/dispatches(WorkflowIdDispatchesBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/workflows/${getEncodedUri(workflowId)}/dispatches`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/actions/workflows/[oas:workflowId workflowId]/dispatches(oas:WorkflowIdDispatchesBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/actions/workflows/[workflowId]/dispatches.post(payload, headers);
     }
 
     # Enable a workflow
@@ -4550,10 +3295,8 @@ public isolated client class Client {
     # + workflowId - The ID of the workflow. You can also pass the workflow file name as a string
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/actions/workflows/[workflowId workflowId]/enable(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/workflows/${getEncodedUri(workflowId)}/enable`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/actions/workflows/[oas:workflowId workflowId]/enable(map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/actions/workflows/[workflowId]/enable.put(headers);
     }
 
     # List workflow runs for a workflow
@@ -4564,10 +3307,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/workflows/[workflowId workflowId]/runs(map<string|string[]> headers = {}, *ActionsListWorkflowRunsQueries queries) returns WorkflowRunResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/workflows/${getEncodedUri(workflowId)}/runs`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/workflows/[oas:workflowId workflowId]/runs(map<string|string[]> headers = {}, *oas:ActionsListWorkflowRunsQueries queries) returns oas:WorkflowRunResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/workflows/[workflowId]/runs.get(headers, queries);
     }
 
     # Get workflow usage
@@ -4577,9 +3318,8 @@ public isolated client class Client {
     # + workflowId - The ID of the workflow. You can also pass the workflow file name as a string
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/actions/workflows/[workflowId workflowId]/timing(map<string|string[]> headers = {}) returns WorkflowUsage|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/actions/workflows/${getEncodedUri(workflowId)}/timing`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/actions/workflows/[oas:workflowId workflowId]/timing(map<string|string[]> headers = {}) returns oas:WorkflowUsage|error {
+        return self.genClient->/repos/[owner]/[repo]/actions/workflows/[workflowId]/timing.get(headers);
     }
 
     # List repository activities
@@ -4589,10 +3329,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/activity(map<string|string[]> headers = {}, *ReposListActivitiesQueries queries) returns Activity[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/activity`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/activity(map<string|string[]> headers = {}, *oas:ReposListActivitiesQueries queries) returns oas:Activity[]|error {
+        return self.genClient->/repos/[owner]/[repo]/activity.get(headers, queries);
     }
 
     # List assignees
@@ -4602,10 +3340,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/assignees(map<string|string[]> headers = {}, *IssuesListAssigneesQueries queries) returns SimpleUser[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/assignees`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/assignees(map<string|string[]> headers = {}, *oas:IssuesListAssigneesQueries queries) returns oas:SimpleUser[]|error {
+        return self.genClient->/repos/[owner]/[repo]/assignees.get(headers, queries);
     }
 
     # Check if a user can be assigned
@@ -4615,8 +3351,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - If the assignee can be assigned to issues in the repository, a 204 header with no content is returned 
     resource isolated function get repos/[string owner]/[string repo]/assignees/[string assignee](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/assignees/${getEncodedUri(assignee)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/assignees/[assignee].get(headers);
     }
 
     # List all autolinks of a repository
@@ -4626,10 +3361,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/autolinks(map<string|string[]> headers = {}, *ReposListAutolinksQueries queries) returns Autolink[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/autolinks`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/autolinks(map<string|string[]> headers = {}, *oas:ReposListAutolinksQueries queries) returns oas:Autolink[]|error {
+        return self.genClient->/repos/[owner]/[repo]/autolinks.get(headers, queries);
     }
 
     # Create an autolink reference for a repository
@@ -4638,12 +3371,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - response 
-    resource isolated function post repos/[string owner]/[string repo]/autolinks(RepoAutolinksBody payload, map<string|string[]> headers = {}) returns Autolink|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/autolinks`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/autolinks(oas:RepoAutolinksBody payload, map<string|string[]> headers = {}) returns oas:Autolink|error {
+        return self.genClient->/repos/[owner]/[repo]/autolinks.post(payload, headers);
     }
 
     # Get an autolink reference of a repository
@@ -4653,9 +3382,8 @@ public isolated client class Client {
     # + autolinkId - The unique identifier of the autolink
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/autolinks/[int autolinkId](map<string|string[]> headers = {}) returns Autolink|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/autolinks/${getEncodedUri(autolinkId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/autolinks/[int autolinkId](map<string|string[]> headers = {}) returns oas:Autolink|error {
+        return self.genClient->/repos/[owner]/[repo]/autolinks/[autolinkId].get(headers);
     }
 
     # Delete an autolink reference from a repository
@@ -4666,8 +3394,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/autolinks/[int autolinkId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/autolinks/${getEncodedUri(autolinkId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/autolinks/[autolinkId].delete(headers);
     }
 
     # Check if automated security fixes are enabled for a repository
@@ -4676,9 +3403,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response if dependabot is enabled 
-    resource isolated function get repos/[string owner]/[string repo]/automated\-security\-fixes(map<string|string[]> headers = {}) returns CheckAutomatedSecurityFixes|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/automated-security-fixes`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/automated\-security\-fixes(map<string|string[]> headers = {}) returns oas:CheckAutomatedSecurityFixes|error {
+        return self.genClient->/repos/[owner]/[repo]/automated\-security\-fixes.get(headers);
     }
 
     # Enable automated security fixes
@@ -4688,9 +3414,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put repos/[string owner]/[string repo]/automated\-security\-fixes(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/automated-security-fixes`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/repos/[owner]/[repo]/automated\-security\-fixes.put(headers);
     }
 
     # Disable automated security fixes
@@ -4700,8 +3424,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/automated\-security\-fixes(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/automated-security-fixes`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/automated\-security\-fixes.delete(headers);
     }
 
     # List branches
@@ -4711,10 +3434,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches(map<string|string[]> headers = {}, *ReposListBranchesQueries queries) returns ShortBranch[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches(map<string|string[]> headers = {}, *oas:ReposListBranchesQueries queries) returns oas:ShortBranch[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches.get(headers, queries);
     }
 
     # Get a branch
@@ -4724,9 +3445,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch](map<string|string[]> headers = {}) returns BranchWithProtection|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch](map<string|string[]> headers = {}) returns oas:BranchWithProtection|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch].get(headers);
     }
 
     # Get branch protection
@@ -4736,9 +3456,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection(map<string|string[]> headers = {}) returns BranchProtection|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection(map<string|string[]> headers = {}) returns oas:BranchProtection|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection.get(headers);
     }
 
     # Update branch protection
@@ -4748,12 +3467,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/branches/[string branch]/protection(BranchProtectionBody payload, map<string|string[]> headers = {}) returns ProtectedBranch|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/branches/[string branch]/protection(oas:BranchProtectionBody payload, map<string|string[]> headers = {}) returns oas:ProtectedBranch|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection.put(payload, headers);
     }
 
     # Delete branch protection
@@ -4764,8 +3479,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection.delete(headers);
     }
 
     # Get admin branch protection
@@ -4775,9 +3489,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/enforce_admins(map<string|string[]> headers = {}) returns ProtectedBranchAdminEnforced|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/enforce_admins`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/enforce_admins(map<string|string[]> headers = {}) returns oas:ProtectedBranchAdminEnforced|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/enforce_admins.get(headers);
     }
 
     # Set admin branch protection
@@ -4787,10 +3500,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/enforce_admins(map<string|string[]> headers = {}) returns ProtectedBranchAdminEnforced|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/enforce_admins`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/enforce_admins(map<string|string[]> headers = {}) returns oas:ProtectedBranchAdminEnforced|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/enforce_admins.post(headers);
     }
 
     # Delete admin branch protection
@@ -4801,8 +3512,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/enforce_admins(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/enforce_admins`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/enforce_admins.delete(headers);
     }
 
     # Get pull request review protection
@@ -4812,9 +3522,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/required_pull_request_reviews(map<string|string[]> headers = {}) returns ProtectedBranchPullRequestReview|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_pull_request_reviews`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/required_pull_request_reviews(map<string|string[]> headers = {}) returns oas:ProtectedBranchPullRequestReview|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_pull_request_reviews.get(headers);
     }
 
     # Delete pull request review protection
@@ -4825,8 +3534,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/required_pull_request_reviews(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_pull_request_reviews`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_pull_request_reviews.delete(headers);
     }
 
     # Update pull request review protection
@@ -4836,12 +3544,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/branches/[string branch]/protection/required_pull_request_reviews(ProtectionRequiredPullRequestReviewsBody payload, map<string|string[]> headers = {}) returns ProtectedBranchPullRequestReview|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_pull_request_reviews`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/branches/[string branch]/protection/required_pull_request_reviews(oas:ProtectionRequiredPullRequestReviewsBody payload, map<string|string[]> headers = {}) returns oas:ProtectedBranchPullRequestReview|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_pull_request_reviews.patch(payload, headers);
     }
 
     # Get commit signature protection
@@ -4851,9 +3555,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/required_signatures(map<string|string[]> headers = {}) returns ProtectedBranchAdminEnforced|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_signatures`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/required_signatures(map<string|string[]> headers = {}) returns oas:ProtectedBranchAdminEnforced|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_signatures.get(headers);
     }
 
     # Create commit signature protection
@@ -4863,10 +3566,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/required_signatures(map<string|string[]> headers = {}) returns ProtectedBranchAdminEnforced|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_signatures`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/required_signatures(map<string|string[]> headers = {}) returns oas:ProtectedBranchAdminEnforced|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_signatures.post(headers);
     }
 
     # Delete commit signature protection
@@ -4877,8 +3578,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/required_signatures(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_signatures`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_signatures.delete(headers);
     }
 
     # Get status checks protection
@@ -4888,9 +3588,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks(map<string|string[]> headers = {}) returns StatusCheckPolicy|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_status_checks`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks(map<string|string[]> headers = {}) returns oas:StatusCheckPolicy|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_status_checks.get(headers);
     }
 
     # Remove status check protection
@@ -4901,8 +3600,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_status_checks`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_status_checks.delete(headers);
     }
 
     # Update status check protection
@@ -4912,12 +3610,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks(ProtectionRequiredStatusChecksBody payload, map<string|string[]> headers = {}) returns StatusCheckPolicy|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_status_checks`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks(oas:ProtectionRequiredStatusChecksBody payload, map<string|string[]> headers = {}) returns oas:StatusCheckPolicy|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_status_checks.patch(payload, headers);
     }
 
     # Get all status check contexts
@@ -4928,8 +3622,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks/contexts(map<string|string[]> headers = {}) returns string[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_status_checks/contexts`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_status_checks/contexts.get(headers);
     }
 
     # Set status check contexts
@@ -4939,12 +3632,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks/contexts(RequiredStatusChecksContextsBody payload, map<string|string[]> headers = {}) returns string[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_status_checks/contexts`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks/contexts(oas:RequiredStatusChecksContextsBody payload, map<string|string[]> headers = {}) returns string[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_status_checks/contexts.put(payload, headers);
     }
 
     # Add status check contexts
@@ -4954,12 +3643,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks/contexts(RequiredStatusChecksContextsBody1 payload, map<string|string[]> headers = {}) returns string[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_status_checks/contexts`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks/contexts(oas:RequiredStatusChecksContextsBody1 payload, map<string|string[]> headers = {}) returns string[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_status_checks/contexts.post(payload, headers);
     }
 
     # Remove status check contexts
@@ -4969,12 +3654,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks/contexts(RequiredStatusChecksContextsBody2 payload, map<string|string[]> headers = {}) returns string[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/required_status_checks/contexts`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/required_status_checks/contexts(oas:RequiredStatusChecksContextsBody2 payload, map<string|string[]> headers = {}) returns string[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/required_status_checks/contexts.delete(payload, headers);
     }
 
     # Get access restrictions
@@ -4984,9 +3665,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions(map<string|string[]> headers = {}) returns BranchRestrictionPolicy|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions(map<string|string[]> headers = {}) returns oas:BranchRestrictionPolicy|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions.get(headers);
     }
 
     # Delete access restrictions
@@ -4997,8 +3677,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions.delete(headers);
     }
 
     # Get apps with access to the protected branch
@@ -5008,9 +3687,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/apps(map<string|string[]> headers = {}) returns Integration[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/apps`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/apps(map<string|string[]> headers = {}) returns oas:Integration[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/apps.get(headers);
     }
 
     # Set app access restrictions
@@ -5020,12 +3698,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/apps(RestrictionsAppsBody payload, map<string|string[]> headers = {}) returns Integration[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/apps`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/apps(oas:RestrictionsAppsBody payload, map<string|string[]> headers = {}) returns oas:Integration[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/apps.put(payload, headers);
     }
 
     # Add app access restrictions
@@ -5035,12 +3709,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/apps(RestrictionsAppsBody payload, map<string|string[]> headers = {}) returns Integration[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/apps`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/apps(oas:RestrictionsAppsBody payload, map<string|string[]> headers = {}) returns oas:Integration[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/apps.post(payload, headers);
     }
 
     # Remove app access restrictions
@@ -5050,12 +3720,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/apps(RestrictionsAppsBody payload, map<string|string[]> headers = {}) returns Integration[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/apps`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/apps(oas:RestrictionsAppsBody payload, map<string|string[]> headers = {}) returns oas:Integration[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/apps.delete(payload, headers);
     }
 
     # Get teams with access to the protected branch
@@ -5065,9 +3731,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/teams(map<string|string[]> headers = {}) returns Team[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/teams`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/teams(map<string|string[]> headers = {}) returns oas:Team[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/teams.get(headers);
     }
 
     # Set team access restrictions
@@ -5077,12 +3742,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/teams(RestrictionsTeamsBody payload, map<string|string[]> headers = {}) returns Team[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/teams`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/teams(oas:RestrictionsTeamsBody payload, map<string|string[]> headers = {}) returns oas:Team[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/teams.put(payload, headers);
     }
 
     # Add team access restrictions
@@ -5092,12 +3753,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/teams(RestrictionsTeamsBody payload, map<string|string[]> headers = {}) returns Team[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/teams`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/teams(oas:RestrictionsTeamsBody payload, map<string|string[]> headers = {}) returns oas:Team[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/teams.post(payload, headers);
     }
 
     # Remove team access restrictions
@@ -5107,12 +3764,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/teams(RestrictionsTeamsBody payload, map<string|string[]> headers = {}) returns Team[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/teams`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/teams(oas:RestrictionsTeamsBody payload, map<string|string[]> headers = {}) returns oas:Team[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/teams.delete(payload, headers);
     }
 
     # Get users with access to the protected branch
@@ -5122,9 +3775,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/users(map<string|string[]> headers = {}) returns SimpleUser[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/users`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/users(map<string|string[]> headers = {}) returns oas:SimpleUser[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/users.get(headers);
     }
 
     # Set user access restrictions
@@ -5134,12 +3786,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/users(RestrictionsUsersBody payload, map<string|string[]> headers = {}) returns SimpleUser[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/users`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/users(oas:RestrictionsUsersBody payload, map<string|string[]> headers = {}) returns oas:SimpleUser[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/users.put(payload, headers);
     }
 
     # Add user access restrictions
@@ -5149,12 +3797,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/users(RestrictionsUsersBody payload, map<string|string[]> headers = {}) returns SimpleUser[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/users`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/users(oas:RestrictionsUsersBody payload, map<string|string[]> headers = {}) returns oas:SimpleUser[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/users.post(payload, headers);
     }
 
     # Remove user access restrictions
@@ -5164,12 +3808,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/users(RestrictionsUsersBody payload, map<string|string[]> headers = {}) returns SimpleUser[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/protection/restrictions/users`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete repos/[string owner]/[string repo]/branches/[string branch]/protection/restrictions/users(oas:RestrictionsUsersBody payload, map<string|string[]> headers = {}) returns oas:SimpleUser[]|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/protection/restrictions/users.delete(payload, headers);
     }
 
     # Rename a branch
@@ -5179,12 +3819,8 @@ public isolated client class Client {
     # + branch - The name of the branch. Cannot contain wildcard characters. To use wildcard characters in branch names, use [the GraphQL API](https://docs.github.com/graphql)
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/rename(BranchRenameBody payload, map<string|string[]> headers = {}) returns BranchWithProtection|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/branches/${getEncodedUri(branch)}/rename`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/branches/[string branch]/rename(oas:BranchRenameBody payload, map<string|string[]> headers = {}) returns oas:BranchWithProtection|error {
+        return self.genClient->/repos/[owner]/[repo]/branches/[branch]/rename.post(payload, headers);
     }
 
     # Create a check run
@@ -5193,12 +3829,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/check\-runs(RepoCheckRunsBody payload, map<string|string[]> headers = {}) returns CheckRun|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/check-runs`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/check\-runs(oas:RepoCheckRunsBody payload, map<string|string[]> headers = {}) returns oas:CheckRun|error {
+        return self.genClient->/repos/[owner]/[repo]/check\-runs.post(payload, headers);
     }
 
     # Get a repository security advisory
@@ -5208,9 +3840,8 @@ public isolated client class Client {
     # + ghsaId - The GHSA (GitHub Security Advisory) identifier of the advisory
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/check\-runs/[int checkRunId](map<string|string[]> headers = {}) returns CheckRun|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/check-runs/${getEncodedUri(checkRunId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/check\-runs/[int checkRunId](map<string|string[]> headers = {}) returns oas:CheckRun|error {
+        return self.genClient->/repos/[owner]/[repo]/check\-runs/[checkRunId].get(headers);
     }
 
     # Update a repository security advisory
@@ -5220,12 +3851,8 @@ public isolated client class Client {
     # + ghsaId - The GHSA (GitHub Security Advisory) identifier of the advisory
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/check\-runs/[int checkRunId](CheckRunscheckRunIdBody payload, map<string|string[]> headers = {}) returns CheckRun|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/check-runs/${getEncodedUri(checkRunId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/check\-runs/[int checkRunId](oas:CheckRunscheckRunIdBody payload, map<string|string[]> headers = {}) returns oas:CheckRun|error {
+        return self.genClient->/repos/[owner]/[repo]/check\-runs/[checkRunId].patch(payload, headers);
     }
 
     # List check run annotations
@@ -5236,10 +3863,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/check\-runs/[int checkRunId]/annotations(map<string|string[]> headers = {}, *ChecksListAnnotationsQueries queries) returns CheckAnnotation[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/check-runs/${getEncodedUri(checkRunId)}/annotations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/check\-runs/[int checkRunId]/annotations(map<string|string[]> headers = {}, *oas:ChecksListAnnotationsQueries queries) returns oas:CheckAnnotation[]|error {
+        return self.genClient->/repos/[owner]/[repo]/check\-runs/[checkRunId]/annotations.get(headers, queries);
     }
 
     # Rerequest a check suite
@@ -5249,10 +3874,8 @@ public isolated client class Client {
     # + checkSuiteId - The unique identifier of the check suite
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/check\-runs/[int checkRunId]/rerequest(map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/check-runs/${getEncodedUri(checkRunId)}/rerequest`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/check\-runs/[int checkRunId]/rerequest(map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/check\-runs/[checkRunId]/rerequest.post(headers);
     }
 
     # Create a check suite
@@ -5261,26 +3884,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response when the suite already exists 
-    resource isolated function post repos/[string owner]/[string repo]/check\-suites(RepoCheckSuitesBody payload, map<string|string[]> headers = {}) returns CheckSuite|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/check-suites`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Update repository preferences for check suites
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/check\-suites/preferences(CheckSuitesPreferencesBody payload, map<string|string[]> headers = {}) returns CheckSuitePreference|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/check-suites/preferences`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/check\-suites(oas:RepoCheckSuitesBody payload, map<string|string[]> headers = {}) returns oas:CheckSuite|error {
+        return self.genClient->/repos/[owner]/[repo]/check\-suites.post(payload, headers);
     }
 
     # Get a repository security advisory
@@ -5290,9 +3895,8 @@ public isolated client class Client {
     # + ghsaId - The GHSA (GitHub Security Advisory) identifier of the advisory
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/check\-suites/[int checkSuiteId](map<string|string[]> headers = {}) returns CheckSuite|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/check-suites/${getEncodedUri(checkSuiteId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/check\-suites/[int checkSuiteId](map<string|string[]> headers = {}) returns oas:CheckSuite|error {
+        return self.genClient->/repos/[owner]/[repo]/check\-suites/[checkSuiteId].get(headers);
     }
 
     # List check runs in a check suite
@@ -5303,10 +3907,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/check\-suites/[int checkSuiteId]/check\-runs(map<string|string[]> headers = {}, *ChecksListForSuiteQueries queries) returns CheckRunResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/check-suites/${getEncodedUri(checkSuiteId)}/check-runs`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/check\-suites/[int checkSuiteId]/check\-runs(map<string|string[]> headers = {}, *oas:ChecksListForSuiteQueries queries) returns oas:CheckRunResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/check\-suites/[checkSuiteId]/check\-runs.get(headers, queries);
     }
 
     # Rerequest a check suite
@@ -5316,10 +3918,8 @@ public isolated client class Client {
     # + checkSuiteId - The unique identifier of the check suite
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/check\-suites/[int checkSuiteId]/rerequest(map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/check-suites/${getEncodedUri(checkSuiteId)}/rerequest`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/check\-suites/[int checkSuiteId]/rerequest(map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/check\-suites/[checkSuiteId]/rerequest.post(headers);
     }
 
     # List secret scanning alerts for a repository
@@ -5329,10 +3929,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/alerts(map<string|string[]> headers = {}, *CodeScanningListAlertsForRepoQueries queries) returns CodeScanningAlertItems[]|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/alerts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/alerts(map<string|string[]> headers = {}, *oas:CodeScanningListAlertsForRepoQueries queries) returns oas:CodeScanningAlertItems[]|error? {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/alerts.get(headers, queries);
     }
 
     # Get a secret scanning alert
@@ -5342,9 +3940,8 @@ public isolated client class Client {
     # + alertNumber - The number that identifies an alert. You can find this at the end of the URL for a code scanning alert within GitHub, and in the number field in the response from the GET /repos/{owner}/{repo}/code-scanning/alerts operation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/alerts/[AlertNumber alertNumber](map<string|string[]> headers = {}) returns CodeScanningAlert|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/alerts/${getEncodedUri(alertNumber)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/alerts/[oas:AlertNumber alertNumber](map<string|string[]> headers = {}) returns oas:CodeScanningAlert|error? {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/alerts/[alertNumber].get(headers);
     }
 
     # Update a secret scanning alert
@@ -5354,12 +3951,8 @@ public isolated client class Client {
     # + alertNumber - The number that identifies an alert. You can find this at the end of the URL for a code scanning alert within GitHub, and in the number field in the response from the GET /repos/{owner}/{repo}/code-scanning/alerts operation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/code\-scanning/alerts/[AlertNumber alertNumber](AlertsalertNumberBody payload, map<string|string[]> headers = {}) returns CodeScanningAlert|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/alerts/${getEncodedUri(alertNumber)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/code\-scanning/alerts/[oas:AlertNumber alertNumber](oas:AlertsalertNumberBody payload, map<string|string[]> headers = {}) returns oas:CodeScanningAlert|error {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/alerts/[alertNumber].patch(payload, headers);
     }
 
     # List instances of a code scanning alert
@@ -5370,10 +3963,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/alerts/[AlertNumber alertNumber]/instances(map<string|string[]> headers = {}, *CodeScanningListAlertInstancesQueries queries) returns CodeScanningAlertInstance[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/alerts/${getEncodedUri(alertNumber)}/instances`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/alerts/[oas:AlertNumber alertNumber]/instances(map<string|string[]> headers = {}, *oas:CodeScanningListAlertInstancesQueries queries) returns oas:CodeScanningAlertInstance[]|error {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/alerts/[alertNumber]/instances.get(headers, queries);
     }
 
     # List code scanning analyses for a repository
@@ -5383,10 +3974,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/analyses(map<string|string[]> headers = {}, *CodeScanningListRecentAnalysesQueries queries) returns CodeScanningAnalysis[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/analyses`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/analyses(map<string|string[]> headers = {}, *oas:CodeScanningListRecentAnalysesQueries queries) returns oas:CodeScanningAnalysis[]|error {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/analyses.get(headers, queries);
     }
 
     # Get a code scanning analysis for a repository
@@ -5396,9 +3985,8 @@ public isolated client class Client {
     # + analysisId - The ID of the analysis, as returned from the GET /repos/{owner}/{repo}/code-scanning/analyses operation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/analyses/[int analysisId](map<string|string[]> headers = {}) returns CodeScanningAnalysis|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/analyses/${getEncodedUri(analysisId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/analyses/[int analysisId](map<string|string[]> headers = {}) returns oas:CodeScanningAnalysis|error {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/analyses/[analysisId].get(headers);
     }
 
     # Delete a code scanning analysis from a repository
@@ -5409,10 +3997,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/code\-scanning/analyses/[int analysisId](map<string|string[]> headers = {}, *CodeScanningDeleteAnalysisQueries queries) returns CodeScanningAnalysisDeletion|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/analyses/${getEncodedUri(analysisId)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->delete(resourcePath, headers = headers);
+    resource isolated function delete repos/[string owner]/[string repo]/code\-scanning/analyses/[int analysisId](map<string|string[]> headers = {}, *oas:CodeScanningDeleteAnalysisQueries queries) returns oas:CodeScanningAnalysisDeletion|error {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/analyses/[analysisId].delete(headers, queries);
     }
 
     # List CodeQL databases for a repository
@@ -5421,9 +4007,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/codeql/databases(map<string|string[]> headers = {}) returns CodeScanningCodeqlDatabase[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/codeql/databases`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/codeql/databases(map<string|string[]> headers = {}) returns oas:CodeScanningCodeqlDatabase[]|error {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/codeql/databases.get(headers);
     }
 
     # Get a CodeQL database for a repository
@@ -5433,9 +4018,8 @@ public isolated client class Client {
     # + language - The language of the CodeQL database
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/codeql/databases/[string language](map<string|string[]> headers = {}) returns CodeScanningCodeqlDatabase|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/codeql/databases/${getEncodedUri(language)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/codeql/databases/[string language](map<string|string[]> headers = {}) returns oas:CodeScanningCodeqlDatabase|error? {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/codeql/databases/[language].get(headers);
     }
 
     # Get a code scanning default setup configuration
@@ -5444,9 +4028,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/default\-setup(map<string|string[]> headers = {}) returns CodeScanningDefaultSetup|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/default-setup`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/default\-setup(map<string|string[]> headers = {}) returns oas:CodeScanningDefaultSetup|error {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/default\-setup.get(headers);
     }
 
     # Update a code scanning default setup configuration
@@ -5455,12 +4038,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/code\-scanning/default\-setup(CodeScanningDefaultSetupUpdate payload, map<string|string[]> headers = {}) returns EmptyObject|CodeScanningDefaultSetupUpdateResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/default-setup`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/code\-scanning/default\-setup(oas:CodeScanningDefaultSetupUpdate payload, map<string|string[]> headers = {}) returns oas:EmptyObject|oas:CodeScanningDefaultSetupUpdateResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/default\-setup.patch(payload, headers);
     }
 
     # Upload an analysis as SARIF data
@@ -5469,12 +4048,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/code\-scanning/sarifs(CodeScanningSarifsBody payload, map<string|string[]> headers = {}) returns CodeScanningSarifsReceipt|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/sarifs`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/code\-scanning/sarifs(oas:CodeScanningSarifsBody payload, map<string|string[]> headers = {}) returns oas:CodeScanningSarifsReceipt|error {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/sarifs.post(payload, headers);
     }
 
     # Get information about a SARIF upload
@@ -5484,9 +4059,8 @@ public isolated client class Client {
     # + sarifId - The SARIF ID obtained after uploading
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/sarifs/[string sarifId](map<string|string[]> headers = {}) returns CodeScanningSarifsStatus|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/code-scanning/sarifs/${getEncodedUri(sarifId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/code\-scanning/sarifs/[string sarifId](map<string|string[]> headers = {}) returns oas:CodeScanningSarifsStatus|error {
+        return self.genClient->/repos/[owner]/[repo]/code\-scanning/sarifs/[sarifId].get(headers);
     }
 
     # List CODEOWNERS errors
@@ -5496,10 +4070,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/codeowners/errors(map<string|string[]> headers = {}, *ReposCodeownersErrorsQueries queries) returns CodeownersErrors|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codeowners/errors`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/codeowners/errors(map<string|string[]> headers = {}, *oas:ReposCodeownersErrorsQueries queries) returns oas:CodeownersErrors|error {
+        return self.genClient->/repos/[owner]/[repo]/codeowners/errors.get(headers, queries);
     }
 
     # List codespaces in a repository for the authenticated user
@@ -5509,10 +4081,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/codespaces(map<string|string[]> headers = {}, *CodespacesListInRepositoryForAuthenticatedUserQueries queries) returns CodespaceResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/codespaces(map<string|string[]> headers = {}, *oas:CodespacesListInRepositoryForAuthenticatedUserQueries queries) returns oas:CodespaceResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/codespaces.get(headers, queries);
     }
 
     # Create a codespace in a repository
@@ -5521,12 +4091,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response when the codespace was successfully created 
-    resource isolated function post repos/[string owner]/[string repo]/codespaces(RepoCodespacesBody payload, map<string|string[]> headers = {}) returns Codespace|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/codespaces(oas:RepoCodespacesBody payload, map<string|string[]> headers = {}) returns oas:Codespace|error {
+        return self.genClient->/repos/[owner]/[repo]/codespaces.post(payload, headers);
     }
 
     # List devcontainer configurations in a repository for the authenticated user
@@ -5536,10 +4102,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/codespaces/devcontainers(map<string|string[]> headers = {}, *CodespacesListDevcontainersInRepositoryForAuthenticatedUserQueries queries) returns DevcontainersResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces/devcontainers`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/codespaces/devcontainers(map<string|string[]> headers = {}, *oas:CodespacesListDevcontainersInRepositoryForAuthenticatedUserQueries queries) returns oas:DevcontainersResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/codespaces/devcontainers.get(headers, queries);
     }
 
     # List available machine types for a repository
@@ -5549,10 +4113,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/codespaces/machines(map<string|string[]> headers = {}, *CodespacesRepoMachinesForAuthenticatedUserQueries queries) returns CodespaceMachineResponse|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces/machines`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/codespaces/machines(map<string|string[]> headers = {}, *oas:CodespacesRepoMachinesForAuthenticatedUserQueries queries) returns oas:CodespaceMachineResponse|error? {
+        return self.genClient->/repos/[owner]/[repo]/codespaces/machines.get(headers, queries);
     }
 
     # Get default attributes for a codespace
@@ -5562,10 +4124,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response when a user is able to create codespaces from the repository 
-    resource isolated function get repos/[string owner]/[string repo]/codespaces/'new(map<string|string[]> headers = {}, *CodespacesPreFlightWithRepoForAuthenticatedUserQueries queries) returns CodespaceDefaultResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces/new`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/codespaces/'new(map<string|string[]> headers = {}, *oas:CodespacesPreFlightWithRepoForAuthenticatedUserQueries queries) returns oas:CodespaceDefaultResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/codespaces/'new.get(headers, queries);
     }
 
     # Check if permissions defined by a devcontainer have been accepted by the authenticated user
@@ -5575,10 +4135,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response when the permission check is successful 
-    resource isolated function get repos/[string owner]/[string repo]/codespaces/permissions_check(map<string|string[]> headers = {}, *CodespacesCheckPermissionsForDevcontainerQueries queries) returns CodespacesPermissionsCheckForDevcontainer|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces/permissions_check`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/codespaces/permissions_check(map<string|string[]> headers = {}, *oas:CodespacesCheckPermissionsForDevcontainerQueries queries) returns oas:CodespacesPermissionsCheckForDevcontainer|error {
+        return self.genClient->/repos/[owner]/[repo]/codespaces/permissions_check.get(headers, queries);
     }
 
     # List repository secrets
@@ -5588,21 +4146,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/codespaces/secrets(map<string|string[]> headers = {}, *CodespacesListRepoSecretsQueries queries) returns RepoCodespacesSecretResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces/secrets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Get a repository public key
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/codespaces/secrets/public\-key(map<string|string[]> headers = {}) returns CodespacesPublicKey|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces/secrets/public-key`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/codespaces/secrets(map<string|string[]> headers = {}, *oas:CodespacesListRepoSecretsQueries queries) returns oas:RepoCodespacesSecretResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/codespaces/secrets.get(headers, queries);
     }
 
     # Get a repository secret
@@ -5612,9 +4157,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/codespaces/secrets/[string secretName](map<string|string[]> headers = {}) returns RepoCodespacesSecret|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/codespaces/secrets/[string secretName](map<string|string[]> headers = {}) returns oas:RepoCodespacesSecret|error {
+        return self.genClient->/repos/[owner]/[repo]/codespaces/secrets/[secretName].get(headers);
     }
 
     # Create or update a repository secret
@@ -5624,12 +4168,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response when creating a secret 
-    resource isolated function put repos/[string owner]/[string repo]/codespaces/secrets/[string secretName](SecretssecretNameBody4 payload, map<string|string[]> headers = {}) returns EmptyObject|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces/secrets/${getEncodedUri(secretName)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/codespaces/secrets/[string secretName](oas:SecretssecretNameBody4 payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error? {
+        return self.genClient->/repos/[owner]/[repo]/codespaces/secrets/[secretName].put(payload, headers);
     }
 
     # Delete a repository secret
@@ -5640,8 +4180,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/codespaces/secrets/[string secretName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/codespaces/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/codespaces/secrets/[secretName].delete(headers);
     }
 
     # List repository collaborators
@@ -5651,10 +4190,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/collaborators(map<string|string[]> headers = {}, *ReposListCollaboratorsQueries queries) returns Collaborator[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/collaborators`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/collaborators(map<string|string[]> headers = {}, *oas:ReposListCollaboratorsQueries queries) returns oas:Collaborator[]|error {
+        return self.genClient->/repos/[owner]/[repo]/collaborators.get(headers, queries);
     }
 
     # Check if a user is a repository collaborator
@@ -5665,8 +4202,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response if user is a collaborator 
     resource isolated function get repos/[string owner]/[string repo]/collaborators/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/collaborators/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/collaborators/[username].get(headers);
     }
 
     # Add a repository collaborator
@@ -5676,12 +4212,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response when a new invitation is created 
-    resource isolated function put repos/[string owner]/[string repo]/collaborators/[string username](CollaboratorsusernameBody1 payload, map<string|string[]> headers = {}) returns RepositoryInvitation|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/collaborators/${getEncodedUri(username)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/collaborators/[string username](oas:CollaboratorsusernameBody1 payload, map<string|string[]> headers = {}) returns oas:RepositoryInvitation|error? {
+        return self.genClient->/repos/[owner]/[repo]/collaborators/[username].put(payload, headers);
     }
 
     # Remove a repository collaborator
@@ -5692,8 +4224,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - No Content when collaborator was removed from the repository 
     resource isolated function delete repos/[string owner]/[string repo]/collaborators/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/collaborators/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/collaborators/[username].delete(headers);
     }
 
     # Get repository permissions for a user
@@ -5703,9 +4234,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - if user has admin permissions 
-    resource isolated function get repos/[string owner]/[string repo]/collaborators/[string username]/permission(map<string|string[]> headers = {}) returns RepositoryCollaboratorPermission|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/collaborators/${getEncodedUri(username)}/permission`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/collaborators/[string username]/permission(map<string|string[]> headers = {}) returns oas:RepositoryCollaboratorPermission|error {
+        return self.genClient->/repos/[owner]/[repo]/collaborators/[username]/permission.get(headers);
     }
 
     # List commit comments for a repository
@@ -5715,10 +4245,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/comments(map<string|string[]> headers = {}, *ReposListCommitCommentsForRepoQueries queries) returns CommitComment[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/comments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/comments(map<string|string[]> headers = {}, *oas:ReposListCommitCommentsForRepoQueries queries) returns oas:CommitComment[]|error {
+        return self.genClient->/repos/[owner]/[repo]/comments.get(headers, queries);
     }
 
     # Get a commit comment
@@ -5728,9 +4256,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/comments/[int commentId](map<string|string[]> headers = {}) returns CommitComment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/comments/${getEncodedUri(commentId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/comments/[int commentId](map<string|string[]> headers = {}) returns oas:CommitComment|error {
+        return self.genClient->/repos/[owner]/[repo]/comments/[commentId].get(headers);
     }
 
     # Delete a commit comment
@@ -5741,8 +4268,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/comments/[int commentId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/comments/${getEncodedUri(commentId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/comments/[commentId].delete(headers);
     }
 
     # Update a commit comment
@@ -5752,12 +4278,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/comments/[int commentId](CommentscommentIdBody payload, map<string|string[]> headers = {}) returns CommitComment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/comments/${getEncodedUri(commentId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/comments/[int commentId](oas:CommentscommentIdBody payload, map<string|string[]> headers = {}) returns oas:CommitComment|error {
+        return self.genClient->/repos/[owner]/[repo]/comments/[commentId].patch(payload, headers);
     }
 
     # List reactions for a commit comment
@@ -5768,10 +4290,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/comments/[int commentId]/reactions(map<string|string[]> headers = {}, *ReactionsListForCommitCommentQueries queries) returns Reaction[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/comments/${getEncodedUri(commentId)}/reactions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/comments/[int commentId]/reactions(map<string|string[]> headers = {}, *oas:ReactionsListForCommitCommentQueries queries) returns oas:Reaction[]|error {
+        return self.genClient->/repos/[owner]/[repo]/comments/[commentId]/reactions.get(headers, queries);
     }
 
     # Create reaction for a commit comment
@@ -5781,12 +4301,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Reaction exists 
-    resource isolated function post repos/[string owner]/[string repo]/comments/[int commentId]/reactions(CommentIdReactionsBody payload, map<string|string[]> headers = {}) returns Reaction|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/comments/${getEncodedUri(commentId)}/reactions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/comments/[int commentId]/reactions(oas:CommentIdReactionsBody payload, map<string|string[]> headers = {}) returns oas:Reaction|error {
+        return self.genClient->/repos/[owner]/[repo]/comments/[commentId]/reactions.post(payload, headers);
     }
 
     # Delete a commit comment reaction
@@ -5798,8 +4314,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/comments/[int commentId]/reactions/[int reactionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/comments/${getEncodedUri(commentId)}/reactions/${getEncodedUri(reactionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/comments/[commentId]/reactions/[reactionId].delete(headers);
     }
 
     # List commits
@@ -5809,10 +4324,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/commits(map<string|string[]> headers = {}, *ReposListCommitsQueries queries) returns Commit[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/commits`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/commits(map<string|string[]> headers = {}, *oas:ReposListCommitsQueries queries) returns oas:Commit[]|error {
+        return self.genClient->/repos/[owner]/[repo]/commits.get(headers, queries);
     }
 
     # List branches for HEAD commit
@@ -5822,9 +4335,8 @@ public isolated client class Client {
     # + commitSha - The SHA of the commit
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/commits/[string commitSha]/branches\-where\-head(map<string|string[]> headers = {}) returns BranchShort[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/commits/${getEncodedUri(commitSha)}/branches-where-head`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/commits/[string commitSha]/branches\-where\-head(map<string|string[]> headers = {}) returns oas:BranchShort[]|error {
+        return self.genClient->/repos/[owner]/[repo]/commits/[commitSha]/branches\-where\-head.get(headers);
     }
 
     # List commit comments
@@ -5835,10 +4347,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/commits/[string commitSha]/comments(map<string|string[]> headers = {}, *ReposListCommentsForCommitQueries queries) returns CommitComment[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/commits/${getEncodedUri(commitSha)}/comments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/commits/[string commitSha]/comments(map<string|string[]> headers = {}, *oas:ReposListCommentsForCommitQueries queries) returns oas:CommitComment[]|error {
+        return self.genClient->/repos/[owner]/[repo]/commits/[commitSha]/comments.get(headers, queries);
     }
 
     # Create a commit comment
@@ -5848,12 +4358,8 @@ public isolated client class Client {
     # + commitSha - The SHA of the commit
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/commits/[string commitSha]/comments(CommitShaCommentsBody payload, map<string|string[]> headers = {}) returns CommitComment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/commits/${getEncodedUri(commitSha)}/comments`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/commits/[string commitSha]/comments(oas:CommitShaCommentsBody payload, map<string|string[]> headers = {}) returns oas:CommitComment|error {
+        return self.genClient->/repos/[owner]/[repo]/commits/[commitSha]/comments.post(payload, headers);
     }
 
     # List pull requests associated with a commit
@@ -5864,10 +4370,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/commits/[string commitSha]/pulls(map<string|string[]> headers = {}, *ReposListPullRequestsAssociatedWithCommitQueries queries) returns PullRequestSimple[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/commits/${getEncodedUri(commitSha)}/pulls`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/commits/[string commitSha]/pulls(map<string|string[]> headers = {}, *oas:ReposListPullRequestsAssociatedWithCommitQueries queries) returns oas:PullRequestSimple[]|error {
+        return self.genClient->/repos/[owner]/[repo]/commits/[commitSha]/pulls.get(headers, queries);
     }
 
     # Get a commit
@@ -5878,10 +4382,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref](map<string|string[]> headers = {}, *ReposGetCommitQueries queries) returns Commit|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/commits/${getEncodedUri(ref)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref](map<string|string[]> headers = {}, *oas:ReposGetCommitQueries queries) returns oas:Commit|error {
+        return self.genClient->/repos/[owner]/[repo]/commits/[ref].get(headers, queries);
     }
 
     # List check runs for a Git reference
@@ -5892,10 +4394,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref]/check\-runs(map<string|string[]> headers = {}, *ChecksListForRefQueries queries) returns CheckRunResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/commits/${getEncodedUri(ref)}/check-runs`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref]/check\-runs(map<string|string[]> headers = {}, *oas:ChecksListForRefQueries queries) returns oas:CheckRunResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/commits/[ref]/check\-runs.get(headers, queries);
     }
 
     # List check suites for a Git reference
@@ -5906,10 +4406,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref]/check\-suites(map<string|string[]> headers = {}, *ChecksListSuitesForRefQueries queries) returns CheckSuiteResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/commits/${getEncodedUri(ref)}/check-suites`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref]/check\-suites(map<string|string[]> headers = {}, *oas:ChecksListSuitesForRefQueries queries) returns oas:CheckSuiteResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/commits/[ref]/check\-suites.get(headers, queries);
     }
 
     # Get the combined status for a specific reference
@@ -5920,10 +4418,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref]/status(map<string|string[]> headers = {}, *ReposGetCombinedStatusForRefQueries queries) returns CombinedCommitStatus|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/commits/${getEncodedUri(ref)}/status`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref]/status(map<string|string[]> headers = {}, *oas:ReposGetCombinedStatusForRefQueries queries) returns oas:CombinedCommitStatus|error {
+        return self.genClient->/repos/[owner]/[repo]/commits/[ref]/status.get(headers, queries);
     }
 
     # List commit statuses for a reference
@@ -5934,10 +4430,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref]/statuses(map<string|string[]> headers = {}, *ReposListCommitStatusesForRefQueries queries) returns Status[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/commits/${getEncodedUri(ref)}/statuses`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref]/statuses(map<string|string[]> headers = {}, *oas:ReposListCommitStatusesForRefQueries queries) returns oas:Status[]|error {
+        return self.genClient->/repos/[owner]/[repo]/commits/[ref]/statuses.get(headers, queries);
     }
 
     # Get community profile metrics
@@ -5946,9 +4440,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/community/profile(map<string|string[]> headers = {}) returns CommunityProfile|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/community/profile`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/community/profile(map<string|string[]> headers = {}) returns oas:CommunityProfile|error {
+        return self.genClient->/repos/[owner]/[repo]/community/profile.get(headers);
     }
 
     # Compare two commits
@@ -5959,10 +4452,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/compare/[string basehead](map<string|string[]> headers = {}, *ReposCompareCommitsQueries queries) returns CommitComparison|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/compare/${getEncodedUri(basehead)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/compare/[string basehead](map<string|string[]> headers = {}, *oas:ReposCompareCommitsQueries queries) returns oas:CommitComparison|error {
+        return self.genClient->/repos/[owner]/[repo]/compare/[basehead].get(headers, queries);
     }
 
     # Get repository content
@@ -5973,10 +4464,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/contents/[string path](map<string|string[]> headers = {}, *ReposGetContentQueries queries) returns InlineResponse200|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/contents/${getEncodedUri(path)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/contents/[string path](map<string|string[]> headers = {}, *oas:ReposGetContentQueries queries) returns oas:InlineResponse200|error? {
+        return self.genClient->/repos/[owner]/[repo]/contents/[path].get(headers, queries);
     }
 
     # Create or update file contents
@@ -5986,12 +4475,8 @@ public isolated client class Client {
     # + path - path parameter
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/contents/[string path](ContentspathBody payload, map<string|string[]> headers = {}) returns FileCommit|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/contents/${getEncodedUri(path)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/contents/[string path](oas:ContentspathBody payload, map<string|string[]> headers = {}) returns oas:FileCommit|error {
+        return self.genClient->/repos/[owner]/[repo]/contents/[path].put(payload, headers);
     }
 
     # Delete a file
@@ -6001,12 +4486,8 @@ public isolated client class Client {
     # + path - path parameter
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/contents/[string path](ContentspathBody1 payload, map<string|string[]> headers = {}) returns FileCommit|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/contents/${getEncodedUri(path)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete repos/[string owner]/[string repo]/contents/[string path](oas:ContentspathBody1 payload, map<string|string[]> headers = {}) returns oas:FileCommit|error {
+        return self.genClient->/repos/[owner]/[repo]/contents/[path].delete(payload, headers);
     }
 
     # List repository contributors
@@ -6016,10 +4497,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - If repository contains content 
-    resource isolated function get repos/[string owner]/[string repo]/contributors(map<string|string[]> headers = {}, *ReposListContributorsQueries queries) returns Contributor[]|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/contributors`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/contributors(map<string|string[]> headers = {}, *oas:ReposListContributorsQueries queries) returns oas:Contributor[]|error? {
+        return self.genClient->/repos/[owner]/[repo]/contributors.get(headers, queries);
     }
 
     # List Dependabot alerts for a repository
@@ -6029,10 +4508,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/dependabot/alerts(map<string|string[]> headers = {}, *DependabotListAlertsForRepoQueries queries) returns DependabotAlert[]|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependabot/alerts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/dependabot/alerts(map<string|string[]> headers = {}, *oas:DependabotListAlertsForRepoQueries queries) returns oas:DependabotAlert[]|error? {
+        return self.genClient->/repos/[owner]/[repo]/dependabot/alerts.get(headers, queries);
     }
 
     # Get a Dependabot alert
@@ -6045,9 +4522,8 @@ public isolated client class Client {
     # GET /repos/{owner}/{repo}/dependabot/alerts operation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/dependabot/alerts/[AlertNumber alertNumber](map<string|string[]> headers = {}) returns DependabotAlert|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependabot/alerts/${getEncodedUri(alertNumber)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/dependabot/alerts/[oas:AlertNumber alertNumber](map<string|string[]> headers = {}) returns oas:DependabotAlert|error? {
+        return self.genClient->/repos/[owner]/[repo]/dependabot/alerts/[alertNumber].get(headers);
     }
 
     # Update a Dependabot alert
@@ -6060,12 +4536,8 @@ public isolated client class Client {
     # GET /repos/{owner}/{repo}/dependabot/alerts operation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/dependabot/alerts/[AlertNumber alertNumber](AlertsalertNumberBody1 payload, map<string|string[]> headers = {}) returns DependabotAlert|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependabot/alerts/${getEncodedUri(alertNumber)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/dependabot/alerts/[oas:AlertNumber alertNumber](oas:AlertsalertNumberBody1 payload, map<string|string[]> headers = {}) returns oas:DependabotAlert|error {
+        return self.genClient->/repos/[owner]/[repo]/dependabot/alerts/[alertNumber].patch(payload, headers);
     }
 
     # List repository secrets
@@ -6075,21 +4547,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/dependabot/secrets(map<string|string[]> headers = {}, *DependabotListRepoSecretsQueries queries) returns DependabotSecretResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependabot/secrets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Get a repository public key
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/dependabot/secrets/public\-key(map<string|string[]> headers = {}) returns DependabotPublicKey|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependabot/secrets/public-key`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/dependabot/secrets(map<string|string[]> headers = {}, *oas:DependabotListRepoSecretsQueries queries) returns oas:DependabotSecretResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/dependabot/secrets.get(headers, queries);
     }
 
     # Get a repository secret
@@ -6099,9 +4558,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/dependabot/secrets/[string secretName](map<string|string[]> headers = {}) returns DependabotSecret|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependabot/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/dependabot/secrets/[string secretName](map<string|string[]> headers = {}) returns oas:DependabotSecret|error {
+        return self.genClient->/repos/[owner]/[repo]/dependabot/secrets/[secretName].get(headers);
     }
 
     # Create or update a repository secret
@@ -6111,12 +4569,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response when creating a secret 
-    resource isolated function put repos/[string owner]/[string repo]/dependabot/secrets/[string secretName](SecretssecretNameBody5 payload, map<string|string[]> headers = {}) returns EmptyObject|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependabot/secrets/${getEncodedUri(secretName)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/dependabot/secrets/[string secretName](oas:SecretssecretNameBody5 payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error? {
+        return self.genClient->/repos/[owner]/[repo]/dependabot/secrets/[secretName].put(payload, headers);
     }
 
     # Delete a repository secret
@@ -6127,8 +4581,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/dependabot/secrets/[string secretName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependabot/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/dependabot/secrets/[secretName].delete(headers);
     }
 
     # Get a diff of the dependencies between commits
@@ -6139,10 +4592,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/dependency\-graph/compare/[string basehead](map<string|string[]> headers = {}, *DependencyGraphDiffRangeQueries queries) returns DependencyGraphDiff|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependency-graph/compare/${getEncodedUri(basehead)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/dependency\-graph/compare/[string basehead](map<string|string[]> headers = {}, *oas:DependencyGraphDiffRangeQueries queries) returns oas:DependencyGraphDiff|error {
+        return self.genClient->/repos/[owner]/[repo]/dependency\-graph/compare/[basehead].get(headers, queries);
     }
 
     # Export a software bill of materials (SBOM) for a repository.
@@ -6151,9 +4602,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/dependency\-graph/sbom(map<string|string[]> headers = {}) returns DependencyGraphSpdxSbom|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependency-graph/sbom`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/dependency\-graph/sbom(map<string|string[]> headers = {}) returns oas:DependencyGraphSpdxSbom|error {
+        return self.genClient->/repos/[owner]/[repo]/dependency\-graph/sbom.get(headers);
     }
 
     # Create a snapshot of dependencies for a repository
@@ -6162,12 +4612,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/dependency\-graph/snapshots(Snapshot payload, map<string|string[]> headers = {}) returns SnapshotResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dependency-graph/snapshots`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/dependency\-graph/snapshots(oas:Snapshot payload, map<string|string[]> headers = {}) returns oas:SnapshotResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/dependency\-graph/snapshots.post(payload, headers);
     }
 
     # List deployments
@@ -6177,10 +4623,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/deployments(map<string|string[]> headers = {}, *ReposListDeploymentsQueries queries) returns Deployment[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/deployments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/deployments(map<string|string[]> headers = {}, *oas:ReposListDeploymentsQueries queries) returns oas:Deployment[]|error {
+        return self.genClient->/repos/[owner]/[repo]/deployments.get(headers, queries);
     }
 
     # Create a deployment
@@ -6189,12 +4633,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/deployments(RepoDeploymentsBody payload, map<string|string[]> headers = {}) returns Deployment|MergedBranchResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/deployments`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/deployments(oas:RepoDeploymentsBody payload, map<string|string[]> headers = {}) returns oas:Deployment|oas:MergedBranchResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/deployments.post(payload, headers);
     }
 
     # Get a deployment
@@ -6204,9 +4644,8 @@ public isolated client class Client {
     # + deploymentId - deployment_id parameter
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/deployments/[int deploymentId](map<string|string[]> headers = {}) returns Deployment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/deployments/${getEncodedUri(deploymentId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/deployments/[int deploymentId](map<string|string[]> headers = {}) returns oas:Deployment|error {
+        return self.genClient->/repos/[owner]/[repo]/deployments/[deploymentId].get(headers);
     }
 
     # Delete a deployment
@@ -6217,8 +4656,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/deployments/[int deploymentId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/deployments/${getEncodedUri(deploymentId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/deployments/[deploymentId].delete(headers);
     }
 
     # List deployment statuses
@@ -6229,10 +4667,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/deployments/[int deploymentId]/statuses(map<string|string[]> headers = {}, *ReposListDeploymentStatusesQueries queries) returns DeploymentStatus[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/deployments/${getEncodedUri(deploymentId)}/statuses`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/deployments/[int deploymentId]/statuses(map<string|string[]> headers = {}, *oas:ReposListDeploymentStatusesQueries queries) returns oas:DeploymentStatus[]|error {
+        return self.genClient->/repos/[owner]/[repo]/deployments/[deploymentId]/statuses.get(headers, queries);
     }
 
     # Create a deployment status
@@ -6242,12 +4678,8 @@ public isolated client class Client {
     # + deploymentId - deployment_id parameter
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/deployments/[int deploymentId]/statuses(DeploymentIdStatusesBody payload, map<string|string[]> headers = {}) returns DeploymentStatus|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/deployments/${getEncodedUri(deploymentId)}/statuses`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/deployments/[int deploymentId]/statuses(oas:DeploymentIdStatusesBody payload, map<string|string[]> headers = {}) returns oas:DeploymentStatus|error {
+        return self.genClient->/repos/[owner]/[repo]/deployments/[deploymentId]/statuses.post(payload, headers);
     }
 
     # Get a deployment status
@@ -6257,9 +4689,8 @@ public isolated client class Client {
     # + deploymentId - deployment_id parameter
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/deployments/[int deploymentId]/statuses/[int statusId](map<string|string[]> headers = {}) returns DeploymentStatus|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/deployments/${getEncodedUri(deploymentId)}/statuses/${getEncodedUri(statusId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/deployments/[int deploymentId]/statuses/[int statusId](map<string|string[]> headers = {}) returns oas:DeploymentStatus|error {
+        return self.genClient->/repos/[owner]/[repo]/deployments/[deploymentId]/statuses/[statusId].get(headers);
     }
 
     # Create a repository dispatch event
@@ -6268,12 +4699,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/dispatches(RepoDispatchesBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/dispatches`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/dispatches(oas:RepoDispatchesBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/dispatches.post(payload, headers);
     }
 
     # List environments
@@ -6283,10 +4710,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/environments(map<string|string[]> headers = {}, *ReposGetAllEnvironmentsQueries queries) returns EnvironmentResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/environments(map<string|string[]> headers = {}, *oas:ReposGetAllEnvironmentsQueries queries) returns oas:EnvironmentResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/environments.get(headers, queries);
     }
 
     # Get an environment
@@ -6296,9 +4721,8 @@ public isolated client class Client {
     # + environmentName - The name of the environment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName](map<string|string[]> headers = {}) returns Environment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName](map<string|string[]> headers = {}) returns oas:Environment|error {
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName].get(headers);
     }
 
     # Create or update an environment
@@ -6308,12 +4732,8 @@ public isolated client class Client {
     # + environmentName - The name of the environment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/environments/[string environmentName](EnvironmentsenvironmentNameBody payload, map<string|string[]> headers = {}) returns Environment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/environments/[string environmentName](oas:EnvironmentsenvironmentNameBody payload, map<string|string[]> headers = {}) returns oas:Environment|error {
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName].put(payload, headers);
     }
 
     # Delete an environment
@@ -6324,8 +4744,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Default response 
     resource isolated function delete repos/[string owner]/[string repo]/environments/[string environmentName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName].delete(headers);
     }
 
     # List deployment branch policies
@@ -6336,10 +4755,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName]/deployment\-branch\-policies(map<string|string[]> headers = {}, *ReposListDeploymentBranchPoliciesQueries queries) returns DeploymentBranchPolicyResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}/deployment-branch-policies`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName]/deployment\-branch\-policies(map<string|string[]> headers = {}, *oas:ReposListDeploymentBranchPoliciesQueries queries) returns oas:DeploymentBranchPolicyResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName]/deployment\-branch\-policies.get(headers, queries);
     }
 
     # Create a deployment branch policy
@@ -6349,12 +4766,8 @@ public isolated client class Client {
     # + environmentName - The name of the environment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/environments/[string environmentName]/deployment\-branch\-policies(DeploymentBranchPolicyNamePatternWithType payload, map<string|string[]> headers = {}) returns DeploymentBranchPolicy|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}/deployment-branch-policies`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/environments/[string environmentName]/deployment\-branch\-policies(oas:DeploymentBranchPolicyNamePatternWithType payload, map<string|string[]> headers = {}) returns oas:DeploymentBranchPolicy|error? {
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName]/deployment\-branch\-policies.post(payload, headers);
     }
 
     # Get a deployment branch policy
@@ -6365,9 +4778,8 @@ public isolated client class Client {
     # + branchPolicyId - The unique identifier of the branch policy
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName]/deployment\-branch\-policies/[int branchPolicyId](map<string|string[]> headers = {}) returns DeploymentBranchPolicy|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}/deployment-branch-policies/${getEncodedUri(branchPolicyId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName]/deployment\-branch\-policies/[int branchPolicyId](map<string|string[]> headers = {}) returns oas:DeploymentBranchPolicy|error {
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName]/deployment\-branch\-policies/[branchPolicyId].get(headers);
     }
 
     # Update a deployment branch policy
@@ -6378,12 +4790,8 @@ public isolated client class Client {
     # + branchPolicyId - The unique identifier of the branch policy
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/environments/[string environmentName]/deployment\-branch\-policies/[int branchPolicyId](DeploymentBranchPolicyNamePattern payload, map<string|string[]> headers = {}) returns DeploymentBranchPolicy|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}/deployment-branch-policies/${getEncodedUri(branchPolicyId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/environments/[string environmentName]/deployment\-branch\-policies/[int branchPolicyId](oas:DeploymentBranchPolicyNamePattern payload, map<string|string[]> headers = {}) returns oas:DeploymentBranchPolicy|error {
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName]/deployment\-branch\-policies/[branchPolicyId].put(payload, headers);
     }
 
     # Delete a deployment branch policy
@@ -6395,8 +4803,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/environments/[string environmentName]/deployment\-branch\-policies/[int branchPolicyId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}/deployment-branch-policies/${getEncodedUri(branchPolicyId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName]/deployment\-branch\-policies/[branchPolicyId].delete(headers);
     }
 
     # Get all deployment protection rules for an environment
@@ -6406,9 +4813,8 @@ public isolated client class Client {
     # + owner - The account owner of the repository. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - List of deployment protection rules 
-    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName]/deployment_protection_rules(map<string|string[]> headers = {}) returns DeploymentProtectionRuleResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}/deployment_protection_rules`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName]/deployment_protection_rules(map<string|string[]> headers = {}) returns oas:DeploymentProtectionRuleResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName]/deployment_protection_rules.get(headers);
     }
 
     # Create a custom deployment protection rule on an environment
@@ -6418,26 +4824,8 @@ public isolated client class Client {
     # + owner - The account owner of the repository. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - The enabled custom deployment protection rule 
-    resource isolated function post repos/[string owner]/[string repo]/environments/[string environmentName]/deployment_protection_rules(EnvironmentNameDeploymentProtectionRulesBody payload, map<string|string[]> headers = {}) returns DeploymentProtectionRule|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}/deployment_protection_rules`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # List custom deployment rule integrations available for an environment
-    #
-    # + environmentName - The name of the environment
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - A list of custom deployment rule integrations available for this environment 
-    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName]/deployment_protection_rules/apps(map<string|string[]> headers = {}, *ReposListCustomDeploymentRuleIntegrationsQueries queries) returns CustomDeploymentRuleAppResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}/deployment_protection_rules/apps`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function post repos/[string owner]/[string repo]/environments/[string environmentName]/deployment_protection_rules(oas:EnvironmentNameDeploymentProtectionRulesBody payload, map<string|string[]> headers = {}) returns oas:DeploymentProtectionRule|error {
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName]/deployment_protection_rules.post(payload, headers);
     }
 
     # Get a custom deployment protection rule
@@ -6448,9 +4836,8 @@ public isolated client class Client {
     # + protectionRuleId - The unique identifier of the protection rule
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName]/deployment_protection_rules/[int protectionRuleId](map<string|string[]> headers = {}) returns DeploymentProtectionRule|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}/deployment_protection_rules/${getEncodedUri(protectionRuleId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/environments/[string environmentName]/deployment_protection_rules/[int protectionRuleId](map<string|string[]> headers = {}) returns oas:DeploymentProtectionRule|error {
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName]/deployment_protection_rules/[protectionRuleId].get(headers);
     }
 
     # Disable a custom protection rule for an environment
@@ -6462,8 +4849,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/environments/[string environmentName]/deployment_protection_rules/[int protectionRuleId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/environments/${getEncodedUri(environmentName)}/deployment_protection_rules/${getEncodedUri(protectionRuleId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/environments/[environmentName]/deployment_protection_rules/[protectionRuleId].delete(headers);
     }
 
     # List repository events
@@ -6473,10 +4859,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/events(map<string|string[]> headers = {}, *ActivityListRepoEventsQueries queries) returns Event[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/events`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/events(map<string|string[]> headers = {}, *oas:ActivityListRepoEventsQueries queries) returns oas:Event[]|error {
+        return self.genClient->/repos/[owner]/[repo]/events.get(headers, queries);
     }
 
     # List forks
@@ -6486,10 +4870,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/forks(map<string|string[]> headers = {}, *ReposListForksQueries queries) returns MinimalRepository[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/forks`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/forks(map<string|string[]> headers = {}, *oas:ReposListForksQueries queries) returns oas:MinimalRepository[]|error {
+        return self.genClient->/repos/[owner]/[repo]/forks.get(headers, queries);
     }
 
     # Create a fork
@@ -6498,12 +4880,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/forks(RepoForksBody payload, map<string|string[]> headers = {}) returns FullRepository|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/forks`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/forks(oas:RepoForksBody payload, map<string|string[]> headers = {}) returns oas:FullRepository|error {
+        return self.genClient->/repos/[owner]/[repo]/forks.post(payload, headers);
     }
 
     # Create a blob
@@ -6512,12 +4890,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/git/blobs(GitBlobsBody payload, map<string|string[]> headers = {}) returns ShortBlob|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/blobs`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/git/blobs(oas:GitBlobsBody payload, map<string|string[]> headers = {}) returns oas:ShortBlob|error {
+        return self.genClient->/repos/[owner]/[repo]/git/blobs.post(payload, headers);
     }
 
     # Get a blob
@@ -6526,9 +4900,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/git/blobs/[string fileSha](map<string|string[]> headers = {}) returns Blob|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/blobs/${getEncodedUri(fileSha)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/git/blobs/[string fileSha](map<string|string[]> headers = {}) returns oas:Blob|error {
+        return self.genClient->/repos/[owner]/[repo]/git/blobs/[fileSha].get(headers);
     }
 
     # Create a commit
@@ -6537,12 +4910,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/git/commits(GitCommitsBody payload, map<string|string[]> headers = {}) returns GitCommit|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/commits`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/git/commits(oas:GitCommitsBody payload, map<string|string[]> headers = {}) returns oas:GitCommit|error {
+        return self.genClient->/repos/[owner]/[repo]/git/commits.post(payload, headers);
     }
 
     # Get a commit object
@@ -6552,9 +4921,8 @@ public isolated client class Client {
     # + commitSha - The SHA of the commit
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/git/commits/[string commitSha](map<string|string[]> headers = {}) returns GitCommit|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/commits/${getEncodedUri(commitSha)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/git/commits/[string commitSha](map<string|string[]> headers = {}) returns oas:GitCommit|error {
+        return self.genClient->/repos/[owner]/[repo]/git/commits/[commitSha].get(headers);
     }
 
     # List matching references
@@ -6564,9 +4932,8 @@ public isolated client class Client {
     # + ref - The commit reference. Can be a commit SHA, branch name (heads/BRANCH_NAME), or tag name (tags/TAG_NAME). For more information, see "[Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References)" in the Git documentation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/git/matching\-refs/[string ref](map<string|string[]> headers = {}) returns GitRef[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/matching-refs/${getEncodedUri(ref)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/git/matching\-refs/[string ref](map<string|string[]> headers = {}) returns oas:GitRef[]|error {
+        return self.genClient->/repos/[owner]/[repo]/git/matching\-refs/[ref].get(headers);
     }
 
     # Get a reference
@@ -6576,9 +4943,8 @@ public isolated client class Client {
     # + ref - The commit reference. Can be a commit SHA, branch name (heads/BRANCH_NAME), or tag name (tags/TAG_NAME). For more information, see "[Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References)" in the Git documentation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/git/ref/[string ref](map<string|string[]> headers = {}) returns GitRef|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/ref/${getEncodedUri(ref)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/git/ref/[string ref](map<string|string[]> headers = {}) returns oas:GitRef|error {
+        return self.genClient->/repos/[owner]/[repo]/git/ref/[ref].get(headers);
     }
 
     # Create a reference
@@ -6587,12 +4953,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/git/refs(GitRefsBody payload, map<string|string[]> headers = {}) returns GitRef|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/refs`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/git/refs(oas:GitRefsBody payload, map<string|string[]> headers = {}) returns oas:GitRef|error {
+        return self.genClient->/repos/[owner]/[repo]/git/refs.post(payload, headers);
     }
 
     # Delete a reference
@@ -6603,8 +4965,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/git/refs/[string ref](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/refs/${getEncodedUri(ref)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/git/refs/[ref].delete(headers);
     }
 
     # Update a reference
@@ -6614,12 +4975,8 @@ public isolated client class Client {
     # + ref - The name of the reference to update (for example, heads/featureA). Can be a branch name (heads/BRANCH_NAME) or tag name (tags/TAG_NAME). For more information, see "[Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References)" in the Git documentation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/git/refs/[string ref](RefsrefBody payload, map<string|string[]> headers = {}) returns GitRef|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/refs/${getEncodedUri(ref)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/git/refs/[string ref](oas:RefsrefBody payload, map<string|string[]> headers = {}) returns oas:GitRef|error {
+        return self.genClient->/repos/[owner]/[repo]/git/refs/[ref].patch(payload, headers);
     }
 
     # Create a tag object
@@ -6628,12 +4985,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/git/tags(GitTagsBody payload, map<string|string[]> headers = {}) returns GitTag|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/tags`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/git/tags(oas:GitTagsBody payload, map<string|string[]> headers = {}) returns oas:GitTag|error {
+        return self.genClient->/repos/[owner]/[repo]/git/tags.post(payload, headers);
     }
 
     # Get a tag
@@ -6642,9 +4995,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/git/tags/[string tagSha](map<string|string[]> headers = {}) returns GitTag|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/tags/${getEncodedUri(tagSha)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/git/tags/[string tagSha](map<string|string[]> headers = {}) returns oas:GitTag|error {
+        return self.genClient->/repos/[owner]/[repo]/git/tags/[tagSha].get(headers);
     }
 
     # Create a tree
@@ -6653,12 +5005,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/git/trees(GitTreesBody payload, map<string|string[]> headers = {}) returns GitTree|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/trees`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/git/trees(oas:GitTreesBody payload, map<string|string[]> headers = {}) returns oas:GitTree|error {
+        return self.genClient->/repos/[owner]/[repo]/git/trees.post(payload, headers);
     }
 
     # Get a tree
@@ -6669,10 +5017,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/git/trees/[string treeSha](map<string|string[]> headers = {}, *GitGetTreeQueries queries) returns GitTree|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/git/trees/${getEncodedUri(treeSha)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/git/trees/[string treeSha](map<string|string[]> headers = {}, *oas:GitGetTreeQueries queries) returns oas:GitTree|error {
+        return self.genClient->/repos/[owner]/[repo]/git/trees/[treeSha].get(headers, queries);
     }
 
     # List repository webhooks
@@ -6682,10 +5028,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/hooks(map<string|string[]> headers = {}, *ReposListWebhooksQueries queries) returns Hook[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/hooks(map<string|string[]> headers = {}, *oas:ReposListWebhooksQueries queries) returns oas:Hook[]|error {
+        return self.genClient->/repos/[owner]/[repo]/hooks.get(headers, queries);
     }
 
     # Create a repository webhook
@@ -6694,12 +5038,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/hooks(RepoHooksBody payload, map<string|string[]> headers = {}) returns Hook|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/hooks(oas:RepoHooksBody payload, map<string|string[]> headers = {}) returns oas:Hook|error {
+        return self.genClient->/repos/[owner]/[repo]/hooks.post(payload, headers);
     }
 
     # Get a repository webhook
@@ -6709,9 +5049,8 @@ public isolated client class Client {
     # + hookId - The unique identifier of the hook. You can find this value in the X-GitHub-Hook-ID header of a webhook delivery
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/hooks/[int hookId](map<string|string[]> headers = {}) returns Hook|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks/${getEncodedUri(hookId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/hooks/[int hookId](map<string|string[]> headers = {}) returns oas:Hook|error {
+        return self.genClient->/repos/[owner]/[repo]/hooks/[hookId].get(headers);
     }
 
     # Delete a repository webhook
@@ -6722,8 +5061,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/hooks/[int hookId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks/${getEncodedUri(hookId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/hooks/[hookId].delete(headers);
     }
 
     # Update a repository webhook
@@ -6733,12 +5071,8 @@ public isolated client class Client {
     # + hookId - The unique identifier of the hook. You can find this value in the X-GitHub-Hook-ID header of a webhook delivery
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/hooks/[int hookId](HookshookIdBody1 payload, map<string|string[]> headers = {}) returns Hook|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks/${getEncodedUri(hookId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/hooks/[int hookId](oas:HookshookIdBody1 payload, map<string|string[]> headers = {}) returns oas:Hook|error {
+        return self.genClient->/repos/[owner]/[repo]/hooks/[hookId].patch(payload, headers);
     }
 
     # Get a webhook configuration for a repository
@@ -6748,9 +5082,8 @@ public isolated client class Client {
     # + hookId - The unique identifier of the hook. You can find this value in the X-GitHub-Hook-ID header of a webhook delivery
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/hooks/[int hookId]/config(map<string|string[]> headers = {}) returns WebhookConfig|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks/${getEncodedUri(hookId)}/config`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/hooks/[int hookId]/config(map<string|string[]> headers = {}) returns oas:WebhookConfig|error {
+        return self.genClient->/repos/[owner]/[repo]/hooks/[hookId]/config.get(headers);
     }
 
     # Update a webhook configuration for a repository
@@ -6760,12 +5093,8 @@ public isolated client class Client {
     # + hookId - The unique identifier of the hook. You can find this value in the X-GitHub-Hook-ID header of a webhook delivery
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/hooks/[int hookId]/config(HookIdConfigBody payload, map<string|string[]> headers = {}) returns WebhookConfig|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks/${getEncodedUri(hookId)}/config`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/hooks/[int hookId]/config(oas:HookIdConfigBody payload, map<string|string[]> headers = {}) returns oas:WebhookConfig|error {
+        return self.genClient->/repos/[owner]/[repo]/hooks/[hookId]/config.patch(payload, headers);
     }
 
     # List deliveries for a repository webhook
@@ -6776,10 +5105,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/hooks/[int hookId]/deliveries(map<string|string[]> headers = {}, *ReposListWebhookDeliveriesQueries queries) returns HookDeliveryItem[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks/${getEncodedUri(hookId)}/deliveries`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/hooks/[int hookId]/deliveries(map<string|string[]> headers = {}, *oas:ReposListWebhookDeliveriesQueries queries) returns oas:HookDeliveryItem[]|error {
+        return self.genClient->/repos/[owner]/[repo]/hooks/[hookId]/deliveries.get(headers, queries);
     }
 
     # Get a delivery for a repository webhook
@@ -6789,9 +5116,8 @@ public isolated client class Client {
     # + hookId - The unique identifier of the hook. You can find this value in the X-GitHub-Hook-ID header of a webhook delivery
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/hooks/[int hookId]/deliveries/[int deliveryId](map<string|string[]> headers = {}) returns HookDelivery|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks/${getEncodedUri(hookId)}/deliveries/${getEncodedUri(deliveryId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/hooks/[int hookId]/deliveries/[int deliveryId](map<string|string[]> headers = {}) returns oas:HookDelivery|error {
+        return self.genClient->/repos/[owner]/[repo]/hooks/[hookId]/deliveries/[deliveryId].get(headers);
     }
 
     # Redeliver a delivery for a repository webhook
@@ -6802,9 +5128,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Accepted 
     resource isolated function post repos/[string owner]/[string repo]/hooks/[int hookId]/deliveries/[int deliveryId]/attempts(map<string|string[]> headers = {}) returns record {}|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks/${getEncodedUri(hookId)}/deliveries/${getEncodedUri(deliveryId)}/attempts`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/repos/[owner]/[repo]/hooks/[hookId]/deliveries/[deliveryId]/attempts.post(headers);
     }
 
     # Ping a repository webhook
@@ -6815,9 +5139,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function post repos/[string owner]/[string repo]/hooks/[int hookId]/pings(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks/${getEncodedUri(hookId)}/pings`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/repos/[owner]/[repo]/hooks/[hookId]/pings.post(headers);
     }
 
     # Test the push repository webhook
@@ -6828,9 +5150,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function post repos/[string owner]/[string repo]/hooks/[int hookId]/tests(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/hooks/${getEncodedUri(hookId)}/tests`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/repos/[owner]/[repo]/hooks/[hookId]/tests.post(headers);
     }
 
     # Get an import status
@@ -6839,9 +5159,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/'import(map<string|string[]> headers = {}) returns Import|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/import`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/'import(map<string|string[]> headers = {}) returns oas:Import|error {
+        return self.genClient->/repos/[owner]/[repo]/'import.get(headers);
     }
 
     # Start an import
@@ -6850,12 +5169,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/'import(RepoImportBody payload, map<string|string[]> headers = {}) returns Import|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/import`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/'import(oas:RepoImportBody payload, map<string|string[]> headers = {}) returns oas:Import|error {
+        return self.genClient->/repos/[owner]/[repo]/'import.put(payload, headers);
     }
 
     # Cancel an import
@@ -6865,8 +5180,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/'import(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/import`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/'import.delete(headers);
     }
 
     # Update an import
@@ -6875,12 +5189,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/'import(RepoImportBody1 payload, map<string|string[]> headers = {}) returns Import|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/import`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/'import(oas:RepoImportBody1 payload, map<string|string[]> headers = {}) returns oas:Import|error {
+        return self.genClient->/repos/[owner]/[repo]/'import.patch(payload, headers);
     }
 
     # Get commit authors
@@ -6890,10 +5200,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/'import/authors(map<string|string[]> headers = {}, *MigrationsGetCommitAuthorsQueries queries) returns PorterAuthor[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/import/authors`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/'import/authors(map<string|string[]> headers = {}, *oas:MigrationsGetCommitAuthorsQueries queries) returns oas:PorterAuthor[]|error {
+        return self.genClient->/repos/[owner]/[repo]/'import/authors.get(headers, queries);
     }
 
     # Map a commit author
@@ -6902,12 +5210,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/'import/authors/[int authorId](AuthorsauthorIdBody payload, map<string|string[]> headers = {}) returns PorterAuthor|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/import/authors/${getEncodedUri(authorId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/'import/authors/[int authorId](oas:AuthorsauthorIdBody payload, map<string|string[]> headers = {}) returns oas:PorterAuthor|error {
+        return self.genClient->/repos/[owner]/[repo]/'import/authors/[authorId].patch(payload, headers);
     }
 
     # Get large files
@@ -6916,9 +5220,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/'import/large_files(map<string|string[]> headers = {}) returns PorterLargeFile[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/import/large_files`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/'import/large_files(map<string|string[]> headers = {}) returns oas:PorterLargeFile[]|error {
+        return self.genClient->/repos/[owner]/[repo]/'import/large_files.get(headers);
     }
 
     # Update Git LFS preference
@@ -6927,12 +5230,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/'import/lfs(ImportLfsBody payload, map<string|string[]> headers = {}) returns Import|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/import/lfs`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/'import/lfs(oas:ImportLfsBody payload, map<string|string[]> headers = {}) returns oas:Import|error {
+        return self.genClient->/repos/[owner]/[repo]/'import/lfs.patch(payload, headers);
     }
 
     # Get a repository installation for the authenticated app
@@ -6941,9 +5240,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/installation(map<string|string[]> headers = {}) returns Installation|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/installation`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/installation(map<string|string[]> headers = {}) returns oas:Installation|error {
+        return self.genClient->/repos/[owner]/[repo]/installation.get(headers);
     }
 
     # Get interaction restrictions for a repository
@@ -6952,9 +5250,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/interaction\-limits(map<string|string[]> headers = {}) returns InteractionLimitResponseAny|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/interaction-limits`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/interaction\-limits(map<string|string[]> headers = {}) returns oas:InteractionLimitResponseAny|error {
+        return self.genClient->/repos/[owner]/[repo]/interaction\-limits.get(headers);
     }
 
     # Set interaction restrictions for a repository
@@ -6963,12 +5260,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/interaction\-limits(InteractionLimit payload, map<string|string[]> headers = {}) returns InteractionLimitResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/interaction-limits`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/interaction\-limits(oas:InteractionLimit payload, map<string|string[]> headers = {}) returns oas:InteractionLimitResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/interaction\-limits.put(payload, headers);
     }
 
     # Remove interaction restrictions for a repository
@@ -6978,8 +5271,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/interaction\-limits(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/interaction-limits`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/interaction\-limits.delete(headers);
     }
 
     # List repository invitations
@@ -6989,10 +5281,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/invitations(map<string|string[]> headers = {}, *ReposListInvitationsQueries queries) returns RepositoryInvitation[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/invitations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/invitations(map<string|string[]> headers = {}, *oas:ReposListInvitationsQueries queries) returns oas:RepositoryInvitation[]|error {
+        return self.genClient->/repos/[owner]/[repo]/invitations.get(headers, queries);
     }
 
     # Delete a repository invitation
@@ -7003,8 +5293,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/invitations/[int invitationId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/invitations/${getEncodedUri(invitationId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/invitations/[invitationId].delete(headers);
     }
 
     # Update a repository invitation
@@ -7014,12 +5303,8 @@ public isolated client class Client {
     # + invitationId - The unique identifier of the invitation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/invitations/[int invitationId](InvitationsinvitationIdBody payload, map<string|string[]> headers = {}) returns RepositoryInvitation|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/invitations/${getEncodedUri(invitationId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/invitations/[int invitationId](oas:InvitationsinvitationIdBody payload, map<string|string[]> headers = {}) returns oas:RepositoryInvitation|error {
+        return self.genClient->/repos/[owner]/[repo]/invitations/[invitationId].patch(payload, headers);
     }
 
     # List repository issues
@@ -7029,10 +5314,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues(map<string|string[]> headers = {}, *IssuesListForRepoQueries queries) returns Issue[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/issues(map<string|string[]> headers = {}, *oas:IssuesListForRepoQueries queries) returns oas:Issue[]|error {
+        return self.genClient->/repos/[owner]/[repo]/issues.get(headers, queries);
     }
 
     # Create an issue
@@ -7041,25 +5324,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/issues(RepoIssuesBody payload, map<string|string[]> headers = {}) returns Issue|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # List issue comments for a repository
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/comments(map<string|string[]> headers = {}, *IssuesListCommentsForRepoQueries queries) returns IssueComment[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/comments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function post repos/[string owner]/[string repo]/issues(oas:RepoIssuesBody payload, map<string|string[]> headers = {}) returns oas:Issue|error {
+        return self.genClient->/repos/[owner]/[repo]/issues.post(payload, headers);
     }
 
     # Get an issue comment
@@ -7069,9 +5335,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/comments/[int commentId](map<string|string[]> headers = {}) returns IssueComment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/comments/${getEncodedUri(commentId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/issues/comments/[int commentId](map<string|string[]> headers = {}) returns oas:IssueComment|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/comments/[commentId].get(headers);
     }
 
     # Delete an issue comment
@@ -7082,8 +5347,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/issues/comments/[int commentId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/comments/${getEncodedUri(commentId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/issues/comments/[commentId].delete(headers);
     }
 
     # Update an issue comment
@@ -7093,12 +5357,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/issues/comments/[int commentId](CommentscommentIdBody1 payload, map<string|string[]> headers = {}) returns IssueComment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/comments/${getEncodedUri(commentId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/issues/comments/[int commentId](oas:CommentscommentIdBody1 payload, map<string|string[]> headers = {}) returns oas:IssueComment|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/comments/[commentId].patch(payload, headers);
     }
 
     # List reactions for an issue comment
@@ -7109,10 +5369,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/comments/[int commentId]/reactions(map<string|string[]> headers = {}, *ReactionsListForIssueCommentQueries queries) returns Reaction[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/comments/${getEncodedUri(commentId)}/reactions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/issues/comments/[int commentId]/reactions(map<string|string[]> headers = {}, *oas:ReactionsListForIssueCommentQueries queries) returns oas:Reaction[]|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/comments/[commentId]/reactions.get(headers, queries);
     }
 
     # Create reaction for an issue comment
@@ -7122,12 +5380,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Reaction exists 
-    resource isolated function post repos/[string owner]/[string repo]/issues/comments/[int commentId]/reactions(CommentIdReactionsBody1 payload, map<string|string[]> headers = {}) returns Reaction|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/comments/${getEncodedUri(commentId)}/reactions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/issues/comments/[int commentId]/reactions(oas:CommentIdReactionsBody1 payload, map<string|string[]> headers = {}) returns oas:Reaction|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/comments/[commentId]/reactions.post(payload, headers);
     }
 
     # Delete an issue comment reaction
@@ -7139,21 +5393,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/issues/comments/[int commentId]/reactions/[int reactionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/comments/${getEncodedUri(commentId)}/reactions/${getEncodedUri(reactionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
-    }
-
-    # List issue events for a repository
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/events(map<string|string[]> headers = {}, *IssuesListEventsForRepoQueries queries) returns IssueEvent[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/events`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/issues/comments/[commentId]/reactions/[reactionId].delete(headers);
     }
 
     # Get an issue event
@@ -7162,9 +5402,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/events/[int eventId](map<string|string[]> headers = {}) returns IssueEvent|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/events/${getEncodedUri(eventId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/issues/events/[int eventId](map<string|string[]> headers = {}) returns oas:IssueEvent|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/events/[eventId].get(headers);
     }
 
     # Get an issue
@@ -7174,9 +5413,8 @@ public isolated client class Client {
     # + issueNumber - The number that identifies the issue
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber](map<string|string[]> headers = {}) returns Issue|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber](map<string|string[]> headers = {}) returns oas:Issue|error? {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber].get(headers);
     }
 
     # Update an issue
@@ -7186,12 +5424,8 @@ public isolated client class Client {
     # + issueNumber - The number that identifies the issue
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/issues/[int issueNumber](IssuesissueNumberBody payload, map<string|string[]> headers = {}) returns Issue|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/issues/[int issueNumber](oas:IssuesissueNumberBody payload, map<string|string[]> headers = {}) returns oas:Issue|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber].patch(payload, headers);
     }
 
     # Add assignees to an issue
@@ -7201,12 +5435,8 @@ public isolated client class Client {
     # + issueNumber - The number that identifies the issue
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/issues/[int issueNumber]/assignees(IssueNumberAssigneesBody payload, map<string|string[]> headers = {}) returns Issue|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/assignees`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/issues/[int issueNumber]/assignees(oas:IssueNumberAssigneesBody payload, map<string|string[]> headers = {}) returns oas:Issue|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/assignees.post(payload, headers);
     }
 
     # Remove assignees from an issue
@@ -7216,12 +5446,8 @@ public isolated client class Client {
     # + issueNumber - The number that identifies the issue
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/issues/[int issueNumber]/assignees(IssueNumberAssigneesBody1 payload, map<string|string[]> headers = {}) returns Issue|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/assignees`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete repos/[string owner]/[string repo]/issues/[int issueNumber]/assignees(oas:IssueNumberAssigneesBody1 payload, map<string|string[]> headers = {}) returns oas:Issue|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/assignees.delete(payload, headers);
     }
 
     # Check if a user can be assigned to a issue
@@ -7232,8 +5458,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response if assignee can be assigned to issue_number 
     resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/assignees/[string assignee](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/assignees/${getEncodedUri(assignee)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/assignees/[assignee].get(headers);
     }
 
     # List issue comments
@@ -7244,10 +5469,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/comments(map<string|string[]> headers = {}, *IssuesListCommentsQueries queries) returns IssueComment[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/comments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/comments(map<string|string[]> headers = {}, *oas:IssuesListCommentsQueries queries) returns oas:IssueComment[]|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/comments.get(headers, queries);
     }
 
     # Create an issue comment
@@ -7257,12 +5480,8 @@ public isolated client class Client {
     # + issueNumber - The number that identifies the issue
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/issues/[int issueNumber]/comments(CommentscommentIdBody1 payload, map<string|string[]> headers = {}) returns IssueComment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/comments`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/issues/[int issueNumber]/comments(oas:CommentscommentIdBody1 payload, map<string|string[]> headers = {}) returns oas:IssueComment|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/comments.post(payload, headers);
     }
 
     # List issue events
@@ -7273,10 +5492,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/events(map<string|string[]> headers = {}, *IssuesListEventsQueries queries) returns IssueEventForIssue[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/events`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/events(map<string|string[]> headers = {}, *oas:IssuesListEventsQueries queries) returns oas:IssueEventForIssue[]|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/events.get(headers, queries);
     }
 
     # List labels for an issue
@@ -7287,10 +5504,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/labels(map<string|string[]> headers = {}, *IssuesListLabelsOnIssueQueries queries) returns Label[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/labels`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/labels(map<string|string[]> headers = {}, *oas:IssuesListLabelsOnIssueQueries queries) returns oas:Label[]|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/labels.get(headers, queries);
     }
 
     # Set labels for an issue
@@ -7300,12 +5515,8 @@ public isolated client class Client {
     # + issueNumber - The number that identifies the issue
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/issues/[int issueNumber]/labels(IssueNumberLabelsBody payload, map<string|string[]> headers = {}) returns Label[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/labels`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/issues/[int issueNumber]/labels(oas:IssueNumberLabelsBody payload, map<string|string[]> headers = {}) returns oas:Label[]|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/labels.put(payload, headers);
     }
 
     # Add labels to an issue
@@ -7315,12 +5526,8 @@ public isolated client class Client {
     # + issueNumber - The number that identifies the issue
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/issues/[int issueNumber]/labels(IssueNumberLabelsBody1 payload, map<string|string[]> headers = {}) returns Label[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/labels`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/issues/[int issueNumber]/labels(oas:IssueNumberLabelsBody1 payload, map<string|string[]> headers = {}) returns oas:Label[]|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/labels.post(payload, headers);
     }
 
     # Remove all labels from an issue
@@ -7331,8 +5538,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/issues/[int issueNumber]/labels(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/labels`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/labels.delete(headers);
     }
 
     # Remove a label from an issue
@@ -7342,9 +5548,8 @@ public isolated client class Client {
     # + issueNumber - The number that identifies the issue
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/issues/[int issueNumber]/labels/[string name](map<string|string[]> headers = {}) returns Label[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/labels/${getEncodedUri(name)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+    resource isolated function delete repos/[string owner]/[string repo]/issues/[int issueNumber]/labels/[string name](map<string|string[]> headers = {}) returns oas:Label[]|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/labels/[name].delete(headers);
     }
 
     # Lock an issue
@@ -7354,12 +5559,8 @@ public isolated client class Client {
     # + issueNumber - The number that identifies the issue
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/issues/[int issueNumber]/'lock(IssueNumberLockBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/lock`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/issues/[int issueNumber]/'lock(oas:IssueNumberLockBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/'lock.put(payload, headers);
     }
 
     # Unlock an issue
@@ -7370,8 +5571,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/issues/[int issueNumber]/'lock(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/lock`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/'lock.delete(headers);
     }
 
     # List reactions for an issue
@@ -7382,10 +5582,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/reactions(map<string|string[]> headers = {}, *ReactionsListForIssueQueries queries) returns Reaction[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/reactions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/reactions(map<string|string[]> headers = {}, *oas:ReactionsListForIssueQueries queries) returns oas:Reaction[]|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/reactions.get(headers, queries);
     }
 
     # Create reaction for an issue
@@ -7395,12 +5593,8 @@ public isolated client class Client {
     # + issueNumber - The number that identifies the issue
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/issues/[int issueNumber]/reactions(IssueNumberReactionsBody payload, map<string|string[]> headers = {}) returns Reaction|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/reactions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/issues/[int issueNumber]/reactions(oas:IssueNumberReactionsBody payload, map<string|string[]> headers = {}) returns oas:Reaction|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/reactions.post(payload, headers);
     }
 
     # Delete an issue reaction
@@ -7412,8 +5606,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/issues/[int issueNumber]/reactions/[int reactionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/reactions/${getEncodedUri(reactionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/reactions/[reactionId].delete(headers);
     }
 
     # List timeline events for an issue
@@ -7424,10 +5617,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/timeline(map<string|string[]> headers = {}, *IssuesListEventsForTimelineQueries queries) returns TimelineIssueEvents[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/issues/${getEncodedUri(issueNumber)}/timeline`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/issues/[int issueNumber]/timeline(map<string|string[]> headers = {}, *oas:IssuesListEventsForTimelineQueries queries) returns oas:TimelineIssueEvents[]|error {
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/timeline.get(headers, queries);
     }
 
     # List deploy keys
@@ -7437,10 +5628,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/keys(map<string|string[]> headers = {}, *ReposListDeployKeysQueries queries) returns DeployKey[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/keys`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/keys(map<string|string[]> headers = {}, *oas:ReposListDeployKeysQueries queries) returns oas:DeployKey[]|error {
+        return self.genClient->/repos/[owner]/[repo]/keys.get(headers, queries);
     }
 
     # Create a deploy key
@@ -7449,12 +5638,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/keys(RepoKeysBody payload, map<string|string[]> headers = {}) returns DeployKey|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/keys`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/keys(oas:RepoKeysBody payload, map<string|string[]> headers = {}) returns oas:DeployKey|error {
+        return self.genClient->/repos/[owner]/[repo]/keys.post(payload, headers);
     }
 
     # Get a deploy key
@@ -7464,9 +5649,8 @@ public isolated client class Client {
     # + keyId - The unique identifier of the key
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/keys/[int keyId](map<string|string[]> headers = {}) returns DeployKey|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/keys/${getEncodedUri(keyId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/keys/[int keyId](map<string|string[]> headers = {}) returns oas:DeployKey|error {
+        return self.genClient->/repos/[owner]/[repo]/keys/[keyId].get(headers);
     }
 
     # Delete a deploy key
@@ -7477,8 +5661,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/keys/[int keyId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/keys/${getEncodedUri(keyId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/keys/[keyId].delete(headers);
     }
 
     # List labels for a repository
@@ -7488,10 +5671,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/labels(map<string|string[]> headers = {}, *IssuesListLabelsForRepoQueries queries) returns Label[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/labels`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/labels(map<string|string[]> headers = {}, *oas:IssuesListLabelsForRepoQueries queries) returns oas:Label[]|error {
+        return self.genClient->/repos/[owner]/[repo]/labels.get(headers, queries);
     }
 
     # Create a label
@@ -7500,12 +5681,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/labels(RepoLabelsBody payload, map<string|string[]> headers = {}) returns Label|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/labels`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/labels(oas:RepoLabelsBody payload, map<string|string[]> headers = {}) returns oas:Label|error {
+        return self.genClient->/repos/[owner]/[repo]/labels.post(payload, headers);
     }
 
     # Get a label
@@ -7514,9 +5691,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/labels/[string name](map<string|string[]> headers = {}) returns Label|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/labels/${getEncodedUri(name)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/labels/[string name](map<string|string[]> headers = {}) returns oas:Label|error {
+        return self.genClient->/repos/[owner]/[repo]/labels/[name].get(headers);
     }
 
     # Delete a label
@@ -7526,8 +5702,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/labels/[string name](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/labels/${getEncodedUri(name)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/labels/[name].delete(headers);
     }
 
     # Update a label
@@ -7536,12 +5711,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/labels/[string name](LabelsnameBody payload, map<string|string[]> headers = {}) returns Label|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/labels/${getEncodedUri(name)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/labels/[string name](oas:LabelsnameBody payload, map<string|string[]> headers = {}) returns oas:Label|error {
+        return self.genClient->/repos/[owner]/[repo]/labels/[name].patch(payload, headers);
     }
 
     # List repository languages
@@ -7550,9 +5721,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/languages(map<string|string[]> headers = {}) returns Language|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/languages`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/languages(map<string|string[]> headers = {}) returns oas:Language|error {
+        return self.genClient->/repos/[owner]/[repo]/languages.get(headers);
     }
 
     # Get the license for a repository
@@ -7561,9 +5731,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/license(map<string|string[]> headers = {}) returns LicenseContent|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/license`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/license(map<string|string[]> headers = {}) returns oas:LicenseContent|error {
+        return self.genClient->/repos/[owner]/[repo]/license.get(headers);
     }
 
     # Sync a fork branch with the upstream repository
@@ -7572,12 +5741,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - The branch has been successfully synced with the upstream repository 
-    resource isolated function post repos/[string owner]/[string repo]/merge\-upstream(RepoMergeUpstreamBody payload, map<string|string[]> headers = {}) returns MergedUpstream|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/merge-upstream`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/merge\-upstream(oas:RepoMergeUpstreamBody payload, map<string|string[]> headers = {}) returns oas:MergedUpstream|error {
+        return self.genClient->/repos/[owner]/[repo]/merge\-upstream.post(payload, headers);
     }
 
     # Merge a branch
@@ -7586,12 +5751,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Successful Response (The resulting merge commit) 
-    resource isolated function post repos/[string owner]/[string repo]/merges(RepoMergesBody payload, map<string|string[]> headers = {}) returns Commit|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/merges`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/merges(oas:RepoMergesBody payload, map<string|string[]> headers = {}) returns oas:Commit|error? {
+        return self.genClient->/repos/[owner]/[repo]/merges.post(payload, headers);
     }
 
     # List milestones
@@ -7601,10 +5762,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/milestones(map<string|string[]> headers = {}, *IssuesListMilestonesQueries queries) returns Milestone[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/milestones`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/milestones(map<string|string[]> headers = {}, *oas:IssuesListMilestonesQueries queries) returns oas:Milestone[]|error {
+        return self.genClient->/repos/[owner]/[repo]/milestones.get(headers, queries);
     }
 
     # Create a milestone
@@ -7613,12 +5772,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/milestones(RepoMilestonesBody payload, map<string|string[]> headers = {}) returns Milestone|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/milestones`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/milestones(oas:RepoMilestonesBody payload, map<string|string[]> headers = {}) returns oas:Milestone|error {
+        return self.genClient->/repos/[owner]/[repo]/milestones.post(payload, headers);
     }
 
     # Get a milestone
@@ -7628,9 +5783,8 @@ public isolated client class Client {
     # + milestoneNumber - The number that identifies the milestone
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/milestones/[int milestoneNumber](map<string|string[]> headers = {}) returns Milestone|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/milestones/${getEncodedUri(milestoneNumber)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/milestones/[int milestoneNumber](map<string|string[]> headers = {}) returns oas:Milestone|error {
+        return self.genClient->/repos/[owner]/[repo]/milestones/[milestoneNumber].get(headers);
     }
 
     # Delete a milestone
@@ -7641,8 +5795,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/milestones/[int milestoneNumber](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/milestones/${getEncodedUri(milestoneNumber)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/milestones/[milestoneNumber].delete(headers);
     }
 
     # Update a milestone
@@ -7652,12 +5805,8 @@ public isolated client class Client {
     # + milestoneNumber - The number that identifies the milestone
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/milestones/[int milestoneNumber](MilestonesmilestoneNumberBody payload, map<string|string[]> headers = {}) returns Milestone|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/milestones/${getEncodedUri(milestoneNumber)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/milestones/[int milestoneNumber](oas:MilestonesmilestoneNumberBody payload, map<string|string[]> headers = {}) returns oas:Milestone|error {
+        return self.genClient->/repos/[owner]/[repo]/milestones/[milestoneNumber].patch(payload, headers);
     }
 
     # List labels for issues in a milestone
@@ -7668,10 +5817,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/milestones/[int milestoneNumber]/labels(map<string|string[]> headers = {}, *IssuesListLabelsForMilestoneQueries queries) returns Label[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/milestones/${getEncodedUri(milestoneNumber)}/labels`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/milestones/[int milestoneNumber]/labels(map<string|string[]> headers = {}, *oas:IssuesListLabelsForMilestoneQueries queries) returns oas:Label[]|error {
+        return self.genClient->/repos/[owner]/[repo]/milestones/[milestoneNumber]/labels.get(headers, queries);
     }
 
     # List repository notifications for the authenticated user
@@ -7681,10 +5828,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/notifications(map<string|string[]> headers = {}, *ActivityListRepoNotificationsForAuthenticatedUserQueries queries) returns NotificationThread[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/notifications`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/notifications(map<string|string[]> headers = {}, *oas:ActivityListRepoNotificationsForAuthenticatedUserQueries queries) returns oas:NotificationThread[]|error {
+        return self.genClient->/repos/[owner]/[repo]/notifications.get(headers, queries);
     }
 
     # Mark repository notifications as read
@@ -7693,12 +5838,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/notifications(RepoNotificationsBody payload, map<string|string[]> headers = {}) returns NotificationRead|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/notifications`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/notifications(oas:RepoNotificationsBody payload, map<string|string[]> headers = {}) returns oas:NotificationRead|error? {
+        return self.genClient->/repos/[owner]/[repo]/notifications.put(payload, headers);
     }
 
     # Get a GitHub Pages site
@@ -7707,9 +5848,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pages(map<string|string[]> headers = {}) returns Page|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pages`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pages(map<string|string[]> headers = {}) returns oas:Page|error {
+        return self.genClient->/repos/[owner]/[repo]/pages.get(headers);
     }
 
     # Update information about a GitHub Pages site
@@ -7718,12 +5858,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/pages(RepoPagesBody payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pages`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/pages(oas:RepoPagesBody payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repos/[owner]/[repo]/pages.put(payload, headers);
     }
 
     # Create a GitHub Pages site
@@ -7732,12 +5868,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/pages(RepoPagesBody1 payload, map<string|string[]> headers = {}) returns Page|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pages`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pages(oas:RepoPagesBody1 payload, map<string|string[]> headers = {}) returns oas:Page|error {
+        return self.genClient->/repos/[owner]/[repo]/pages.post(payload, headers);
     }
 
     # Delete a GitHub Pages site
@@ -7747,8 +5879,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/pages(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pages`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/pages.delete(headers);
     }
 
     # List GitHub Pages builds
@@ -7758,10 +5889,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pages/builds(map<string|string[]> headers = {}, *ReposListPagesBuildsQueries queries) returns PageBuild[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pages/builds`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pages/builds(map<string|string[]> headers = {}, *oas:ReposListPagesBuildsQueries queries) returns oas:PageBuild[]|error {
+        return self.genClient->/repos/[owner]/[repo]/pages/builds.get(headers, queries);
     }
 
     # Request a GitHub Pages build
@@ -7770,21 +5899,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/pages/builds(map<string|string[]> headers = {}) returns PageBuildStatus|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pages/builds`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Get latest Pages build
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pages/builds/latest(map<string|string[]> headers = {}) returns PageBuild|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pages/builds/latest`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pages/builds(map<string|string[]> headers = {}) returns oas:PageBuildStatus|error {
+        return self.genClient->/repos/[owner]/[repo]/pages/builds.post(headers);
     }
 
     # Get GitHub Pages build
@@ -7793,9 +5909,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pages/builds/[int buildId](map<string|string[]> headers = {}) returns PageBuild|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pages/builds/${getEncodedUri(buildId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pages/builds/[int buildId](map<string|string[]> headers = {}) returns oas:PageBuild|error {
+        return self.genClient->/repos/[owner]/[repo]/pages/builds/[buildId].get(headers);
     }
 
     # Create a GitHub Pages deployment
@@ -7804,12 +5919,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/pages/deployment(PagesDeploymentBody payload, map<string|string[]> headers = {}) returns PageDeployment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pages/deployment`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pages/deployment(oas:PagesDeploymentBody payload, map<string|string[]> headers = {}) returns oas:PageDeployment|error {
+        return self.genClient->/repos/[owner]/[repo]/pages/deployment.post(payload, headers);
     }
 
     # Get a DNS health check for GitHub Pages
@@ -7818,9 +5929,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pages/health(map<string|string[]> headers = {}) returns PagesHealthCheck|EmptyObject|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pages/health`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pages/health(map<string|string[]> headers = {}) returns oas:PagesHealthCheck|oas:EmptyObject|error {
+        return self.genClient->/repos/[owner]/[repo]/pages/health.get(headers);
     }
 
     # Enable private vulnerability reporting for a repository
@@ -7830,9 +5940,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - A header with no content is returned 
     resource isolated function put repos/[string owner]/[string repo]/private\-vulnerability\-reporting(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/private-vulnerability-reporting`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/repos/[owner]/[repo]/private\-vulnerability\-reporting.put(headers);
     }
 
     # Disable private vulnerability reporting for a repository
@@ -7842,35 +5950,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - A header with no content is returned 
     resource isolated function delete repos/[string owner]/[string repo]/private\-vulnerability\-reporting(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/private-vulnerability-reporting`;
-        return self.clientEp->delete(resourcePath, headers = headers);
-    }
-
-    # List repository projects
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/projects(map<string|string[]> headers = {}, *ProjectsListForRepoQueries queries) returns Project[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/projects`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Create a repository project
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/projects(OrgProjectsBody payload, map<string|string[]> headers = {}) returns Project|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/projects`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/repos/[owner]/[repo]/private\-vulnerability\-reporting.delete(headers);
     }
 
     # List pull requests
@@ -7880,10 +5960,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pulls(map<string|string[]> headers = {}, *PullsListQueries queries) returns PullRequestSimple[]|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls(map<string|string[]> headers = {}, *oas:PullsListQueries queries) returns oas:PullRequestSimple[]|error? {
+        return self.genClient->/repos/[owner]/[repo]/pulls.get(headers, queries);
     }
 
     # Create a pull request
@@ -7892,25 +5970,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/pulls(RepoPullsBody payload, map<string|string[]> headers = {}) returns PullRequest|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # List review comments in a repository
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/comments(map<string|string[]> headers = {}, *PullsListReviewCommentsForRepoQueries queries) returns PullRequestReviewComment[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/comments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pulls(oas:RepoPullsBody payload, map<string|string[]> headers = {}) returns oas:PullRequest|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls.post(payload, headers);
     }
 
     # Get a review comment for a pull request
@@ -7920,9 +5981,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/comments/[int commentId](map<string|string[]> headers = {}) returns PullRequestReviewComment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/comments/${getEncodedUri(commentId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls/comments/[int commentId](map<string|string[]> headers = {}) returns oas:PullRequestReviewComment|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/comments/[commentId].get(headers);
     }
 
     # Delete a review comment for a pull request
@@ -7933,8 +5993,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/pulls/comments/[int commentId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/comments/${getEncodedUri(commentId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/pulls/comments/[commentId].delete(headers);
     }
 
     # Update a review comment for a pull request
@@ -7944,12 +6003,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/pulls/comments/[int commentId](CommentscommentIdBody2 payload, map<string|string[]> headers = {}) returns PullRequestReviewComment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/comments/${getEncodedUri(commentId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/pulls/comments/[int commentId](oas:CommentscommentIdBody2 payload, map<string|string[]> headers = {}) returns oas:PullRequestReviewComment|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/comments/[commentId].patch(payload, headers);
     }
 
     # List reactions for a pull request review comment
@@ -7960,10 +6015,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/comments/[int commentId]/reactions(map<string|string[]> headers = {}, *ReactionsListForPullRequestReviewCommentQueries queries) returns Reaction[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/comments/${getEncodedUri(commentId)}/reactions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls/comments/[int commentId]/reactions(map<string|string[]> headers = {}, *oas:ReactionsListForPullRequestReviewCommentQueries queries) returns oas:Reaction[]|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/comments/[commentId]/reactions.get(headers, queries);
     }
 
     # Create reaction for a pull request review comment
@@ -7973,12 +6026,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Reaction exists 
-    resource isolated function post repos/[string owner]/[string repo]/pulls/comments/[int commentId]/reactions(CommentIdReactionsBody2 payload, map<string|string[]> headers = {}) returns Reaction|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/comments/${getEncodedUri(commentId)}/reactions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pulls/comments/[int commentId]/reactions(oas:CommentIdReactionsBody2 payload, map<string|string[]> headers = {}) returns oas:Reaction|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/comments/[commentId]/reactions.post(payload, headers);
     }
 
     # Delete a pull request comment reaction
@@ -7990,8 +6039,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/pulls/comments/[int commentId]/reactions/[int reactionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/comments/${getEncodedUri(commentId)}/reactions/${getEncodedUri(reactionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/pulls/comments/[commentId]/reactions/[reactionId].delete(headers);
     }
 
     # Get a pull request
@@ -8001,9 +6049,8 @@ public isolated client class Client {
     # + pullNumber - The number that identifies the pull request
     # + headers - Headers to be sent with the request 
     # + return - Pass the appropriate [media type](https://docs.github.com/rest/overview/media-types/#commits-commit-comparison-and-pull-requests) to fetch diff and patch formats 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber](map<string|string[]> headers = {}) returns PullRequest|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber](map<string|string[]> headers = {}) returns oas:PullRequest|error? {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber].get(headers);
     }
 
     # Update a pull request
@@ -8013,12 +6060,8 @@ public isolated client class Client {
     # + pullNumber - The number that identifies the pull request
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/pulls/[int pullNumber](PullspullNumberBody payload, map<string|string[]> headers = {}) returns PullRequest|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/pulls/[int pullNumber](oas:PullspullNumberBody payload, map<string|string[]> headers = {}) returns oas:PullRequest|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber].patch(payload, headers);
     }
 
     # Create a codespace from a pull request
@@ -8028,12 +6071,8 @@ public isolated client class Client {
     # + pullNumber - The number that identifies the pull request
     # + headers - Headers to be sent with the request 
     # + return - Response when the codespace was successfully created 
-    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/codespaces(PullNumberCodespacesBody payload, map<string|string[]> headers = {}) returns Codespace|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/codespaces`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/codespaces(oas:PullNumberCodespacesBody payload, map<string|string[]> headers = {}) returns oas:Codespace|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/codespaces.post(payload, headers);
     }
 
     # List review comments on a pull request
@@ -8044,10 +6083,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/comments(map<string|string[]> headers = {}, *PullsListReviewCommentsQueries queries) returns PullRequestReviewComment[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/comments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/comments(map<string|string[]> headers = {}, *oas:PullsListReviewCommentsQueries queries) returns oas:PullRequestReviewComment[]|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/comments.get(headers, queries);
     }
 
     # Create a review comment for a pull request
@@ -8057,12 +6094,8 @@ public isolated client class Client {
     # + pullNumber - The number that identifies the pull request
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/comments(PullNumberCommentsBody payload, map<string|string[]> headers = {}) returns PullRequestReviewComment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/comments`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/comments(oas:PullNumberCommentsBody payload, map<string|string[]> headers = {}) returns oas:PullRequestReviewComment|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/comments.post(payload, headers);
     }
 
     # Create a reply for a review comment
@@ -8073,12 +6106,8 @@ public isolated client class Client {
     # + commentId - The unique identifier of the comment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/comments/[int commentId]/replies(CommentIdRepliesBody payload, map<string|string[]> headers = {}) returns PullRequestReviewComment|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/comments/${getEncodedUri(commentId)}/replies`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/comments/[int commentId]/replies(oas:CommentIdRepliesBody payload, map<string|string[]> headers = {}) returns oas:PullRequestReviewComment|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/comments/[commentId]/replies.post(payload, headers);
     }
 
     # List commits on a pull request
@@ -8089,10 +6118,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/commits(map<string|string[]> headers = {}, *PullsListCommitsQueries queries) returns Commit[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/commits`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/commits(map<string|string[]> headers = {}, *oas:PullsListCommitsQueries queries) returns oas:Commit[]|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/commits.get(headers, queries);
     }
 
     # List pull requests files
@@ -8103,10 +6130,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/files(map<string|string[]> headers = {}, *PullsListFilesQueries queries) returns DiffEntry[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/files`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/files(map<string|string[]> headers = {}, *oas:PullsListFilesQueries queries) returns oas:DiffEntry[]|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/files.get(headers, queries);
     }
 
     # Check if a pull request has been merged
@@ -8117,8 +6142,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response if pull request has been merged 
     resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/merge(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/merge`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/merge.get(headers);
     }
 
     # Merge a pull request
@@ -8128,12 +6152,8 @@ public isolated client class Client {
     # + pullNumber - The number that identifies the pull request
     # + headers - Headers to be sent with the request 
     # + return - if merge was successful 
-    resource isolated function put repos/[string owner]/[string repo]/pulls/[int pullNumber]/merge(PullNumberMergeBody payload, map<string|string[]> headers = {}) returns PullRequestMergeResult|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/merge`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/pulls/[int pullNumber]/merge(oas:PullNumberMergeBody payload, map<string|string[]> headers = {}) returns oas:PullRequestMergeResult|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/merge.put(payload, headers);
     }
 
     # Get all requested reviewers for a pull request
@@ -8143,9 +6163,8 @@ public isolated client class Client {
     # + pullNumber - The number that identifies the pull request
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/requested_reviewers(map<string|string[]> headers = {}) returns PullRequestReviewRequest|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/requested_reviewers`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/requested_reviewers(map<string|string[]> headers = {}) returns oas:PullRequestReviewRequest|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/requested_reviewers.get(headers);
     }
 
     # Request reviewers for a pull request
@@ -8155,12 +6174,8 @@ public isolated client class Client {
     # + pullNumber - The number that identifies the pull request
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/requested_reviewers(PullNumberRequestedReviewersBody payload, map<string|string[]> headers = {}) returns PullRequestSimple|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/requested_reviewers`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/requested_reviewers(oas:PullNumberRequestedReviewersBody payload, map<string|string[]> headers = {}) returns oas:PullRequestSimple|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/requested_reviewers.post(payload, headers);
     }
 
     # Remove requested reviewers from a pull request
@@ -8170,12 +6185,8 @@ public isolated client class Client {
     # + pullNumber - The number that identifies the pull request
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/pulls/[int pullNumber]/requested_reviewers(PullNumberRequestedReviewersBody1 payload, map<string|string[]> headers = {}) returns PullRequestSimple|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/requested_reviewers`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete repos/[string owner]/[string repo]/pulls/[int pullNumber]/requested_reviewers(oas:PullNumberRequestedReviewersBody1 payload, map<string|string[]> headers = {}) returns oas:PullRequestSimple|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/requested_reviewers.delete(payload, headers);
     }
 
     # List reviews for a pull request
@@ -8186,10 +6197,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - The list of reviews returns in chronological order 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews(map<string|string[]> headers = {}, *PullsListReviewsQueries queries) returns PullRequestReview[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/reviews`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews(map<string|string[]> headers = {}, *oas:PullsListReviewsQueries queries) returns oas:PullRequestReview[]|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/reviews.get(headers, queries);
     }
 
     # Create a review for a pull request
@@ -8199,12 +6208,8 @@ public isolated client class Client {
     # + pullNumber - The number that identifies the pull request
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews(PullNumberReviewsBody payload, map<string|string[]> headers = {}) returns PullRequestReview|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/reviews`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews(oas:PullNumberReviewsBody payload, map<string|string[]> headers = {}) returns oas:PullRequestReview|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/reviews.post(payload, headers);
     }
 
     # Get a review for a pull request
@@ -8215,9 +6220,8 @@ public isolated client class Client {
     # + reviewId - The unique identifier of the review
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId](map<string|string[]> headers = {}) returns PullRequestReview|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/reviews/${getEncodedUri(reviewId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId](map<string|string[]> headers = {}) returns oas:PullRequestReview|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/reviews/[reviewId].get(headers);
     }
 
     # Update a review for a pull request
@@ -8228,12 +6232,8 @@ public isolated client class Client {
     # + reviewId - The unique identifier of the review
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId](ReviewsreviewIdBody payload, map<string|string[]> headers = {}) returns PullRequestReview|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/reviews/${getEncodedUri(reviewId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId](oas:ReviewsreviewIdBody payload, map<string|string[]> headers = {}) returns oas:PullRequestReview|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/reviews/[reviewId].put(payload, headers);
     }
 
     # Delete a pending review for a pull request
@@ -8244,9 +6244,8 @@ public isolated client class Client {
     # + reviewId - The unique identifier of the review
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId](map<string|string[]> headers = {}) returns PullRequestReview|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/reviews/${getEncodedUri(reviewId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+    resource isolated function delete repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId](map<string|string[]> headers = {}) returns oas:PullRequestReview|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/reviews/[reviewId].delete(headers);
     }
 
     # List comments for a pull request review
@@ -8258,10 +6257,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId]/comments(map<string|string[]> headers = {}, *PullsListCommentsForReviewQueries queries) returns ReviewComment[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/reviews/${getEncodedUri(reviewId)}/comments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId]/comments(map<string|string[]> headers = {}, *oas:PullsListCommentsForReviewQueries queries) returns oas:ReviewComment[]|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/reviews/[reviewId]/comments.get(headers, queries);
     }
 
     # Dismiss a review for a pull request
@@ -8272,12 +6269,8 @@ public isolated client class Client {
     # + reviewId - The unique identifier of the review
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId]/dismissals(ReviewIdDismissalsBody payload, map<string|string[]> headers = {}) returns PullRequestReview|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/reviews/${getEncodedUri(reviewId)}/dismissals`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId]/dismissals(oas:ReviewIdDismissalsBody payload, map<string|string[]> headers = {}) returns oas:PullRequestReview|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/reviews/[reviewId]/dismissals.put(payload, headers);
     }
 
     # Submit a review for a pull request
@@ -8288,12 +6281,8 @@ public isolated client class Client {
     # + reviewId - The unique identifier of the review
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId]/events(ReviewIdEventsBody payload, map<string|string[]> headers = {}) returns PullRequestReview|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/reviews/${getEncodedUri(reviewId)}/events`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/reviews/[int reviewId]/events(oas:ReviewIdEventsBody payload, map<string|string[]> headers = {}) returns oas:PullRequestReview|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/reviews/[reviewId]/events.post(payload, headers);
     }
 
     # Update a pull request branch
@@ -8303,12 +6292,8 @@ public isolated client class Client {
     # + pullNumber - The number that identifies the pull request
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/pulls/[int pullNumber]/update\-branch(PullNumberUpdateBranchBody payload, map<string|string[]> headers = {}) returns NotificationRead|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/pulls/${getEncodedUri(pullNumber)}/update-branch`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/pulls/[int pullNumber]/update\-branch(oas:PullNumberUpdateBranchBody payload, map<string|string[]> headers = {}) returns oas:NotificationRead|error {
+        return self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/update\-branch.put(payload, headers);
     }
 
     # Get a repository README
@@ -8318,10 +6303,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/readme(map<string|string[]> headers = {}, *ReposGetReadmeQueries queries) returns ContentFile|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/readme`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/readme(map<string|string[]> headers = {}, *oas:ReposGetReadmeQueries queries) returns oas:ContentFile|error {
+        return self.genClient->/repos/[owner]/[repo]/readme.get(headers, queries);
     }
 
     # Get a repository README for a directory
@@ -8332,10 +6315,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/readme/[string dir](map<string|string[]> headers = {}, *ReposGetReadmeInDirectoryQueries queries) returns ContentFile|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/readme/${getEncodedUri(dir)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/readme/[string dir](map<string|string[]> headers = {}, *oas:ReposGetReadmeInDirectoryQueries queries) returns oas:ContentFile|error {
+        return self.genClient->/repos/[owner]/[repo]/readme/[dir].get(headers, queries);
     }
 
     # List releases
@@ -8345,10 +6326,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/releases(map<string|string[]> headers = {}, *ReposListReleasesQueries queries) returns Release[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/releases(map<string|string[]> headers = {}, *oas:ReposListReleasesQueries queries) returns oas:Release[]|error {
+        return self.genClient->/repos/[owner]/[repo]/releases.get(headers, queries);
     }
 
     # Create a release
@@ -8357,12 +6336,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/releases(RepoReleasesBody payload, map<string|string[]> headers = {}) returns Release|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/releases(oas:RepoReleasesBody payload, map<string|string[]> headers = {}) returns oas:Release|error {
+        return self.genClient->/repos/[owner]/[repo]/releases.post(payload, headers);
     }
 
     # Get a release asset
@@ -8372,9 +6347,8 @@ public isolated client class Client {
     # + assetId - The unique identifier of the asset
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/releases/assets/[int assetId](map<string|string[]> headers = {}) returns ReleaseAsset|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/assets/${getEncodedUri(assetId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/releases/assets/[int assetId](map<string|string[]> headers = {}) returns oas:ReleaseAsset|error? {
+        return self.genClient->/repos/[owner]/[repo]/releases/assets/[assetId].get(headers);
     }
 
     # Delete a release asset
@@ -8385,8 +6359,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/releases/assets/[int assetId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/assets/${getEncodedUri(assetId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/releases/assets/[assetId].delete(headers);
     }
 
     # Update a release asset
@@ -8396,37 +6369,8 @@ public isolated client class Client {
     # + assetId - The unique identifier of the asset
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/releases/assets/[int assetId](AssetsassetIdBody payload, map<string|string[]> headers = {}) returns ReleaseAsset|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/assets/${getEncodedUri(assetId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
-    }
-
-    # Generate release notes content for a release
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Name and body of generated release notes 
-    resource isolated function post repos/[string owner]/[string repo]/releases/generate\-notes(ReleasesGenerateNotesBody payload, map<string|string[]> headers = {}) returns ReleaseNotesContent|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/generate-notes`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Get the latest release
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/releases/latest(map<string|string[]> headers = {}) returns Release|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/latest`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/releases/assets/[int assetId](oas:AssetsassetIdBody payload, map<string|string[]> headers = {}) returns oas:ReleaseAsset|error {
+        return self.genClient->/repos/[owner]/[repo]/releases/assets/[assetId].patch(payload, headers);
     }
 
     # Get a release by tag name
@@ -8436,9 +6380,8 @@ public isolated client class Client {
     # + tag - tag parameter
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/releases/tags/[string tag](map<string|string[]> headers = {}) returns Release|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/tags/${getEncodedUri(tag)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/releases/tags/[string tag](map<string|string[]> headers = {}) returns oas:Release|error {
+        return self.genClient->/repos/[owner]/[repo]/releases/tags/[tag].get(headers);
     }
 
     # Get a release
@@ -8448,9 +6391,8 @@ public isolated client class Client {
     # + releaseId - The unique identifier of the release
     # + headers - Headers to be sent with the request 
     # + return - **Note:** This returns an upload_url key corresponding to the endpoint for uploading release assets. This key is a [hypermedia resource](https://docs.github.com/rest/overview/resources-in-the-rest-api#hypermedia) 
-    resource isolated function get repos/[string owner]/[string repo]/releases/[int releaseId](map<string|string[]> headers = {}) returns Release|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/${getEncodedUri(releaseId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/releases/[int releaseId](map<string|string[]> headers = {}) returns oas:Release|error {
+        return self.genClient->/repos/[owner]/[repo]/releases/[releaseId].get(headers);
     }
 
     # Delete a release
@@ -8461,8 +6403,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/releases/[int releaseId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/${getEncodedUri(releaseId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/releases/[releaseId].delete(headers);
     }
 
     # Update a release
@@ -8472,12 +6413,8 @@ public isolated client class Client {
     # + releaseId - The unique identifier of the release
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/releases/[int releaseId](ReleasesreleaseIdBody payload, map<string|string[]> headers = {}) returns Release|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/${getEncodedUri(releaseId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/releases/[int releaseId](oas:ReleasesreleaseIdBody payload, map<string|string[]> headers = {}) returns oas:Release|error {
+        return self.genClient->/repos/[owner]/[repo]/releases/[releaseId].patch(payload, headers);
     }
 
     # List release assets
@@ -8488,10 +6425,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/releases/[int releaseId]/assets(map<string|string[]> headers = {}, *ReposListReleaseAssetsQueries queries) returns ReleaseAsset[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/${getEncodedUri(releaseId)}/assets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/releases/[int releaseId]/assets(map<string|string[]> headers = {}, *oas:ReposListReleaseAssetsQueries queries) returns oas:ReleaseAsset[]|error {
+        return self.genClient->/repos/[owner]/[repo]/releases/[releaseId]/assets.get(headers, queries);
     }
 
     # Upload a release asset
@@ -8502,12 +6437,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response for successful upload 
-    resource isolated function post repos/[string owner]/[string repo]/releases/[int releaseId]/assets(byte[] payload, map<string|string[]> headers = {}, *ReposUploadReleaseAssetQueries queries) returns ReleaseAsset|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/${getEncodedUri(releaseId)}/assets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        http:Request request = new;
-        request.setPayload(payload, "application/octet-stream");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/releases/[int releaseId]/assets(byte[] payload, map<string|string[]> headers = {}, *oas:ReposUploadReleaseAssetQueries queries) returns oas:ReleaseAsset|error {
+        return self.genClient->/repos/[owner]/[repo]/releases/[releaseId]/assets.post(payload, headers, queries);
     }
 
     # List reactions for a release
@@ -8518,10 +6449,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/releases/[int releaseId]/reactions(map<string|string[]> headers = {}, *ReactionsListForReleaseQueries queries) returns Reaction[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/${getEncodedUri(releaseId)}/reactions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/releases/[int releaseId]/reactions(map<string|string[]> headers = {}, *oas:ReactionsListForReleaseQueries queries) returns oas:Reaction[]|error {
+        return self.genClient->/repos/[owner]/[repo]/releases/[releaseId]/reactions.get(headers, queries);
     }
 
     # Create reaction for a release
@@ -8531,12 +6460,8 @@ public isolated client class Client {
     # + releaseId - The unique identifier of the release
     # + headers - Headers to be sent with the request 
     # + return - Reaction exists 
-    resource isolated function post repos/[string owner]/[string repo]/releases/[int releaseId]/reactions(ReleaseIdReactionsBody payload, map<string|string[]> headers = {}) returns Reaction|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/${getEncodedUri(releaseId)}/reactions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/releases/[int releaseId]/reactions(oas:ReleaseIdReactionsBody payload, map<string|string[]> headers = {}) returns oas:Reaction|error {
+        return self.genClient->/repos/[owner]/[repo]/releases/[releaseId]/reactions.post(payload, headers);
     }
 
     # Delete a release reaction
@@ -8548,8 +6473,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/releases/[int releaseId]/reactions/[int reactionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/releases/${getEncodedUri(releaseId)}/reactions/${getEncodedUri(reactionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/releases/[releaseId]/reactions/[reactionId].delete(headers);
     }
 
     # Get rules for a branch
@@ -8560,10 +6484,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/rules/branches/[string branch](map<string|string[]> headers = {}, *ReposGetBranchRulesQueries queries) returns RepositoryRuleDetailed[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/rules/branches/${getEncodedUri(branch)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/rules/branches/[string branch](map<string|string[]> headers = {}, *oas:ReposGetBranchRulesQueries queries) returns oas:RepositoryRuleDetailed[]|error {
+        return self.genClient->/repos/[owner]/[repo]/rules/branches/[branch].get(headers, queries);
     }
 
     # Get all repository rulesets
@@ -8573,10 +6495,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/rulesets(map<string|string[]> headers = {}, *ReposGetRepoRulesetsQueries queries) returns RepositoryRuleset[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/rulesets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/rulesets(map<string|string[]> headers = {}, *oas:ReposGetRepoRulesetsQueries queries) returns oas:RepositoryRuleset[]|error {
+        return self.genClient->/repos/[owner]/[repo]/rulesets.get(headers, queries);
     }
 
     # Create a repository ruleset
@@ -8586,25 +6506,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + payload - Request body 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/rulesets(RepoRulesetsBody payload, map<string|string[]> headers = {}) returns RepositoryRuleset|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/rulesets`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # List repository rule suites
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/rulesets/rule\-suites(map<string|string[]> headers = {}, *ReposGetRepoRuleSuitesQueries queries) returns RuleSuites|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/rulesets/rule-suites`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function post repos/[string owner]/[string repo]/rulesets(oas:RepoRulesetsBody payload, map<string|string[]> headers = {}) returns oas:RepositoryRuleset|error {
+        return self.genClient->/repos/[owner]/[repo]/rulesets.post(payload, headers);
     }
 
     # Get a repository rule suite
@@ -8617,9 +6520,8 @@ public isolated client class Client {
     # for organizations
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/rulesets/rule\-suites/[int ruleSuiteId](map<string|string[]> headers = {}) returns RuleSuite|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/rulesets/rule-suites/${getEncodedUri(ruleSuiteId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/rulesets/rule\-suites/[int ruleSuiteId](map<string|string[]> headers = {}) returns oas:RuleSuite|error {
+        return self.genClient->/repos/[owner]/[repo]/rulesets/rule\-suites/[ruleSuiteId].get(headers);
     }
 
     # Get a repository ruleset
@@ -8630,10 +6532,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/rulesets/[int rulesetId](map<string|string[]> headers = {}, *ReposGetRepoRulesetQueries queries) returns RepositoryRuleset|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/rulesets/${getEncodedUri(rulesetId)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/rulesets/[int rulesetId](map<string|string[]> headers = {}, *oas:ReposGetRepoRulesetQueries queries) returns oas:RepositoryRuleset|error {
+        return self.genClient->/repos/[owner]/[repo]/rulesets/[rulesetId].get(headers, queries);
     }
 
     # Update a repository ruleset
@@ -8644,12 +6544,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + payload - Request body 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/rulesets/[int rulesetId](RulesetsrulesetIdBody1 payload, map<string|string[]> headers = {}) returns RepositoryRuleset|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/rulesets/${getEncodedUri(rulesetId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/rulesets/[int rulesetId](oas:RulesetsrulesetIdBody1 payload, map<string|string[]> headers = {}) returns oas:RepositoryRuleset|error {
+        return self.genClient->/repos/[owner]/[repo]/rulesets/[rulesetId].put(payload, headers);
     }
 
     # Delete a repository ruleset
@@ -8660,8 +6556,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/rulesets/[int rulesetId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/rulesets/${getEncodedUri(rulesetId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/rulesets/[rulesetId].delete(headers);
     }
 
     # List secret scanning alerts for a repository
@@ -8671,10 +6566,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/secret\-scanning/alerts(map<string|string[]> headers = {}, *SecretScanningListAlertsForRepoQueries queries) returns SecretScanningAlert[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/secret-scanning/alerts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/secret\-scanning/alerts(map<string|string[]> headers = {}, *oas:SecretScanningListAlertsForRepoQueries queries) returns oas:SecretScanningAlert[]|error {
+        return self.genClient->/repos/[owner]/[repo]/secret\-scanning/alerts.get(headers, queries);
     }
 
     # Get a secret scanning alert
@@ -8684,9 +6577,8 @@ public isolated client class Client {
     # + alertNumber - The number that identifies an alert. You can find this at the end of the URL for a code scanning alert within GitHub, and in the number field in the response from the GET /repos/{owner}/{repo}/code-scanning/alerts operation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/secret\-scanning/alerts/[AlertNumber alertNumber](map<string|string[]> headers = {}) returns SecretScanningAlert|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/secret-scanning/alerts/${getEncodedUri(alertNumber)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/secret\-scanning/alerts/[oas:AlertNumber alertNumber](map<string|string[]> headers = {}) returns oas:SecretScanningAlert|error? {
+        return self.genClient->/repos/[owner]/[repo]/secret\-scanning/alerts/[alertNumber].get(headers);
     }
 
     # Update a secret scanning alert
@@ -8696,12 +6588,8 @@ public isolated client class Client {
     # + alertNumber - The number that identifies an alert. You can find this at the end of the URL for a code scanning alert within GitHub, and in the number field in the response from the GET /repos/{owner}/{repo}/code-scanning/alerts operation
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/secret\-scanning/alerts/[AlertNumber alertNumber](AlertsalertNumberBody2 payload, map<string|string[]> headers = {}) returns SecretScanningAlert|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/secret-scanning/alerts/${getEncodedUri(alertNumber)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/secret\-scanning/alerts/[oas:AlertNumber alertNumber](oas:AlertsalertNumberBody2 payload, map<string|string[]> headers = {}) returns oas:SecretScanningAlert|error {
+        return self.genClient->/repos/[owner]/[repo]/secret\-scanning/alerts/[alertNumber].patch(payload, headers);
     }
 
     # List locations for a secret scanning alert
@@ -8712,10 +6600,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/secret\-scanning/alerts/[AlertNumber alertNumber]/locations(map<string|string[]> headers = {}, *SecretScanningListLocationsForAlertQueries queries) returns SecretScanningLocation[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/secret-scanning/alerts/${getEncodedUri(alertNumber)}/locations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/secret\-scanning/alerts/[oas:AlertNumber alertNumber]/locations(map<string|string[]> headers = {}, *oas:SecretScanningListLocationsForAlertQueries queries) returns oas:SecretScanningLocation[]|error {
+        return self.genClient->/repos/[owner]/[repo]/secret\-scanning/alerts/[alertNumber]/locations.get(headers, queries);
     }
 
     # List repository security advisories
@@ -8725,10 +6611,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/security\-advisories(map<string|string[]> headers = {}, *SecurityAdvisoriesListRepositoryAdvisoriesQueries queries) returns RepositoryAdvisory[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/security-advisories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/security\-advisories(map<string|string[]> headers = {}, *oas:SecurityAdvisoriesListRepositoryAdvisoriesQueries queries) returns oas:RepositoryAdvisory[]|error {
+        return self.genClient->/repos/[owner]/[repo]/security\-advisories.get(headers, queries);
     }
 
     # Create a repository security advisory
@@ -8737,26 +6621,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/security\-advisories(RepositoryAdvisoryCreate payload, map<string|string[]> headers = {}) returns RepositoryAdvisory|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/security-advisories`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Privately report a security vulnerability
-    #
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/security\-advisories/reports(PrivateVulnerabilityReportCreate payload, map<string|string[]> headers = {}) returns RepositoryAdvisory|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/security-advisories/reports`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/security\-advisories(oas:RepositoryAdvisoryCreate payload, map<string|string[]> headers = {}) returns oas:RepositoryAdvisory|error {
+        return self.genClient->/repos/[owner]/[repo]/security\-advisories.post(payload, headers);
     }
 
     # Get a repository security advisory
@@ -8766,9 +6632,8 @@ public isolated client class Client {
     # + ghsaId - The GHSA (GitHub Security Advisory) identifier of the advisory
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/security\-advisories/[string ghsaId](map<string|string[]> headers = {}) returns RepositoryAdvisory|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/security-advisories/${getEncodedUri(ghsaId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/security\-advisories/[string ghsaId](map<string|string[]> headers = {}) returns oas:RepositoryAdvisory|error {
+        return self.genClient->/repos/[owner]/[repo]/security\-advisories/[ghsaId].get(headers);
     }
 
     # Update a repository security advisory
@@ -8778,12 +6643,8 @@ public isolated client class Client {
     # + ghsaId - The GHSA (GitHub Security Advisory) identifier of the advisory
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repos/[string owner]/[string repo]/security\-advisories/[string ghsaId](RepositoryAdvisoryUpdate payload, map<string|string[]> headers = {}) returns RepositoryAdvisory|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/security-advisories/${getEncodedUri(ghsaId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repos/[string owner]/[string repo]/security\-advisories/[string ghsaId](oas:RepositoryAdvisoryUpdate payload, map<string|string[]> headers = {}) returns oas:RepositoryAdvisory|error {
+        return self.genClient->/repos/[owner]/[repo]/security\-advisories/[ghsaId].patch(payload, headers);
     }
 
     # Request a CVE for a repository security advisory
@@ -8794,9 +6655,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Accepted 
     resource isolated function post repos/[string owner]/[string repo]/security\-advisories/[string ghsaId]/cve(map<string|string[]> headers = {}) returns record {}|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/security-advisories/${getEncodedUri(ghsaId)}/cve`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/repos/[owner]/[repo]/security\-advisories/[ghsaId]/cve.post(headers);
     }
 
     # List stargazers
@@ -8806,10 +6665,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/stargazers(map<string|string[]> headers = {}, *ActivityListStargazersForRepoQueries queries) returns StargazerResponse|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/stargazers`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/stargazers(map<string|string[]> headers = {}, *oas:ActivityListStargazersForRepoQueries queries) returns oas:StargazerResponse|error {
+        return self.genClient->/repos/[owner]/[repo]/stargazers.get(headers, queries);
     }
 
     # Get the weekly commit activity
@@ -8818,9 +6675,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Returns a weekly aggregate of the number of additions and deletions pushed to a repository 
-    resource isolated function get repos/[string owner]/[string repo]/stats/code_frequency(map<string|string[]> headers = {}) returns CodeFrequencyStat[]|record {}|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/stats/code_frequency`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/stats/code_frequency(map<string|string[]> headers = {}) returns oas:CodeFrequencyStat[]|record {}|error? {
+        return self.genClient->/repos/[owner]/[repo]/stats/code_frequency.get(headers);
     }
 
     # Get the last year of commit activity
@@ -8829,9 +6685,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/stats/commit_activity(map<string|string[]> headers = {}) returns CommitActivity[]|record {}|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/stats/commit_activity`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/stats/commit_activity(map<string|string[]> headers = {}) returns oas:CommitActivity[]|record {}|error? {
+        return self.genClient->/repos/[owner]/[repo]/stats/commit_activity.get(headers);
     }
 
     # Get all contributor commit activity
@@ -8840,9 +6695,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/stats/contributors(map<string|string[]> headers = {}) returns ContributorActivity[]|record {}|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/stats/contributors`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/stats/contributors(map<string|string[]> headers = {}) returns oas:ContributorActivity[]|record {}|error? {
+        return self.genClient->/repos/[owner]/[repo]/stats/contributors.get(headers);
     }
 
     # Get the weekly commit count
@@ -8851,9 +6705,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - The array order is oldest week (index 0) to most recent week 
-    resource isolated function get repos/[string owner]/[string repo]/stats/participation(map<string|string[]> headers = {}) returns ParticipationStats|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/stats/participation`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/stats/participation(map<string|string[]> headers = {}) returns oas:ParticipationStats|error {
+        return self.genClient->/repos/[owner]/[repo]/stats/participation.get(headers);
     }
 
     # Get the hourly commit count for each day
@@ -8862,9 +6715,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - For example, [2, 14, 25] indicates that there were 25 total commits, during the 2:00pm hour on Tuesdays. All times are based on the time zone of individual commits 
-    resource isolated function get repos/[string owner]/[string repo]/stats/punch_card(map<string|string[]> headers = {}) returns CodeFrequencyStat[]|error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/stats/punch_card`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/stats/punch_card(map<string|string[]> headers = {}) returns oas:CodeFrequencyStat[]|error? {
+        return self.genClient->/repos/[owner]/[repo]/stats/punch_card.get(headers);
     }
 
     # Create a commit status
@@ -8873,12 +6725,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/statuses/[string sha](StatusesshaBody payload, map<string|string[]> headers = {}) returns Status|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/statuses/${getEncodedUri(sha)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/statuses/[string sha](oas:StatusesshaBody payload, map<string|string[]> headers = {}) returns oas:Status|error {
+        return self.genClient->/repos/[owner]/[repo]/statuses/[sha].post(payload, headers);
     }
 
     # List watchers
@@ -8888,10 +6736,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/subscribers(map<string|string[]> headers = {}, *ActivityListWatchersForRepoQueries queries) returns SimpleUser[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/subscribers`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/subscribers(map<string|string[]> headers = {}, *oas:ActivityListWatchersForRepoQueries queries) returns oas:SimpleUser[]|error {
+        return self.genClient->/repos/[owner]/[repo]/subscribers.get(headers, queries);
     }
 
     # Get a repository subscription
@@ -8900,9 +6746,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - if you subscribe to the repository 
-    resource isolated function get repos/[string owner]/[string repo]/subscription(map<string|string[]> headers = {}) returns RepositorySubscription|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/subscription`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/subscription(map<string|string[]> headers = {}) returns oas:RepositorySubscription|error {
+        return self.genClient->/repos/[owner]/[repo]/subscription.get(headers);
     }
 
     # Set a repository subscription
@@ -8911,12 +6756,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/subscription(RepoSubscriptionBody payload, map<string|string[]> headers = {}) returns RepositorySubscription|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/subscription`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/subscription(oas:RepoSubscriptionBody payload, map<string|string[]> headers = {}) returns oas:RepositorySubscription|error {
+        return self.genClient->/repos/[owner]/[repo]/subscription.put(payload, headers);
     }
 
     # Delete a repository subscription
@@ -8926,8 +6767,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/subscription(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/subscription`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/subscription.delete(headers);
     }
 
     # List repository tags
@@ -8937,10 +6777,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/tags(map<string|string[]> headers = {}, *ReposListTagsQueries queries) returns Tag[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/tags`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/tags(map<string|string[]> headers = {}, *oas:ReposListTagsQueries queries) returns oas:Tag[]|error {
+        return self.genClient->/repos/[owner]/[repo]/tags.get(headers, queries);
     }
 
     # List tag protection states for a repository
@@ -8949,9 +6787,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/tags/protection(map<string|string[]> headers = {}) returns TagProtection[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/tags/protection`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/tags/protection(map<string|string[]> headers = {}) returns oas:TagProtection[]|error {
+        return self.genClient->/repos/[owner]/[repo]/tags/protection.get(headers);
     }
 
     # Create a tag protection state for a repository
@@ -8960,12 +6797,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/tags/protection(TagsProtectionBody payload, map<string|string[]> headers = {}) returns TagProtection|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/tags/protection`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/tags/protection(oas:TagsProtectionBody payload, map<string|string[]> headers = {}) returns oas:TagProtection|error {
+        return self.genClient->/repos/[owner]/[repo]/tags/protection.post(payload, headers);
     }
 
     # Delete a tag protection state for a repository
@@ -8976,8 +6809,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/tags/protection/[int tagProtectionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/tags/protection/${getEncodedUri(tagProtectionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/tags/protection/[tagProtectionId].delete(headers);
     }
 
     # Download a repository archive (tar)
@@ -8987,8 +6819,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get repos/[string owner]/[string repo]/tarball/[string ref](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/tarball/${getEncodedUri(ref)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/tarball/[ref].get(headers);
     }
 
     # List repository teams
@@ -8998,10 +6829,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/teams(map<string|string[]> headers = {}, *ReposListTeamsQueries queries) returns Team[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/teams`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/teams(map<string|string[]> headers = {}, *oas:ReposListTeamsQueries queries) returns oas:Team[]|error {
+        return self.genClient->/repos/[owner]/[repo]/teams.get(headers, queries);
     }
 
     # Get all repository topics
@@ -9011,10 +6840,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/topics(map<string|string[]> headers = {}, *ReposGetAllTopicsQueries queries) returns Topic|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/topics`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/topics(map<string|string[]> headers = {}, *oas:ReposGetAllTopicsQueries queries) returns oas:Topic|error {
+        return self.genClient->/repos/[owner]/[repo]/topics.get(headers, queries);
     }
 
     # Replace all repository topics
@@ -9023,12 +6850,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put repos/[string owner]/[string repo]/topics(RepoTopicsBody payload, map<string|string[]> headers = {}) returns Topic|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/topics`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repos/[string owner]/[string repo]/topics(oas:RepoTopicsBody payload, map<string|string[]> headers = {}) returns oas:Topic|error {
+        return self.genClient->/repos/[owner]/[repo]/topics.put(payload, headers);
     }
 
     # Get repository clones
@@ -9038,10 +6861,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/traffic/clones(map<string|string[]> headers = {}, *ReposGetClonesQueries queries) returns CloneTraffic|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/traffic/clones`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/traffic/clones(map<string|string[]> headers = {}, *oas:ReposGetClonesQueries queries) returns oas:CloneTraffic|error {
+        return self.genClient->/repos/[owner]/[repo]/traffic/clones.get(headers, queries);
     }
 
     # Get top referral paths
@@ -9050,9 +6871,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/traffic/popular/paths(map<string|string[]> headers = {}) returns ContentTraffic[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/traffic/popular/paths`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/traffic/popular/paths(map<string|string[]> headers = {}) returns oas:ContentTraffic[]|error {
+        return self.genClient->/repos/[owner]/[repo]/traffic/popular/paths.get(headers);
     }
 
     # Get top referral sources
@@ -9061,9 +6881,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/traffic/popular/referrers(map<string|string[]> headers = {}) returns ReferrerTraffic[]|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/traffic/popular/referrers`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/traffic/popular/referrers(map<string|string[]> headers = {}) returns oas:ReferrerTraffic[]|error {
+        return self.genClient->/repos/[owner]/[repo]/traffic/popular/referrers.get(headers);
     }
 
     # Get page views
@@ -9073,10 +6892,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repos/[string owner]/[string repo]/traffic/views(map<string|string[]> headers = {}, *ReposGetViewsQueries queries) returns ViewTraffic|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/traffic/views`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repos/[string owner]/[string repo]/traffic/views(map<string|string[]> headers = {}, *oas:ReposGetViewsQueries queries) returns oas:ViewTraffic|error {
+        return self.genClient->/repos/[owner]/[repo]/traffic/views.get(headers, queries);
     }
 
     # Transfer a repository
@@ -9085,12 +6902,8 @@ public isolated client class Client {
     # + repo - The name of the repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string owner]/[string repo]/transfer(RepoTransferBody payload, map<string|string[]> headers = {}) returns MinimalRepository|error {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/transfer`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string owner]/[string repo]/transfer(oas:RepoTransferBody payload, map<string|string[]> headers = {}) returns oas:MinimalRepository|error {
+        return self.genClient->/repos/[owner]/[repo]/transfer.post(payload, headers);
     }
 
     # Check if vulnerability alerts are enabled for a repository
@@ -9100,8 +6913,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response if repository is enabled with vulnerability alerts 
     resource isolated function get repos/[string owner]/[string repo]/vulnerability\-alerts(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/vulnerability-alerts`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/vulnerability\-alerts.get(headers);
     }
 
     # Enable vulnerability alerts
@@ -9111,9 +6923,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put repos/[string owner]/[string repo]/vulnerability\-alerts(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/vulnerability-alerts`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/repos/[owner]/[repo]/vulnerability\-alerts.put(headers);
     }
 
     # Disable vulnerability alerts
@@ -9123,8 +6933,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repos/[string owner]/[string repo]/vulnerability\-alerts(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/vulnerability-alerts`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repos/[owner]/[repo]/vulnerability\-alerts.delete(headers);
     }
 
     # Download a repository archive (zip)
@@ -9134,8 +6943,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get repos/[string owner]/[string repo]/zipball/[string ref](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}/zipball/${getEncodedUri(ref)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/repos/[owner]/[repo]/zipball/[ref].get(headers);
     }
 
     # Create a repository using a template
@@ -9144,12 +6952,8 @@ public isolated client class Client {
     # + templateRepo - The name of the template repository without the .git extension. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repos/[string templateOwner]/[string templateRepo]/generate(TemplateRepoGenerateBody payload, map<string|string[]> headers = {}) returns Repository|error {
-        string resourcePath = string `/repos/${getEncodedUri(templateOwner)}/${getEncodedUri(templateRepo)}/generate`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repos/[string templateOwner]/[string templateRepo]/generate(oas:TemplateRepoGenerateBody payload, map<string|string[]> headers = {}) returns oas:Repository|error {
+        return self.genClient->/repos/[templateOwner]/[templateRepo]/generate.post(payload, headers);
     }
 
     # List public repositories
@@ -9157,10 +6961,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repositories(map<string|string[]> headers = {}, *ReposListPublicQueries queries) returns MinimalRepository[]|error? {
-        string resourcePath = string `/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repositories(map<string|string[]> headers = {}, *oas:ReposListPublicQueries queries) returns oas:MinimalRepository[]|error? {
+        return self.genClient->/repositories.get(headers, queries);
     }
 
     # List environment secrets
@@ -9170,21 +6972,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repositories/[int repositoryId]/environments/[string environmentName]/secrets(map<string|string[]> headers = {}, *ActionsListEnvironmentSecretsQueries queries) returns ActionsSecretResponse|error {
-        string resourcePath = string `/repositories/${getEncodedUri(repositoryId)}/environments/${getEncodedUri(environmentName)}/secrets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Get an environment public key
-    #
-    # + repositoryId - The unique identifier of the repository
-    # + environmentName - The name of the environment
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get repositories/[int repositoryId]/environments/[string environmentName]/secrets/public\-key(map<string|string[]> headers = {}) returns ActionsPublicKey|error {
-        string resourcePath = string `/repositories/${getEncodedUri(repositoryId)}/environments/${getEncodedUri(environmentName)}/secrets/public-key`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repositories/[int repositoryId]/environments/[string environmentName]/secrets(map<string|string[]> headers = {}, *oas:ActionsListEnvironmentSecretsQueries queries) returns oas:ActionsSecretResponse|error {
+        return self.genClient->/repositories/[repositoryId]/environments/[environmentName]/secrets.get(headers, queries);
     }
 
     # Get an environment secret
@@ -9194,9 +6983,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repositories/[int repositoryId]/environments/[string environmentName]/secrets/[string secretName](map<string|string[]> headers = {}) returns ActionsSecret|error {
-        string resourcePath = string `/repositories/${getEncodedUri(repositoryId)}/environments/${getEncodedUri(environmentName)}/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repositories/[int repositoryId]/environments/[string environmentName]/secrets/[string secretName](map<string|string[]> headers = {}) returns oas:ActionsSecret|error {
+        return self.genClient->/repositories/[repositoryId]/environments/[environmentName]/secrets/[secretName].get(headers);
     }
 
     # Create or update an environment secret
@@ -9206,12 +6994,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response when creating a secret 
-    resource isolated function put repositories/[int repositoryId]/environments/[string environmentName]/secrets/[string secretName](SecretssecretNameBody6 payload, map<string|string[]> headers = {}) returns EmptyObject|error? {
-        string resourcePath = string `/repositories/${getEncodedUri(repositoryId)}/environments/${getEncodedUri(environmentName)}/secrets/${getEncodedUri(secretName)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put repositories/[int repositoryId]/environments/[string environmentName]/secrets/[string secretName](oas:SecretssecretNameBody6 payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error? {
+        return self.genClient->/repositories/[repositoryId]/environments/[environmentName]/secrets/[secretName].put(payload, headers);
     }
 
     # Delete an environment secret
@@ -9222,8 +7006,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Default response 
     resource isolated function delete repositories/[int repositoryId]/environments/[string environmentName]/secrets/[string secretName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repositories/${getEncodedUri(repositoryId)}/environments/${getEncodedUri(environmentName)}/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repositories/[repositoryId]/environments/[environmentName]/secrets/[secretName].delete(headers);
     }
 
     # List environment variables
@@ -9233,10 +7016,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get repositories/[int repositoryId]/environments/[string environmentName]/variables(map<string|string[]> headers = {}, *ActionsListEnvironmentVariablesQueries queries) returns ActionsVariableResponse|error {
-        string resourcePath = string `/repositories/${getEncodedUri(repositoryId)}/environments/${getEncodedUri(environmentName)}/variables`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repositories/[int repositoryId]/environments/[string environmentName]/variables(map<string|string[]> headers = {}, *oas:ActionsListEnvironmentVariablesQueries queries) returns oas:ActionsVariableResponse|error {
+        return self.genClient->/repositories/[repositoryId]/environments/[environmentName]/variables.get(headers, queries);
     }
 
     # Create an environment variable
@@ -9245,12 +7026,8 @@ public isolated client class Client {
     # + environmentName - The name of the environment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post repositories/[int repositoryId]/environments/[string environmentName]/variables(ActionsVariablesBody1 payload, map<string|string[]> headers = {}) returns EmptyObject|error {
-        string resourcePath = string `/repositories/${getEncodedUri(repositoryId)}/environments/${getEncodedUri(environmentName)}/variables`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post repositories/[int repositoryId]/environments/[string environmentName]/variables(oas:ActionsVariablesBody1 payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error {
+        return self.genClient->/repositories/[repositoryId]/environments/[environmentName]/variables.post(payload, headers);
     }
 
     # Get an environment variable
@@ -9260,9 +7037,8 @@ public isolated client class Client {
     # + name - The name of the variable
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get repositories/[int repositoryId]/environments/[string environmentName]/variables/[string name](map<string|string[]> headers = {}) returns ActionsVariable|error {
-        string resourcePath = string `/repositories/${getEncodedUri(repositoryId)}/environments/${getEncodedUri(environmentName)}/variables/${getEncodedUri(name)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get repositories/[int repositoryId]/environments/[string environmentName]/variables/[string name](map<string|string[]> headers = {}) returns oas:ActionsVariable|error {
+        return self.genClient->/repositories/[repositoryId]/environments/[environmentName]/variables/[name].get(headers);
     }
 
     # Delete an environment variable
@@ -9273,8 +7049,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete repositories/[int repositoryId]/environments/[string environmentName]/variables/[string name](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repositories/${getEncodedUri(repositoryId)}/environments/${getEncodedUri(environmentName)}/variables/${getEncodedUri(name)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/repositories/[repositoryId]/environments/[environmentName]/variables/[name].delete(headers);
     }
 
     # Update an environment variable
@@ -9284,12 +7059,8 @@ public isolated client class Client {
     # + environmentName - The name of the environment
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch repositories/[int repositoryId]/environments/[string environmentName]/variables/[string name](VariablesnameBody1 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/repositories/${getEncodedUri(repositoryId)}/environments/${getEncodedUri(environmentName)}/variables/${getEncodedUri(name)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch repositories/[int repositoryId]/environments/[string environmentName]/variables/[string name](oas:VariablesnameBody1 payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/repositories/[repositoryId]/environments/[environmentName]/variables/[name].patch(payload, headers);
     }
 
     # Search code
@@ -9297,10 +7068,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get search/code(map<string|string[]> headers = {}, *SearchCodeQueries queries) returns CodeSearchResultItemResponse|error? {
-        string resourcePath = string `/search/code`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get search/code(map<string|string[]> headers = {}, *oas:SearchCodeQueries queries) returns oas:CodeSearchResultItemResponse|error? {
+        return self.genClient->/search/code.get(headers, queries);
     }
 
     # Search commits
@@ -9308,10 +7077,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get search/commits(map<string|string[]> headers = {}, *SearchCommitsQueries queries) returns CommitSearchResultItemResponse|error? {
-        string resourcePath = string `/search/commits`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get search/commits(map<string|string[]> headers = {}, *oas:SearchCommitsQueries queries) returns oas:CommitSearchResultItemResponse|error? {
+        return self.genClient->/search/commits.get(headers, queries);
     }
 
     # Search issues and pull requests
@@ -9319,10 +7086,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get search/issues(map<string|string[]> headers = {}, *SearchIssuesAndPullRequestsQueries queries) returns IssueSearchResultItemResponse|error? {
-        string resourcePath = string `/search/issues`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get search/issues(map<string|string[]> headers = {}, *oas:SearchIssuesAndPullRequestsQueries queries) returns oas:IssueSearchResultItemResponse|error? {
+        return self.genClient->/search/issues.get(headers, queries);
     }
 
     # Search labels
@@ -9330,10 +7095,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get search/labels(map<string|string[]> headers = {}, *SearchLabelsQueries queries) returns LabelSearchResultItemResponse|error? {
-        string resourcePath = string `/search/labels`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get search/labels(map<string|string[]> headers = {}, *oas:SearchLabelsQueries queries) returns oas:LabelSearchResultItemResponse|error? {
+        return self.genClient->/search/labels.get(headers, queries);
     }
 
     # Search repositories
@@ -9341,10 +7104,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get search/repositories(map<string|string[]> headers = {}, *SearchReposQueries queries) returns RepoSearchResultItemResponse|error? {
-        string resourcePath = string `/search/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get search/repositories(map<string|string[]> headers = {}, *oas:SearchReposQueries queries) returns oas:RepoSearchResultItemResponse|error? {
+        return self.genClient->/search/repositories.get(headers, queries);
     }
 
     # Search topics
@@ -9352,10 +7113,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get search/topics(map<string|string[]> headers = {}, *SearchTopicsQueries queries) returns TopicSearchResultItemResponse|error? {
-        string resourcePath = string `/search/topics`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get search/topics(map<string|string[]> headers = {}, *oas:SearchTopicsQueries queries) returns oas:TopicSearchResultItemResponse|error? {
+        return self.genClient->/search/topics.get(headers, queries);
     }
 
     # Search users
@@ -9363,554 +7122,144 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get search/users(map<string|string[]> headers = {}, *SearchUsersQueries queries) returns UserSearchResultItemResponse|error? {
-        string resourcePath = string `/search/users`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get search/users(map<string|string[]> headers = {}, *oas:SearchUsersQueries queries) returns oas:UserSearchResultItemResponse|error? {
+        return self.genClient->/search/users.get(headers, queries);
     }
 
-    # Get a team (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId](map<string|string[]> headers = {}) returns TeamFull|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId](map<string|string[]> headers = {}) returns oas:TeamFull|error {
+        return self.genClient->/teams/[teamId].get(headers);
     }
 
-    # Delete a team (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
     resource isolated function delete teams/[int teamId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/teams/[teamId].delete(headers);
     }
 
-    # Update a team (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + headers - Headers to be sent with the request 
-    # + return - Response when the updated information already exists 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function patch teams/[int teamId](TeamsteamIdBody payload, map<string|string[]> headers = {}) returns TeamFull|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch teams/[int teamId](oas:TeamsteamIdBody payload, map<string|string[]> headers = {}) returns oas:TeamFull|error {
+        return self.genClient->/teams/[teamId].patch(payload, headers);
     }
 
-    # List discussions (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/discussions(map<string|string[]> headers = {}, *TeamsListDiscussionsLegacyQueries queries) returns TeamDiscussion[]|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/discussions(map<string|string[]> headers = {}, *oas:TeamsListDiscussionsLegacyQueries queries) returns oas:TeamDiscussion[]|error {
+        return self.genClient->/teams/[teamId]/discussions.get(headers, queries);
     }
 
-    # Create a discussion (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function post teams/[int teamId]/discussions(TeamSlugDiscussionsBody payload, map<string|string[]> headers = {}) returns TeamDiscussion|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post teams/[int teamId]/discussions(oas:TeamSlugDiscussionsBody payload, map<string|string[]> headers = {}) returns oas:TeamDiscussion|error {
+        return self.genClient->/teams/[teamId]/discussions.post(payload, headers);
     }
 
-    # Get a discussion (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/discussions/[int discussionNumber](map<string|string[]> headers = {}) returns TeamDiscussion|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/discussions/[int discussionNumber](map<string|string[]> headers = {}) returns oas:TeamDiscussion|error {
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber].get(headers);
     }
 
-    # Delete a discussion (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
     resource isolated function delete teams/[int teamId]/discussions/[int discussionNumber](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber].delete(headers);
     }
 
-    # Update a discussion (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function patch teams/[int teamId]/discussions/[int discussionNumber](DiscussionsdiscussionNumberBody payload, map<string|string[]> headers = {}) returns TeamDiscussion|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch teams/[int teamId]/discussions/[int discussionNumber](oas:DiscussionsdiscussionNumberBody payload, map<string|string[]> headers = {}) returns oas:TeamDiscussion|error {
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber].patch(payload, headers);
     }
 
-    # List discussion comments (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/discussions/[int discussionNumber]/comments(map<string|string[]> headers = {}, *TeamsListDiscussionCommentsLegacyQueries queries) returns TeamDiscussionComment[]|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}/comments`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/discussions/[int discussionNumber]/comments(map<string|string[]> headers = {}, *oas:TeamsListDiscussionCommentsLegacyQueries queries) returns oas:TeamDiscussionComment[]|error {
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber]/comments.get(headers, queries);
     }
 
-    # Create a discussion comment (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function post teams/[int teamId]/discussions/[int discussionNumber]/comments(DiscussionNumberCommentsBody payload, map<string|string[]> headers = {}) returns TeamDiscussionComment|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}/comments`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post teams/[int teamId]/discussions/[int discussionNumber]/comments(oas:DiscussionNumberCommentsBody payload, map<string|string[]> headers = {}) returns oas:TeamDiscussionComment|error {
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber]/comments.post(payload, headers);
     }
 
-    # Get a discussion comment (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + commentNumber - The number that identifies the comment
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/discussions/[int discussionNumber]/comments/[int commentNumber](map<string|string[]> headers = {}) returns TeamDiscussionComment|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/discussions/[int discussionNumber]/comments/[int commentNumber](map<string|string[]> headers = {}) returns oas:TeamDiscussionComment|error {
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber]/comments/[commentNumber].get(headers);
     }
 
-    # Delete a discussion comment (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + commentNumber - The number that identifies the comment
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
     resource isolated function delete teams/[int teamId]/discussions/[int discussionNumber]/comments/[int commentNumber](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber]/comments/[commentNumber].delete(headers);
     }
 
-    # Update a discussion comment (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + commentNumber - The number that identifies the comment
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function patch teams/[int teamId]/discussions/[int discussionNumber]/comments/[int commentNumber](DiscussionNumberCommentsBody payload, map<string|string[]> headers = {}) returns TeamDiscussionComment|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch teams/[int teamId]/discussions/[int discussionNumber]/comments/[int commentNumber](oas:DiscussionNumberCommentsBody payload, map<string|string[]> headers = {}) returns oas:TeamDiscussionComment|error {
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber]/comments/[commentNumber].patch(payload, headers);
     }
 
-    # List reactions for a team discussion comment (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + commentNumber - The number that identifies the comment
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/discussions/[int discussionNumber]/comments/[int commentNumber]/reactions(map<string|string[]> headers = {}, *ReactionsListForTeamDiscussionCommentLegacyQueries queries) returns Reaction[]|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}/reactions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/discussions/[int discussionNumber]/comments/[int commentNumber]/reactions(map<string|string[]> headers = {}, *oas:ReactionsListForTeamDiscussionCommentLegacyQueries queries) returns oas:Reaction[]|error {
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber]/comments/[commentNumber]/reactions.get(headers, queries);
     }
 
-    # Create reaction for a team discussion comment (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + commentNumber - The number that identifies the comment
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function post teams/[int teamId]/discussions/[int discussionNumber]/comments/[int commentNumber]/reactions(CommentNumberReactionsBody payload, map<string|string[]> headers = {}) returns Reaction|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}/comments/${getEncodedUri(commentNumber)}/reactions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post teams/[int teamId]/discussions/[int discussionNumber]/comments/[int commentNumber]/reactions(oas:CommentNumberReactionsBody payload, map<string|string[]> headers = {}) returns oas:Reaction|error {
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber]/comments/[commentNumber]/reactions.post(payload, headers);
     }
 
-    # List reactions for a team discussion (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/discussions/[int discussionNumber]/reactions(map<string|string[]> headers = {}, *ReactionsListForTeamDiscussionLegacyQueries queries) returns Reaction[]|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}/reactions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/discussions/[int discussionNumber]/reactions(map<string|string[]> headers = {}, *oas:ReactionsListForTeamDiscussionLegacyQueries queries) returns oas:Reaction[]|error {
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber]/reactions.get(headers, queries);
     }
 
-    # Create reaction for a team discussion (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + discussionNumber - The number that identifies the discussion
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function post teams/[int teamId]/discussions/[int discussionNumber]/reactions(DiscussionNumberReactionsBody payload, map<string|string[]> headers = {}) returns Reaction|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/discussions/${getEncodedUri(discussionNumber)}/reactions`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post teams/[int teamId]/discussions/[int discussionNumber]/reactions(oas:DiscussionNumberReactionsBody payload, map<string|string[]> headers = {}) returns oas:Reaction|error {
+        return self.genClient->/teams/[teamId]/discussions/[discussionNumber]/reactions.post(payload, headers);
     }
 
-    # List pending team invitations (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/invitations(map<string|string[]> headers = {}, *TeamsListPendingInvitationsLegacyQueries queries) returns OrganizationInvitation[]|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/invitations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/invitations(map<string|string[]> headers = {}, *oas:TeamsListPendingInvitationsLegacyQueries queries) returns oas:OrganizationInvitation[]|error {
+        return self.genClient->/teams/[teamId]/invitations.get(headers, queries);
     }
 
-    # List team members (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/members(map<string|string[]> headers = {}, *TeamsListMembersLegacyQueries queries) returns SimpleUser[]|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/members`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/members(map<string|string[]> headers = {}, *oas:TeamsListMembersLegacyQueries queries) returns oas:SimpleUser[]|error {
+        return self.genClient->/teams/[teamId]/members.get(headers, queries);
     }
 
-    # Get team member (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + username - The handle for the GitHub user account
-    # + headers - Headers to be sent with the request 
-    # + return - if user is a member 
-    # 
-    # # Deprecated
-    @deprecated
     resource isolated function get teams/[int teamId]/members/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/members/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/teams/[teamId]/members/[username].get(headers);
     }
 
-    # Add team member (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + username - The handle for the GitHub user account
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
     resource isolated function put teams/[int teamId]/members/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/members/${getEncodedUri(username)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/teams/[teamId]/members/[username].put(headers);
     }
 
-    # Remove team member (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + username - The handle for the GitHub user account
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
     resource isolated function delete teams/[int teamId]/members/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/members/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/teams/[teamId]/members/[username].delete(headers);
     }
 
-    # Get team membership for a user (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + username - The handle for the GitHub user account
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/memberships/[string username](map<string|string[]> headers = {}) returns TeamMembership|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/memberships/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/memberships/[string username](map<string|string[]> headers = {}) returns oas:TeamMembership|error {
+        return self.genClient->/teams/[teamId]/memberships/[username].get(headers);
     }
 
-    # Add or update team membership for a user (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + username - The handle for the GitHub user account
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function put teams/[int teamId]/memberships/[string username](MembershipsusernameBody1 payload, map<string|string[]> headers = {}) returns TeamMembership|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/memberships/${getEncodedUri(username)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put teams/[int teamId]/memberships/[string username](oas:MembershipsusernameBody1 payload, map<string|string[]> headers = {}) returns oas:TeamMembership|error {
+        return self.genClient->/teams/[teamId]/memberships/[username].put(payload, headers);
     }
 
-    # Remove team membership for a user (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + username - The handle for the GitHub user account
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
     resource isolated function delete teams/[int teamId]/memberships/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/memberships/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/teams/[teamId]/memberships/[username].delete(headers);
     }
 
-    # List team projects (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/projects(map<string|string[]> headers = {}, *TeamsListProjectsLegacyQueries queries) returns TeamProject[]|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/projects`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/repos(map<string|string[]> headers = {}, *oas:TeamsListReposLegacyQueries queries) returns oas:MinimalRepository[]|error {
+        return self.genClient->/teams/[teamId]/repos.get(headers, queries);
     }
 
-    # Check team permissions for a project (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/projects/[int projectId](map<string|string[]> headers = {}) returns TeamProject|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/projects/${getEncodedUri(projectId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/repos/[string owner]/[string repo](map<string|string[]> headers = {}) returns oas:TeamRepository|error? {
+        return self.genClient->/teams/[teamId]/repos/[owner]/[repo].get(headers);
     }
 
-    # Add or update team project permissions (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function put teams/[int teamId]/projects/[int projectId](ProjectsprojectIdBody2 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/projects/${getEncodedUri(projectId)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put teams/[int teamId]/repos/[string owner]/[string repo](oas:OwnerrepoBody2 payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/teams/[teamId]/repos/[owner]/[repo].put(payload, headers);
     }
 
-    # Remove a project from a team (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + projectId - The unique identifier of the project
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function delete teams/[int teamId]/projects/[int projectId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/projects/${getEncodedUri(projectId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
-    }
-
-    # List team repositories (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/repos(map<string|string[]> headers = {}, *TeamsListReposLegacyQueries queries) returns MinimalRepository[]|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/repos`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Check team permissions for a repository (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Alternative response with extra repository information 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/repos/[string owner]/[string repo](map<string|string[]> headers = {}) returns TeamRepository|error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Add or update team repository permissions (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function put teams/[int teamId]/repos/[string owner]/[string repo](OwnerrepoBody2 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
-    }
-
-    # Remove a repository from a team (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + owner - The account owner of the repository. The name is not case sensitive
-    # + repo - The name of the repository without the .git extension. The name is not case sensitive
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    # 
-    # # Deprecated
-    @deprecated
     resource isolated function delete teams/[int teamId]/repos/[string owner]/[string repo](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/repos/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/teams/[teamId]/repos/[owner]/[repo].delete(headers);
     }
 
-    # List child teams (Legacy)
-    #
-    # + teamId - The unique identifier of the team
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - if child teams exist 
-    # 
-    # # Deprecated
-    @deprecated
-    resource isolated function get teams/[int teamId]/teams(map<string|string[]> headers = {}, *TeamsListChildLegacyQueries queries) returns Team[]|error {
-        string resourcePath = string `/teams/${getEncodedUri(teamId)}/teams`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get teams/[int teamId]/teams(map<string|string[]> headers = {}, *oas:TeamsListChildLegacyQueries queries) returns oas:Team[]|error {
+        return self.genClient->/teams/[teamId]/teams.get(headers, queries);
     }
 
     # Get the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user(map<string|string[]> headers = {}) returns UserResponse|error? {
-        string resourcePath = string `/user`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user(map<string|string[]> headers = {}) returns oas:UserResponse|error? {
+        return self.genClient->/user.get(headers);
     }
 
     # Update the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch user(UserBody payload, map<string|string[]> headers = {}) returns PrivateUser|error? {
-        string resourcePath = string `/user`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch user(oas:UserBody payload, map<string|string[]> headers = {}) returns oas:PrivateUser|error? {
+        return self.genClient->/user.patch(payload, headers);
     }
 
     # List users blocked by the authenticated user
@@ -9918,10 +7267,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/blocks(map<string|string[]> headers = {}, *UsersListBlockedByAuthenticatedUserQueries queries) returns SimpleUser[]|error? {
-        string resourcePath = string `/user/blocks`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/blocks(map<string|string[]> headers = {}, *oas:UsersListBlockedByAuthenticatedUserQueries queries) returns oas:SimpleUser[]|error? {
+        return self.genClient->/user/blocks.get(headers, queries);
     }
 
     # Check if a user is blocked by the authenticated user
@@ -9930,8 +7277,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - If the user is blocked 
     resource isolated function get user/blocks/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/blocks/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/user/blocks/[username].get(headers);
     }
 
     # Block a user
@@ -9940,9 +7286,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put user/blocks/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/blocks/${getEncodedUri(username)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/user/blocks/[username].put(headers);
     }
 
     # Unblock a user
@@ -9951,8 +7295,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/blocks/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/blocks/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/blocks/[username].delete(headers);
     }
 
     # List codespaces for the authenticated user
@@ -9960,42 +7303,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/codespaces(map<string|string[]> headers = {}, *CodespacesListForAuthenticatedUserQueries queries) returns CodespaceResponse|error? {
-        string resourcePath = string `/user/codespaces`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/codespaces(map<string|string[]> headers = {}, *oas:CodespacesListForAuthenticatedUserQueries queries) returns oas:CodespaceResponse|error? {
+        return self.genClient->/user/codespaces.get(headers, queries);
     }
 
     # Create a codespace for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response when the codespace was successfully created 
-    resource isolated function post user/codespaces(UserCodespacesBody payload, map<string|string[]> headers = {}) returns Codespace|error {
-        string resourcePath = string `/user/codespaces`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # List secrets for the authenticated user
-    #
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get user/codespaces/secrets(map<string|string[]> headers = {}, *CodespacesListSecretsForAuthenticatedUserQueries queries) returns CodespacesSecretResponse|error {
-        string resourcePath = string `/user/codespaces/secrets`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
-    }
-
-    # Get public key for the authenticated user
-    #
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function get user/codespaces/secrets/public\-key(map<string|string[]> headers = {}) returns CodespacesUserPublicKey|error {
-        string resourcePath = string `/user/codespaces/secrets/public-key`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function post user/codespaces(oas:UserCodespacesBody payload, map<string|string[]> headers = {}) returns oas:Codespace|error {
+        return self.genClient->/user/codespaces.post(payload, headers);
     }
 
     # Get a secret for the authenticated user
@@ -10003,9 +7320,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/codespaces/secrets/[string secretName](map<string|string[]> headers = {}) returns CodespacesSecret|error {
-        string resourcePath = string `/user/codespaces/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/codespaces/secrets/[string secretName](map<string|string[]> headers = {}) returns oas:CodespacesSecret|error {
+        return self.genClient->/user/codespaces/secrets/[secretName].get(headers);
     }
 
     # Create or update a secret for the authenticated user
@@ -10013,12 +7329,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response after successfully creating a secret 
-    resource isolated function put user/codespaces/secrets/[string secretName](SecretssecretNameBody7 payload, map<string|string[]> headers = {}) returns EmptyObject|error? {
-        string resourcePath = string `/user/codespaces/secrets/${getEncodedUri(secretName)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put user/codespaces/secrets/[string secretName](oas:SecretssecretNameBody7 payload, map<string|string[]> headers = {}) returns oas:EmptyObject|error? {
+        return self.genClient->/user/codespaces/secrets/[secretName].put(payload, headers);
     }
 
     # Delete a secret for the authenticated user
@@ -10027,8 +7339,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/codespaces/secrets/[string secretName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/codespaces/secrets/${getEncodedUri(secretName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/codespaces/secrets/[secretName].delete(headers);
     }
 
     # List selected repositories for a user secret
@@ -10036,9 +7347,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/codespaces/secrets/[string secretName]/repositories(map<string|string[]> headers = {}) returns MinimalRepositoryResponse|error {
-        string resourcePath = string `/user/codespaces/secrets/${getEncodedUri(secretName)}/repositories`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/codespaces/secrets/[string secretName]/repositories(map<string|string[]> headers = {}) returns oas:MinimalRepositoryResponse|error {
+        return self.genClient->/user/codespaces/secrets/[secretName]/repositories.get(headers);
     }
 
     # Set selected repositories for a user secret
@@ -10046,12 +7356,8 @@ public isolated client class Client {
     # + secretName - The name of the secret
     # + headers - Headers to be sent with the request 
     # + return - No Content when repositories were added to the selected list 
-    resource isolated function put user/codespaces/secrets/[string secretName]/repositories(SecretNameRepositoriesBody3 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/codespaces/secrets/${getEncodedUri(secretName)}/repositories`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put user/codespaces/secrets/[string secretName]/repositories(oas:SecretNameRepositoriesBody3 payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/user/codespaces/secrets/[secretName]/repositories.put(payload, headers);
     }
 
     # Add a selected repository to a user secret
@@ -10060,9 +7366,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - No Content when repository was added to the selected list 
     resource isolated function put user/codespaces/secrets/[string secretName]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/codespaces/secrets/${getEncodedUri(secretName)}/repositories/${getEncodedUri(repositoryId)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/user/codespaces/secrets/[secretName]/repositories/[repositoryId].put(headers);
     }
 
     # Remove a selected repository from a user secret
@@ -10071,8 +7375,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - No Content when repository was removed from the selected list 
     resource isolated function delete user/codespaces/secrets/[string secretName]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/codespaces/secrets/${getEncodedUri(secretName)}/repositories/${getEncodedUri(repositoryId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/codespaces/secrets/[secretName]/repositories/[repositoryId].delete(headers);
     }
 
     # Get a codespace for the authenticated user
@@ -10080,9 +7383,8 @@ public isolated client class Client {
     # + codespaceName - The name of the codespace
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/codespaces/[string codespaceName](map<string|string[]> headers = {}) returns Codespace|error? {
-        string resourcePath = string `/user/codespaces/${getEncodedUri(codespaceName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/codespaces/[string codespaceName](map<string|string[]> headers = {}) returns oas:Codespace|error? {
+        return self.genClient->/user/codespaces/[codespaceName].get(headers);
     }
 
     # Delete a codespace for the authenticated user
@@ -10091,8 +7393,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Accepted 
     resource isolated function delete user/codespaces/[string codespaceName](map<string|string[]> headers = {}) returns record {}|error? {
-        string resourcePath = string `/user/codespaces/${getEncodedUri(codespaceName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/codespaces/[codespaceName].delete(headers);
     }
 
     # Update a codespace for the authenticated user
@@ -10100,12 +7401,8 @@ public isolated client class Client {
     # + codespaceName - The name of the codespace
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch user/codespaces/[string codespaceName](CodespacescodespaceNameBody payload, map<string|string[]> headers = {}) returns Codespace|error {
-        string resourcePath = string `/user/codespaces/${getEncodedUri(codespaceName)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch user/codespaces/[string codespaceName](oas:CodespacescodespaceNameBody payload, map<string|string[]> headers = {}) returns oas:Codespace|error {
+        return self.genClient->/user/codespaces/[codespaceName].patch(payload, headers);
     }
 
     # Export a codespace for the authenticated user
@@ -10113,10 +7410,8 @@ public isolated client class Client {
     # + codespaceName - The name of the codespace
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/codespaces/[string codespaceName]/exports(map<string|string[]> headers = {}) returns CodespaceExportDetails|error {
-        string resourcePath = string `/user/codespaces/${getEncodedUri(codespaceName)}/exports`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/codespaces/[string codespaceName]/exports(map<string|string[]> headers = {}) returns oas:CodespaceExportDetails|error {
+        return self.genClient->/user/codespaces/[codespaceName]/exports.post(headers);
     }
 
     # Get details about a codespace export
@@ -10125,9 +7420,8 @@ public isolated client class Client {
     # + exportId - The ID of the export operation, or latest. Currently only latest is currently supported
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/codespaces/[string codespaceName]/exports/[string exportId](map<string|string[]> headers = {}) returns CodespaceExportDetails|error {
-        string resourcePath = string `/user/codespaces/${getEncodedUri(codespaceName)}/exports/${getEncodedUri(exportId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/codespaces/[string codespaceName]/exports/[string exportId](map<string|string[]> headers = {}) returns oas:CodespaceExportDetails|error {
+        return self.genClient->/user/codespaces/[codespaceName]/exports/[exportId].get(headers);
     }
 
     # List machine types for a codespace
@@ -10135,9 +7429,8 @@ public isolated client class Client {
     # + codespaceName - The name of the codespace
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/codespaces/[string codespaceName]/machines(map<string|string[]> headers = {}) returns CodespaceMachineResponse|error? {
-        string resourcePath = string `/user/codespaces/${getEncodedUri(codespaceName)}/machines`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/codespaces/[string codespaceName]/machines(map<string|string[]> headers = {}) returns oas:CodespaceMachineResponse|error? {
+        return self.genClient->/user/codespaces/[codespaceName]/machines.get(headers);
     }
 
     # Create a repository from an unpublished codespace
@@ -10145,12 +7438,8 @@ public isolated client class Client {
     # + codespaceName - The name of the codespace
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/codespaces/[string codespaceName]/publish(CodespaceNamePublishBody payload, map<string|string[]> headers = {}) returns CodespaceWithFullRepository|error {
-        string resourcePath = string `/user/codespaces/${getEncodedUri(codespaceName)}/publish`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/codespaces/[string codespaceName]/publish(oas:CodespaceNamePublishBody payload, map<string|string[]> headers = {}) returns oas:CodespaceWithFullRepository|error {
+        return self.genClient->/user/codespaces/[codespaceName]/publish.post(payload, headers);
     }
 
     # Start a codespace for the authenticated user
@@ -10158,10 +7447,8 @@ public isolated client class Client {
     # + codespaceName - The name of the codespace
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/codespaces/[string codespaceName]/'start(map<string|string[]> headers = {}) returns Codespace|error? {
-        string resourcePath = string `/user/codespaces/${getEncodedUri(codespaceName)}/start`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/codespaces/[string codespaceName]/'start(map<string|string[]> headers = {}) returns oas:Codespace|error? {
+        return self.genClient->/user/codespaces/[codespaceName]/'start.post(headers);
     }
 
     # Stop a codespace for the authenticated user
@@ -10169,31 +7456,24 @@ public isolated client class Client {
     # + codespaceName - The name of the codespace
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/codespaces/[string codespaceName]/stop(map<string|string[]> headers = {}) returns Codespace|error {
-        string resourcePath = string `/user/codespaces/${getEncodedUri(codespaceName)}/stop`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/codespaces/[string codespaceName]/stop(map<string|string[]> headers = {}) returns oas:Codespace|error {
+        return self.genClient->/user/codespaces/[codespaceName]/stop.post(headers);
     }
 
     # Get list of conflicting packages during Docker migration for authenticated-user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/docker/conflicts(map<string|string[]> headers = {}) returns Package[]|error {
-        string resourcePath = string `/user/docker/conflicts`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/docker/conflicts(map<string|string[]> headers = {}) returns oas:Package[]|error {
+        return self.genClient->/user/docker/conflicts.get(headers);
     }
 
     # Set primary email visibility for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch user/email/visibility(EmailVisibilityBody payload, map<string|string[]> headers = {}) returns Email[]|error? {
-        string resourcePath = string `/user/email/visibility`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch user/email/visibility(oas:EmailVisibilityBody payload, map<string|string[]> headers = {}) returns oas:Email[]|error? {
+        return self.genClient->/user/email/visibility.patch(payload, headers);
     }
 
     # List email addresses for the authenticated user
@@ -10201,34 +7481,24 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/emails(map<string|string[]> headers = {}, *UsersListEmailsForAuthenticatedUserQueries queries) returns Email[]|error? {
-        string resourcePath = string `/user/emails`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/emails(map<string|string[]> headers = {}, *oas:UsersListEmailsForAuthenticatedUserQueries queries) returns oas:Email[]|error? {
+        return self.genClient->/user/emails.get(headers, queries);
     }
 
     # Add an email address for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/emails(UserEmailsBody payload, map<string|string[]> headers = {}) returns Email[]|error? {
-        string resourcePath = string `/user/emails`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/emails(oas:UserEmailsBody payload, map<string|string[]> headers = {}) returns oas:Email[]|error? {
+        return self.genClient->/user/emails.post(payload, headers);
     }
 
     # Delete an email address for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete user/emails(UserEmailsBody1 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/emails`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete user/emails(oas:UserEmailsBody1 payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/user/emails.delete(payload, headers);
     }
 
     # List followers of the authenticated user
@@ -10236,10 +7506,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/followers(map<string|string[]> headers = {}, *UsersListFollowersForAuthenticatedUserQueries queries) returns SimpleUser[]|error? {
-        string resourcePath = string `/user/followers`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/followers(map<string|string[]> headers = {}, *oas:UsersListFollowersForAuthenticatedUserQueries queries) returns oas:SimpleUser[]|error? {
+        return self.genClient->/user/followers.get(headers, queries);
     }
 
     # List the people the authenticated user follows
@@ -10247,10 +7515,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/following(map<string|string[]> headers = {}, *UsersListFollowedByAuthenticatedUserQueries queries) returns SimpleUser[]|error? {
-        string resourcePath = string `/user/following`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/following(map<string|string[]> headers = {}, *oas:UsersListFollowedByAuthenticatedUserQueries queries) returns oas:SimpleUser[]|error? {
+        return self.genClient->/user/following.get(headers, queries);
     }
 
     # Check if a person is followed by the authenticated user
@@ -10259,8 +7525,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - if the person is followed by the authenticated user 
     resource isolated function get user/following/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/following/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/user/following/[username].get(headers);
     }
 
     # Follow a user
@@ -10269,9 +7534,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put user/following/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/following/${getEncodedUri(username)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/user/following/[username].put(headers);
     }
 
     # Unfollow a user
@@ -10280,8 +7543,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/following/[string username](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/following/${getEncodedUri(username)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/following/[username].delete(headers);
     }
 
     # List GPG keys for the authenticated user
@@ -10289,22 +7551,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/gpg_keys(map<string|string[]> headers = {}, *UsersListGpgKeysForAuthenticatedUserQueries queries) returns GpgKey[]|error? {
-        string resourcePath = string `/user/gpg_keys`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/gpg_keys(map<string|string[]> headers = {}, *oas:UsersListGpgKeysForAuthenticatedUserQueries queries) returns oas:GpgKey[]|error? {
+        return self.genClient->/user/gpg_keys.get(headers, queries);
     }
 
     # Create a GPG key for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/gpg_keys(UserGpgKeysBody payload, map<string|string[]> headers = {}) returns GpgKey|error? {
-        string resourcePath = string `/user/gpg_keys`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/gpg_keys(oas:UserGpgKeysBody payload, map<string|string[]> headers = {}) returns oas:GpgKey|error? {
+        return self.genClient->/user/gpg_keys.post(payload, headers);
     }
 
     # Get a GPG key for the authenticated user
@@ -10312,9 +7568,8 @@ public isolated client class Client {
     # + gpgKeyId - The unique identifier of the GPG key
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/gpg_keys/[int gpgKeyId](map<string|string[]> headers = {}) returns GpgKey|error? {
-        string resourcePath = string `/user/gpg_keys/${getEncodedUri(gpgKeyId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/gpg_keys/[int gpgKeyId](map<string|string[]> headers = {}) returns oas:GpgKey|error? {
+        return self.genClient->/user/gpg_keys/[gpgKeyId].get(headers);
     }
 
     # Delete a GPG key for the authenticated user
@@ -10323,8 +7578,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/gpg_keys/[int gpgKeyId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/gpg_keys/${getEncodedUri(gpgKeyId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/gpg_keys/[gpgKeyId].delete(headers);
     }
 
     # List app installations accessible to the user access token
@@ -10332,10 +7586,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - You can find the permissions for the installation under the permissions key 
-    resource isolated function get user/installations(map<string|string[]> headers = {}, *AppsListInstallationsForAuthenticatedUserQueries queries) returns InstallationResponse|error? {
-        string resourcePath = string `/user/installations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/installations(map<string|string[]> headers = {}, *oas:AppsListInstallationsForAuthenticatedUserQueries queries) returns oas:InstallationResponse|error? {
+        return self.genClient->/user/installations.get(headers, queries);
     }
 
     # List repositories accessible to the user access token
@@ -10344,10 +7596,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - The access the user has to each repository is included in the hash under the permissions key 
-    resource isolated function get user/installations/[int installationId]/repositories(map<string|string[]> headers = {}, *AppsListInstallationReposForAuthenticatedUserQueries queries) returns RepositoryResponse|error? {
-        string resourcePath = string `/user/installations/${getEncodedUri(installationId)}/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/installations/[int installationId]/repositories(map<string|string[]> headers = {}, *oas:AppsListInstallationReposForAuthenticatedUserQueries queries) returns oas:RepositoryResponse|error? {
+        return self.genClient->/user/installations/[installationId]/repositories.get(headers, queries);
     }
 
     # Add a repository to an app installation
@@ -10357,9 +7607,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put user/installations/[int installationId]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/installations/${getEncodedUri(installationId)}/repositories/${getEncodedUri(repositoryId)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/user/installations/[installationId]/repositories/[repositoryId].put(headers);
     }
 
     # Remove a repository from an app installation
@@ -10369,29 +7617,23 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/installations/[int installationId]/repositories/[int repositoryId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/installations/${getEncodedUri(installationId)}/repositories/${getEncodedUri(repositoryId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/installations/[installationId]/repositories/[repositoryId].delete(headers);
     }
 
     # Get interaction restrictions for your public repositories
     #
     # + headers - Headers to be sent with the request 
     # + return - Default response 
-    resource isolated function get user/interaction\-limits(map<string|string[]> headers = {}) returns InteractionLimitResponseAny|error? {
-        string resourcePath = string `/user/interaction-limits`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/interaction\-limits(map<string|string[]> headers = {}) returns oas:InteractionLimitResponseAny|error? {
+        return self.genClient->/user/interaction\-limits.get(headers);
     }
 
     # Set interaction restrictions for your public repositories
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function put user/interaction\-limits(InteractionLimit payload, map<string|string[]> headers = {}) returns InteractionLimitResponse|error {
-        string resourcePath = string `/user/interaction-limits`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->put(resourcePath, request, headers);
+    resource isolated function put user/interaction\-limits(oas:InteractionLimit payload, map<string|string[]> headers = {}) returns oas:InteractionLimitResponse|error {
+        return self.genClient->/user/interaction\-limits.put(payload, headers);
     }
 
     # Remove interaction restrictions from your public repositories
@@ -10399,8 +7641,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/interaction\-limits(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/interaction-limits`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/interaction\-limits.delete(headers);
     }
 
     # List user account issues assigned to the authenticated user
@@ -10408,10 +7649,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/issues(map<string|string[]> headers = {}, *IssuesListForAuthenticatedUserQueries queries) returns Issue[]|error? {
-        string resourcePath = string `/user/issues`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/issues(map<string|string[]> headers = {}, *oas:IssuesListForAuthenticatedUserQueries queries) returns oas:Issue[]|error? {
+        return self.genClient->/user/issues.get(headers, queries);
     }
 
     # List public SSH keys for the authenticated user
@@ -10419,22 +7658,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/keys(map<string|string[]> headers = {}, *UsersListPublicSshKeysForAuthenticatedUserQueries queries) returns Key[]|error? {
-        string resourcePath = string `/user/keys`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/keys(map<string|string[]> headers = {}, *oas:UsersListPublicSshKeysForAuthenticatedUserQueries queries) returns oas:Key[]|error? {
+        return self.genClient->/user/keys.get(headers, queries);
     }
 
     # Create a public SSH key for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/keys(UserKeysBody payload, map<string|string[]> headers = {}) returns Key|error? {
-        string resourcePath = string `/user/keys`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/keys(oas:UserKeysBody payload, map<string|string[]> headers = {}) returns oas:Key|error? {
+        return self.genClient->/user/keys.post(payload, headers);
     }
 
     # Get a public SSH key for the authenticated user
@@ -10442,9 +7675,8 @@ public isolated client class Client {
     # + keyId - The unique identifier of the key
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/keys/[int keyId](map<string|string[]> headers = {}) returns Key|error? {
-        string resourcePath = string `/user/keys/${getEncodedUri(keyId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/keys/[int keyId](map<string|string[]> headers = {}) returns oas:Key|error? {
+        return self.genClient->/user/keys/[keyId].get(headers);
     }
 
     # Delete a public SSH key for the authenticated user
@@ -10453,8 +7685,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/keys/[int keyId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/keys/${getEncodedUri(keyId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/keys/[keyId].delete(headers);
     }
 
     # List subscriptions for the authenticated user
@@ -10462,10 +7693,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/marketplace_purchases(map<string|string[]> headers = {}, *AppsListSubscriptionsForAuthenticatedUserQueries queries) returns UserMarketplacePurchase[]|error? {
-        string resourcePath = string `/user/marketplace_purchases`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/marketplace_purchases(map<string|string[]> headers = {}, *oas:AppsListSubscriptionsForAuthenticatedUserQueries queries) returns oas:UserMarketplacePurchase[]|error? {
+        return self.genClient->/user/marketplace_purchases.get(headers, queries);
     }
 
     # List subscriptions for the authenticated user (stubbed)
@@ -10473,10 +7702,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/marketplace_purchases/stubbed(map<string|string[]> headers = {}, *AppsListSubscriptionsForAuthenticatedUserStubbedQueries queries) returns UserMarketplacePurchase[]|error? {
-        string resourcePath = string `/user/marketplace_purchases/stubbed`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/marketplace_purchases/stubbed(map<string|string[]> headers = {}, *oas:AppsListSubscriptionsForAuthenticatedUserStubbedQueries queries) returns oas:UserMarketplacePurchase[]|error? {
+        return self.genClient->/user/marketplace_purchases/stubbed.get(headers, queries);
     }
 
     # List organization memberships for the authenticated user
@@ -10484,10 +7711,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/memberships/orgs(map<string|string[]> headers = {}, *OrgsListMembershipsForAuthenticatedUserQueries queries) returns OrgMembership[]|error? {
-        string resourcePath = string `/user/memberships/orgs`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/memberships/orgs(map<string|string[]> headers = {}, *oas:OrgsListMembershipsForAuthenticatedUserQueries queries) returns oas:OrgMembership[]|error? {
+        return self.genClient->/user/memberships/orgs.get(headers, queries);
     }
 
     # Get an organization membership for the authenticated user
@@ -10495,9 +7720,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/memberships/orgs/[string org](map<string|string[]> headers = {}) returns OrgMembership|error {
-        string resourcePath = string `/user/memberships/orgs/${getEncodedUri(org)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/memberships/orgs/[string org](map<string|string[]> headers = {}) returns oas:OrgMembership|error {
+        return self.genClient->/user/memberships/orgs/[org].get(headers);
     }
 
     # Update an organization membership for the authenticated user
@@ -10505,12 +7729,8 @@ public isolated client class Client {
     # + org - The organization name. The name is not case sensitive
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function patch user/memberships/orgs/[string org](OrgsorgBody1 payload, map<string|string[]> headers = {}) returns OrgMembership|error {
-        string resourcePath = string `/user/memberships/orgs/${getEncodedUri(org)}`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->patch(resourcePath, request, headers);
+    resource isolated function patch user/memberships/orgs/[string org](oas:OrgsorgBody1 payload, map<string|string[]> headers = {}) returns oas:OrgMembership|error {
+        return self.genClient->/user/memberships/orgs/[org].patch(payload, headers);
     }
 
     # List user migrations
@@ -10518,22 +7738,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/migrations(map<string|string[]> headers = {}, *MigrationsListForAuthenticatedUserQueries queries) returns Migration[]|error? {
-        string resourcePath = string `/user/migrations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/migrations(map<string|string[]> headers = {}, *oas:MigrationsListForAuthenticatedUserQueries queries) returns oas:Migration[]|error? {
+        return self.genClient->/user/migrations.get(headers, queries);
     }
 
     # Start a user migration
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/migrations(UserMigrationsBody payload, map<string|string[]> headers = {}) returns Migration|error? {
-        string resourcePath = string `/user/migrations`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/migrations(oas:UserMigrationsBody payload, map<string|string[]> headers = {}) returns oas:Migration|error? {
+        return self.genClient->/user/migrations.post(payload, headers);
     }
 
     # Get a user migration status
@@ -10542,11 +7756,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/migrations/[int migrationId](map<string|string[]> headers = {}, *MigrationsGetStatusForAuthenticatedUserQueries queries) returns Migration|error? {
-        string resourcePath = string `/user/migrations/${getEncodedUri(migrationId)}`;
-        map<Encoding> queryParamEncoding = {"exclude": {style: FORM, explode: true}};
-        resourcePath = resourcePath + check getPathForQueryParam(queries, queryParamEncoding);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/migrations/[int migrationId](map<string|string[]> headers = {}, *oas:MigrationsGetStatusForAuthenticatedUserQueries queries) returns oas:Migration|error? {
+        return self.genClient->/user/migrations/[migrationId].get(headers, queries);
     }
 
     # Download a user migration archive
@@ -10555,8 +7766,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get user/migrations/[int migrationId]/archive(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/migrations/${getEncodedUri(migrationId)}/archive`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/user/migrations/[migrationId]/archive.get(headers);
     }
 
     # Delete a user migration archive
@@ -10565,8 +7775,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/migrations/[int migrationId]/archive(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/migrations/${getEncodedUri(migrationId)}/archive`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/migrations/[migrationId]/archive.delete(headers);
     }
 
     # Unlock a user repository
@@ -10576,8 +7785,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/migrations/[int migrationId]/repos/[string repoName]/'lock(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/migrations/${getEncodedUri(migrationId)}/repos/${getEncodedUri(repoName)}/lock`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/migrations/[migrationId]/repos/[repoName]/'lock.delete(headers);
     }
 
     # List repositories for a user migration
@@ -10586,10 +7794,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/migrations/[int migrationId]/repositories(map<string|string[]> headers = {}, *MigrationsListReposForAuthenticatedUserQueries queries) returns MinimalRepository[]|error {
-        string resourcePath = string `/user/migrations/${getEncodedUri(migrationId)}/repositories`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/migrations/[int migrationId]/repositories(map<string|string[]> headers = {}, *oas:MigrationsListReposForAuthenticatedUserQueries queries) returns oas:MinimalRepository[]|error {
+        return self.genClient->/user/migrations/[migrationId]/repositories.get(headers, queries);
     }
 
     # List organizations for the authenticated user
@@ -10597,10 +7803,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/orgs(map<string|string[]> headers = {}, *OrgsListForAuthenticatedUserQueries queries) returns OrganizationSimple[]|error? {
-        string resourcePath = string `/user/orgs`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/orgs(map<string|string[]> headers = {}, *oas:OrgsListForAuthenticatedUserQueries queries) returns oas:OrganizationSimple[]|error? {
+        return self.genClient->/user/orgs.get(headers, queries);
     }
 
     # List packages for the authenticated user's namespace
@@ -10608,10 +7812,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/packages(map<string|string[]> headers = {}, *PackagesListPackagesForAuthenticatedUserQueries queries) returns Package[]|error {
-        string resourcePath = string `/user/packages`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/packages(map<string|string[]> headers = {}, *oas:PackagesListPackagesForAuthenticatedUserQueries queries) returns oas:Package[]|error {
+        return self.genClient->/user/packages.get(headers, queries);
     }
 
     # Get a package for the authenticated user
@@ -10620,9 +7822,8 @@ public isolated client class Client {
     # + packageName - The name of the package
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName](map<string|string[]> headers = {}) returns Package|error {
-        string resourcePath = string `/user/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName](map<string|string[]> headers = {}) returns oas:Package|error {
+        return self.genClient->/user/packages/[packageType]/[packageName].get(headers);
     }
 
     # Delete a package for the authenticated user
@@ -10632,8 +7833,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/packages/[packageType]/[packageName].delete(headers);
     }
 
     # Restore a package for the authenticated user
@@ -10643,11 +7843,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function post user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/restore(map<string|string[]> headers = {}, *PackagesRestorePackageForAuthenticatedUserQueries queries) returns error? {
-        string resourcePath = string `/user/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/restore`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/restore(map<string|string[]> headers = {}, *oas:PackagesRestorePackageForAuthenticatedUserQueries queries) returns error? {
+        return self.genClient->/user/packages/[packageType]/[packageName]/restore.post(headers, queries);
     }
 
     # List package versions for a package owned by the authenticated user
@@ -10657,10 +7854,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions(map<string|string[]> headers = {}, *PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserQueries queries) returns PackageVersion[]|error {
-        string resourcePath = string `/user/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions(map<string|string[]> headers = {}, *oas:PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserQueries queries) returns oas:PackageVersion[]|error {
+        return self.genClient->/user/packages/[packageType]/[packageName]/versions.get(headers, queries);
     }
 
     # Get a package version for the authenticated user
@@ -10670,9 +7865,8 @@ public isolated client class Client {
     # + packageVersionId - Unique identifier of the package version
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId](map<string|string[]> headers = {}) returns PackageVersion|error {
-        string resourcePath = string `/user/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions/${getEncodedUri(packageVersionId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId](map<string|string[]> headers = {}) returns oas:PackageVersion|error {
+        return self.genClient->/user/packages/[packageType]/[packageName]/versions/[packageVersionId].get(headers);
     }
 
     # Delete a package version for the authenticated user
@@ -10683,8 +7877,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions/${getEncodedUri(packageVersionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/packages/[packageType]/[packageName]/versions/[packageVersionId].delete(headers);
     }
 
     # Restore a package version for the authenticated user
@@ -10695,21 +7888,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function post user/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId]/restore(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions/${getEncodedUri(packageVersionId)}/restore`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # Create a user project
-    #
-    # + headers - Headers to be sent with the request 
-    # + return - Response 
-    resource isolated function post user/projects(UserProjectsBody payload, map<string|string[]> headers = {}) returns Project|error? {
-        string resourcePath = string `/user/projects`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+        return self.genClient->/user/packages/[packageType]/[packageName]/versions/[packageVersionId]/restore.post(headers);
     }
 
     # List public email addresses for the authenticated user
@@ -10717,10 +7896,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/public_emails(map<string|string[]> headers = {}, *UsersListPublicEmailsForAuthenticatedUserQueries queries) returns Email[]|error? {
-        string resourcePath = string `/user/public_emails`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/public_emails(map<string|string[]> headers = {}, *oas:UsersListPublicEmailsForAuthenticatedUserQueries queries) returns oas:Email[]|error? {
+        return self.genClient->/user/public_emails.get(headers, queries);
     }
 
     # List repositories for the authenticated user
@@ -10728,22 +7905,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/repos(map<string|string[]> headers = {}, *ReposListForAuthenticatedUserQueries queries) returns Repository[]|error? {
-        string resourcePath = string `/user/repos`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/repos(map<string|string[]> headers = {}, *oas:ReposListForAuthenticatedUserQueries queries) returns oas:Repository[]|error? {
+        return self.genClient->/user/repos.get(headers, queries);
     }
 
     # Create a repository for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/repos(UserReposBody payload, map<string|string[]> headers = {}) returns Repository|error? {
-        string resourcePath = string `/user/repos`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/repos(oas:UserReposBody payload, map<string|string[]> headers = {}) returns oas:Repository|error? {
+        return self.genClient->/user/repos.post(payload, headers);
     }
 
     # List repository invitations for the authenticated user
@@ -10751,10 +7922,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/repository_invitations(map<string|string[]> headers = {}, *ReposListInvitationsForAuthenticatedUserQueries queries) returns RepositoryInvitation[]|error? {
-        string resourcePath = string `/user/repository_invitations`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/repository_invitations(map<string|string[]> headers = {}, *oas:ReposListInvitationsForAuthenticatedUserQueries queries) returns oas:RepositoryInvitation[]|error? {
+        return self.genClient->/user/repository_invitations.get(headers, queries);
     }
 
     # Decline a repository invitation
@@ -10763,8 +7932,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/repository_invitations/[int invitationId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/repository_invitations/${getEncodedUri(invitationId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/repository_invitations/[invitationId].delete(headers);
     }
 
     # Accept a repository invitation
@@ -10773,9 +7941,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function patch user/repository_invitations/[int invitationId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/repository_invitations/${getEncodedUri(invitationId)}`;
-        http:Request request = new;
-        return self.clientEp->patch(resourcePath, request, headers);
+        return self.genClient->/user/repository_invitations/[invitationId].patch(headers);
     }
 
     # List social accounts for the authenticated user
@@ -10783,34 +7949,24 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/social_accounts(map<string|string[]> headers = {}, *UsersListSocialAccountsForAuthenticatedUserQueries queries) returns SocialAccount[]|error? {
-        string resourcePath = string `/user/social_accounts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/social_accounts(map<string|string[]> headers = {}, *oas:UsersListSocialAccountsForAuthenticatedUserQueries queries) returns oas:SocialAccount[]|error? {
+        return self.genClient->/user/social_accounts.get(headers, queries);
     }
 
     # Add social accounts for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/social_accounts(UserSocialAccountsBody payload, map<string|string[]> headers = {}) returns SocialAccount[]|error? {
-        string resourcePath = string `/user/social_accounts`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/social_accounts(oas:UserSocialAccountsBody payload, map<string|string[]> headers = {}) returns oas:SocialAccount[]|error? {
+        return self.genClient->/user/social_accounts.post(payload, headers);
     }
 
     # Delete social accounts for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function delete user/social_accounts(UserSocialAccountsBody1 payload, map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/social_accounts`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->delete(resourcePath, request, headers);
+    resource isolated function delete user/social_accounts(oas:UserSocialAccountsBody1 payload, map<string|string[]> headers = {}) returns error? {
+        return self.genClient->/user/social_accounts.delete(payload, headers);
     }
 
     # List SSH signing keys for the authenticated user
@@ -10818,22 +7974,16 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/ssh_signing_keys(map<string|string[]> headers = {}, *UsersListSshSigningKeysForAuthenticatedUserQueries queries) returns SshSigningKey[]|error? {
-        string resourcePath = string `/user/ssh_signing_keys`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/ssh_signing_keys(map<string|string[]> headers = {}, *oas:UsersListSshSigningKeysForAuthenticatedUserQueries queries) returns oas:SshSigningKey[]|error? {
+        return self.genClient->/user/ssh_signing_keys.get(headers, queries);
     }
 
     # Create a SSH signing key for the authenticated user
     #
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function post user/ssh_signing_keys(UserSshSigningKeysBody payload, map<string|string[]> headers = {}) returns SshSigningKey|error? {
-        string resourcePath = string `/user/ssh_signing_keys`;
-        http:Request request = new;
-        json jsonBody = jsondata:toJson(payload);
-        request.setPayload(jsonBody, "application/json");
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post user/ssh_signing_keys(oas:UserSshSigningKeysBody payload, map<string|string[]> headers = {}) returns oas:SshSigningKey|error? {
+        return self.genClient->/user/ssh_signing_keys.post(payload, headers);
     }
 
     # Get an SSH signing key for the authenticated user
@@ -10841,9 +7991,8 @@ public isolated client class Client {
     # + sshSigningKeyId - The unique identifier of the SSH signing key
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get user/ssh_signing_keys/[int sshSigningKeyId](map<string|string[]> headers = {}) returns SshSigningKey|error? {
-        string resourcePath = string `/user/ssh_signing_keys/${getEncodedUri(sshSigningKeyId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/ssh_signing_keys/[int sshSigningKeyId](map<string|string[]> headers = {}) returns oas:SshSigningKey|error? {
+        return self.genClient->/user/ssh_signing_keys/[sshSigningKeyId].get(headers);
     }
 
     # Delete an SSH signing key for the authenticated user
@@ -10852,8 +8001,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/ssh_signing_keys/[int sshSigningKeyId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/ssh_signing_keys/${getEncodedUri(sshSigningKeyId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/ssh_signing_keys/[sshSigningKeyId].delete(headers);
     }
 
     # List repositories starred by the authenticated user
@@ -10861,10 +8009,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/starred(map<string|string[]> headers = {}, *ActivityListReposStarredByAuthenticatedUserQueries queries) returns Repository[]|error? {
-        string resourcePath = string `/user/starred`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/starred(map<string|string[]> headers = {}, *oas:ActivityListReposStarredByAuthenticatedUserQueries queries) returns oas:Repository[]|error? {
+        return self.genClient->/user/starred.get(headers, queries);
     }
 
     # Check if a repository is starred by the authenticated user
@@ -10874,8 +8020,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response if this repository is starred by you 
     resource isolated function get user/starred/[string owner]/[string repo](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/starred/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/user/starred/[owner]/[repo].get(headers);
     }
 
     # Star a repository for the authenticated user
@@ -10885,9 +8030,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function put user/starred/[string owner]/[string repo](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/starred/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        http:Request request = new;
-        return self.clientEp->put(resourcePath, request, headers);
+        return self.genClient->/user/starred/[owner]/[repo].put(headers);
     }
 
     # Unstar a repository for the authenticated user
@@ -10897,8 +8040,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete user/starred/[string owner]/[string repo](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/user/starred/${getEncodedUri(owner)}/${getEncodedUri(repo)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/user/starred/[owner]/[repo].delete(headers);
     }
 
     # List repositories watched by the authenticated user
@@ -10906,10 +8048,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/subscriptions(map<string|string[]> headers = {}, *ActivityListWatchedReposForAuthenticatedUserQueries queries) returns MinimalRepository[]|error? {
-        string resourcePath = string `/user/subscriptions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/subscriptions(map<string|string[]> headers = {}, *oas:ActivityListWatchedReposForAuthenticatedUserQueries queries) returns oas:MinimalRepository[]|error? {
+        return self.genClient->/user/subscriptions.get(headers, queries);
     }
 
     # List teams for the authenticated user
@@ -10917,10 +8057,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get user/teams(map<string|string[]> headers = {}, *TeamsListForAuthenticatedUserQueries queries) returns TeamFull[]|error? {
-        string resourcePath = string `/user/teams`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get user/teams(map<string|string[]> headers = {}, *oas:TeamsListForAuthenticatedUserQueries queries) returns oas:TeamFull[]|error? {
+        return self.genClient->/user/teams.get(headers, queries);
     }
 
     # List users
@@ -10928,10 +8066,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users(map<string|string[]> headers = {}, *UsersListQueries queries) returns SimpleUser[]|error? {
-        string resourcePath = string `/users`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users(map<string|string[]> headers = {}, *oas:UsersListQueries queries) returns oas:SimpleUser[]|error? {
+        return self.genClient->/users.get(headers, queries);
     }
 
     # Get a user
@@ -10939,9 +8075,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username](map<string|string[]> headers = {}) returns UserResponse|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username](map<string|string[]> headers = {}) returns oas:UserResponse|error {
+        return self.genClient->/users/[username].get(headers);
     }
 
     # Get list of conflicting packages during Docker migration for user
@@ -10949,9 +8084,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/docker/conflicts(map<string|string[]> headers = {}) returns Package[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/docker/conflicts`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/docker/conflicts(map<string|string[]> headers = {}) returns oas:Package[]|error {
+        return self.genClient->/users/[username]/docker/conflicts.get(headers);
     }
 
     # List events for the authenticated user
@@ -10960,10 +8094,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/events(map<string|string[]> headers = {}, *ActivityListEventsForAuthenticatedUserQueries queries) returns Event[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/events`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/events(map<string|string[]> headers = {}, *oas:ActivityListEventsForAuthenticatedUserQueries queries) returns oas:Event[]|error {
+        return self.genClient->/users/[username]/events.get(headers, queries);
     }
 
     # List organization events for the authenticated user
@@ -10973,10 +8105,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/events/orgs/[string org](map<string|string[]> headers = {}, *ActivityListOrgEventsForAuthenticatedUserQueries queries) returns Event[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/events/orgs/${getEncodedUri(org)}`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/events/orgs/[string org](map<string|string[]> headers = {}, *oas:ActivityListOrgEventsForAuthenticatedUserQueries queries) returns oas:Event[]|error {
+        return self.genClient->/users/[username]/events/orgs/[org].get(headers, queries);
     }
 
     # List public events for a user
@@ -10985,10 +8115,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/events/'public(map<string|string[]> headers = {}, *ActivityListPublicEventsForUserQueries queries) returns Event[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/events/public`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/events/'public(map<string|string[]> headers = {}, *oas:ActivityListPublicEventsForUserQueries queries) returns oas:Event[]|error {
+        return self.genClient->/users/[username]/events/'public.get(headers, queries);
     }
 
     # List followers of a user
@@ -10997,10 +8125,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/followers(map<string|string[]> headers = {}, *UsersListFollowersForUserQueries queries) returns SimpleUser[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/followers`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/followers(map<string|string[]> headers = {}, *oas:UsersListFollowersForUserQueries queries) returns oas:SimpleUser[]|error {
+        return self.genClient->/users/[username]/followers.get(headers, queries);
     }
 
     # List the people a user follows
@@ -11009,10 +8135,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/following(map<string|string[]> headers = {}, *UsersListFollowingForUserQueries queries) returns SimpleUser[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/following`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/following(map<string|string[]> headers = {}, *oas:UsersListFollowingForUserQueries queries) returns oas:SimpleUser[]|error {
+        return self.genClient->/users/[username]/following.get(headers, queries);
     }
 
     # Check if a user follows another user
@@ -11021,8 +8145,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - if the user follows the target user 
     resource isolated function get users/[string username]/following/[string targetUser](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/users/${getEncodedUri(username)}/following/${getEncodedUri(targetUser)}`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/users/[username]/following/[targetUser].get(headers);
     }
 
     # List gists for a user
@@ -11031,10 +8154,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/gists(map<string|string[]> headers = {}, *GistsListForUserQueries queries) returns BaseGist[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/gists`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/gists(map<string|string[]> headers = {}, *oas:GistsListForUserQueries queries) returns oas:BaseGist[]|error {
+        return self.genClient->/users/[username]/gists.get(headers, queries);
     }
 
     # List GPG keys for a user
@@ -11043,10 +8164,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/gpg_keys(map<string|string[]> headers = {}, *UsersListGpgKeysForUserQueries queries) returns GpgKey[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/gpg_keys`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/gpg_keys(map<string|string[]> headers = {}, *oas:UsersListGpgKeysForUserQueries queries) returns oas:GpgKey[]|error {
+        return self.genClient->/users/[username]/gpg_keys.get(headers, queries);
     }
 
     # Get contextual information for a user
@@ -11055,10 +8174,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/hovercard(map<string|string[]> headers = {}, *UsersGetContextForUserQueries queries) returns Hovercard|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/hovercard`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/hovercard(map<string|string[]> headers = {}, *oas:UsersGetContextForUserQueries queries) returns oas:Hovercard|error {
+        return self.genClient->/users/[username]/hovercard.get(headers, queries);
     }
 
     # Get a user installation for the authenticated app
@@ -11066,9 +8183,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/installation(map<string|string[]> headers = {}) returns Installation|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/installation`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/installation(map<string|string[]> headers = {}) returns oas:Installation|error {
+        return self.genClient->/users/[username]/installation.get(headers);
     }
 
     # List public keys for a user
@@ -11077,10 +8193,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/keys(map<string|string[]> headers = {}, *UsersListPublicKeysForUserQueries queries) returns KeySimple[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/keys`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/keys(map<string|string[]> headers = {}, *oas:UsersListPublicKeysForUserQueries queries) returns oas:KeySimple[]|error {
+        return self.genClient->/users/[username]/keys.get(headers, queries);
     }
 
     # List organizations for a user
@@ -11089,10 +8203,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/orgs(map<string|string[]> headers = {}, *OrgsListForUserQueries queries) returns OrganizationSimple[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/orgs`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/orgs(map<string|string[]> headers = {}, *oas:OrgsListForUserQueries queries) returns oas:OrganizationSimple[]|error {
+        return self.genClient->/users/[username]/orgs.get(headers, queries);
     }
 
     # List packages for a user
@@ -11101,10 +8213,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/packages(map<string|string[]> headers = {}, *PackagesListPackagesForUserQueries queries) returns Package[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/packages`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/packages(map<string|string[]> headers = {}, *oas:PackagesListPackagesForUserQueries queries) returns oas:Package[]|error {
+        return self.genClient->/users/[username]/packages.get(headers, queries);
     }
 
     # Get a package for a user
@@ -11114,9 +8224,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName](map<string|string[]> headers = {}) returns Package|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName](map<string|string[]> headers = {}) returns oas:Package|error {
+        return self.genClient->/users/[username]/packages/[packageType]/[packageName].get(headers);
     }
 
     # Delete a package for a user
@@ -11127,8 +8236,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/users/${getEncodedUri(username)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/users/[username]/packages/[packageType]/[packageName].delete(headers);
     }
 
     # Restore a package for a user
@@ -11139,11 +8247,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function post users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/restore(map<string|string[]> headers = {}, *PackagesRestorePackageForUserQueries queries) returns error? {
-        string resourcePath = string `/users/${getEncodedUri(username)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/restore`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
+    resource isolated function post users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/restore(map<string|string[]> headers = {}, *oas:PackagesRestorePackageForUserQueries queries) returns error? {
+        return self.genClient->/users/[username]/packages/[packageType]/[packageName]/restore.post(headers, queries);
     }
 
     # List package versions for a package owned by a user
@@ -11153,9 +8258,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions(map<string|string[]> headers = {}) returns PackageVersion[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions(map<string|string[]> headers = {}) returns oas:PackageVersion[]|error {
+        return self.genClient->/users/[username]/packages/[packageType]/[packageName]/versions.get(headers);
     }
 
     # Get a package version for a user
@@ -11166,9 +8270,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId](map<string|string[]> headers = {}) returns PackageVersion|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions/${getEncodedUri(packageVersionId)}`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId](map<string|string[]> headers = {}) returns oas:PackageVersion|error {
+        return self.genClient->/users/[username]/packages/[packageType]/[packageName]/versions/[packageVersionId].get(headers);
     }
 
     # Delete package version for a user
@@ -11180,8 +8283,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function delete users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId](map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/users/${getEncodedUri(username)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions/${getEncodedUri(packageVersionId)}`;
-        return self.clientEp->delete(resourcePath, headers = headers);
+        return self.genClient->/users/[username]/packages/[packageType]/[packageName]/versions/[packageVersionId].delete(headers);
     }
 
     # Restore package version for a user
@@ -11193,21 +8295,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function post users/[string username]/packages/["npm"|"maven"|"rubygems"|"docker"|"nuget"|"container" packageType]/[string packageName]/versions/[int packageVersionId]/restore(map<string|string[]> headers = {}) returns error? {
-        string resourcePath = string `/users/${getEncodedUri(username)}/packages/${getEncodedUri(packageType)}/${getEncodedUri(packageName)}/versions/${getEncodedUri(packageVersionId)}/restore`;
-        http:Request request = new;
-        return self.clientEp->post(resourcePath, request, headers);
-    }
-
-    # List user projects
-    #
-    # + username - The handle for the GitHub user account
-    # + headers - Headers to be sent with the request 
-    # + queries - Queries to be sent with the request 
-    # + return - Response 
-    resource isolated function get users/[string username]/projects(map<string|string[]> headers = {}, *ProjectsListForUserQueries queries) returns Project[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/projects`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/users/[username]/packages/[packageType]/[packageName]/versions/[packageVersionId]/restore.post(headers);
     }
 
     # List events received by the authenticated user
@@ -11216,10 +8304,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/received_events(map<string|string[]> headers = {}, *ActivityListReceivedEventsForUserQueries queries) returns Event[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/received_events`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/received_events(map<string|string[]> headers = {}, *oas:ActivityListReceivedEventsForUserQueries queries) returns oas:Event[]|error {
+        return self.genClient->/users/[username]/received_events.get(headers, queries);
     }
 
     # List public events received by a user
@@ -11228,10 +8314,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/received_events/'public(map<string|string[]> headers = {}, *ActivityListReceivedPublicEventsForUserQueries queries) returns Event[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/received_events/public`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/received_events/'public(map<string|string[]> headers = {}, *oas:ActivityListReceivedPublicEventsForUserQueries queries) returns oas:Event[]|error {
+        return self.genClient->/users/[username]/received_events/'public.get(headers, queries);
     }
 
     # List repositories for a user
@@ -11240,10 +8324,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/repos(map<string|string[]> headers = {}, *ReposListForUserQueries queries) returns MinimalRepository[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/repos`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/repos(map<string|string[]> headers = {}, *oas:ReposListForUserQueries queries) returns oas:MinimalRepository[]|error {
+        return self.genClient->/users/[username]/repos.get(headers, queries);
     }
 
     # Get GitHub Actions billing for a user
@@ -11251,9 +8333,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/settings/billing/actions(map<string|string[]> headers = {}) returns ActionsBillingUsage|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/settings/billing/actions`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/settings/billing/actions(map<string|string[]> headers = {}) returns oas:ActionsBillingUsage|error {
+        return self.genClient->/users/[username]/settings/billing/actions.get(headers);
     }
 
     # Get GitHub Packages billing for a user
@@ -11261,9 +8342,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/settings/billing/packages(map<string|string[]> headers = {}) returns PackagesBillingUsage|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/settings/billing/packages`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/settings/billing/packages(map<string|string[]> headers = {}) returns oas:PackagesBillingUsage|error {
+        return self.genClient->/users/[username]/settings/billing/packages.get(headers);
     }
 
     # Get shared storage billing for a user
@@ -11271,9 +8351,8 @@ public isolated client class Client {
     # + username - The handle for the GitHub user account
     # + headers - Headers to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/settings/billing/shared\-storage(map<string|string[]> headers = {}) returns CombinedBillingUsage|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/settings/billing/shared-storage`;
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/settings/billing/shared\-storage(map<string|string[]> headers = {}) returns oas:CombinedBillingUsage|error {
+        return self.genClient->/users/[username]/settings/billing/shared\-storage.get(headers);
     }
 
     # List social accounts for a user
@@ -11282,10 +8361,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/social_accounts(map<string|string[]> headers = {}, *UsersListSocialAccountsForUserQueries queries) returns SocialAccount[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/social_accounts`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/social_accounts(map<string|string[]> headers = {}, *oas:UsersListSocialAccountsForUserQueries queries) returns oas:SocialAccount[]|error {
+        return self.genClient->/users/[username]/social_accounts.get(headers, queries);
     }
 
     # List SSH signing keys for a user
@@ -11294,10 +8371,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/ssh_signing_keys(map<string|string[]> headers = {}, *UsersListSshSigningKeysForUserQueries queries) returns SshSigningKey[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/ssh_signing_keys`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/ssh_signing_keys(map<string|string[]> headers = {}, *oas:UsersListSshSigningKeysForUserQueries queries) returns oas:SshSigningKey[]|error {
+        return self.genClient->/users/[username]/ssh_signing_keys.get(headers, queries);
     }
 
     # List repositories starred by a user
@@ -11306,10 +8381,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/starred(map<string|string[]> headers = {}, *ActivityListReposStarredByUserQueries queries) returns StarredRepositoryResponse|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/starred`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/starred(map<string|string[]> headers = {}, *oas:ActivityListReposStarredByUserQueries queries) returns oas:StarredRepositoryResponse|error {
+        return self.genClient->/users/[username]/starred.get(headers, queries);
     }
 
     # List repositories watched by a user
@@ -11318,10 +8391,8 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + queries - Queries to be sent with the request 
     # + return - Response 
-    resource isolated function get users/[string username]/subscriptions(map<string|string[]> headers = {}, *ActivityListReposWatchedByUserQueries queries) returns MinimalRepository[]|error {
-        string resourcePath = string `/users/${getEncodedUri(username)}/subscriptions`;
-        resourcePath = resourcePath + check getPathForQueryParam(queries);
-        return self.clientEp->get(resourcePath, headers);
+    resource isolated function get users/[string username]/subscriptions(map<string|string[]> headers = {}, *oas:ActivityListReposWatchedByUserQueries queries) returns oas:MinimalRepository[]|error {
+        return self.genClient->/users/[username]/subscriptions.get(headers, queries);
     }
 
     # Get all API versions
@@ -11329,8 +8400,7 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get versions(map<string|string[]> headers = {}) returns string[]|error {
-        string resourcePath = string `/versions`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/versions.get(headers);
     }
 
     # Get the Zen of GitHub
@@ -11338,7 +8408,211 @@ public isolated client class Client {
     # + headers - Headers to be sent with the request 
     # + return - Response 
     resource isolated function get zen(map<string|string[]> headers = {}) returns string|error {
-        string resourcePath = string `/zen`;
-        return self.clientEp->get(resourcePath, headers);
+        return self.genClient->/zen.get(headers);
     }
+
+    // ============================================================
+    // COMPOSITE OPERATIONS - hand-maintained in scripts/composites.bal
+    // ============================================================
+
+    // Composite operations - hand-maintained. Each delegates to the same generated
+    // `oas` client the wrapper methods above use (self.genClient->...), so a breaking
+    // spec change surfaces as a compile error here, not a silent runtime drift.
+    //
+    // Manually marked in ui-schema.json with "composite": true and the top priority
+    // tier (above the ~20 recommended operations) - see scripts/generate_ui_schema.py.
+
+    # Creates a new file, or updates it if it already exists - handles the GitHub API's
+    # `sha`-required-on-update requirement automatically instead of surfacing a 409 to
+    # the caller.
+    #
+    # + owner - The account owner of the repository
+    # + repo - The name of the repository
+    # + path - Path to the file in the repository
+    # + content - The new file content, using Base64 encoding
+    # + message - The commit message
+    # + branch - The branch name; defaults to the repository's default branch
+    # + return - The commit made to create/update the file
+    resource isolated function post repos/[string owner]/[string repo]/upsert\-file\-content(
+            string path, string content, string message, string? branch = ())
+            returns oas:FileCommit|error {
+        string? existingSha = ();
+        oas:InlineResponse200|error? existing = self.genClient->/repos/[owner]/[repo]/contents/[path](
+            queries = branch is string ? {ref: branch} : {});
+        if existing is oas:ContentFile {
+            existingSha = existing.sha;
+        } else if existing is error && !isNotFound(existing) {
+            return existing;
+        }
+        oas:ContentspathBody body = {
+            message,
+            content,
+            sha: existingSha,
+            branch
+        };
+        return self.genClient->/repos/[owner]/[repo]/contents/[path].put(body);
+    }
+
+    # Creates a new branch from the tip of the repository's default branch, resolving
+    # the base branch name and its current commit SHA automatically instead of
+    # requiring the caller to look both up first.
+    #
+    # + owner - The account owner of the repository
+    # + repo - The name of the repository
+    # + newBranchName - Name for the new branch (without the `refs/heads/` prefix)
+    # + return - The created git reference
+    resource isolated function post repos/[string owner]/[string repo]/branches\-from\-default(
+            string newBranchName) returns oas:GitRef|error {
+        oas:FullRepository repository = check self.genClient->/repos/[owner]/[repo]();
+        string defaultBranch = repository.defaultBranch;
+        oas:BranchWithProtection baseBranch = check self.genClient->/repos/[owner]/[repo]/branches/[defaultBranch]();
+        string baseSha = baseBranch.'commit.sha;
+        oas:GitRefsBody body = {ref: string `refs/heads/${newBranchName}`, sha: baseSha};
+        return self.genClient->/repos/[owner]/[repo]/git/refs.post(body);
+    }
+
+    # Merges a pull request and deletes its source branch in one step - the two
+    # operations most PR workflows always perform together.
+    #
+    # + owner - The account owner of the repository
+    # + repo - The name of the repository
+    # + pullNumber - The pull request number
+    # + mergeMethod - The merge method to use
+    # + return - The merge result
+    resource isolated function post repos/[string owner]/[string repo]/pulls/[int pullNumber]/merge\-and\-delete\-branch(
+            "merge"|"squash"|"rebase" mergeMethod = "merge") returns oas:PullRequestMergeResult|error {
+        oas:PullRequest? maybePullRequest = check self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]();
+        if maybePullRequest is () {
+            return error("Pull request not found");
+        }
+        oas:PullRequest pullRequest = maybePullRequest;
+        oas:PullNumberMergeBody body = {mergeMethod};
+        oas:PullRequestMergeResult result =
+            check self.genClient->/repos/[owner]/[repo]/pulls/[pullNumber]/merge.put(body);
+        string headRef = pullRequest.head.ref;
+        error? deleteResult = self.genClient->/repos/[owner]/[repo]/git/refs/[string `heads/${headRef}`].delete();
+        if deleteResult is error {
+            return error("Pull request merged, but deleting branch '" + headRef + "' failed: " + deleteResult.message());
+        }
+        return result;
+    }
+
+    # Returns the full CI status for a commit, combining GitHub's two independent
+    # status systems - legacy commit statuses and the newer Checks API - into one
+    # result, since a repository (or a single commit) may report through either or
+    # both and callers otherwise have to know to check both separately.
+    #
+    # + owner - The account owner of the repository
+    # + repo - The name of the repository
+    # + ref - The commit SHA, branch name, or tag name
+    # + return - Combined legacy statuses and check runs for the ref
+    resource isolated function get repos/[string owner]/[string repo]/commits/[string ref]/full\-ci\-status()
+            returns CombinedCiStatus|error {
+        oas:CombinedCommitStatus statuses = check self.genClient->/repos/[owner]/[repo]/commits/[ref]/status();
+        oas:CheckRunResponse checkRuns = check self.genClient->/repos/[owner]/[repo]/commits/[ref]/check\-runs();
+        return {statuses, checkRuns: checkRuns.checkRuns};
+    }
+
+    # Ensures a label exists on the repository (creating it if necessary) and applies
+    # it to an issue or pull request in one step, instead of requiring a separate
+    # existence check before every apply.
+    #
+    # + owner - The account owner of the repository
+    # + repo - The name of the repository
+    # + issueNumber - The issue (or pull request) number to label
+    # + labelName - The label name
+    # + color - Hex color (without leading '#') to use if the label needs to be created
+    # + description - Description to use if the label needs to be created
+    # + return - The issue's labels after applying
+    resource isolated function post repos/[string owner]/[string repo]/issues/[int issueNumber]/ensure\-label(
+            string labelName, string? color = (), string? description = ()) returns oas:Label[]|error {
+        oas:Label|error existingLabel = self.genClient->/repos/[owner]/[repo]/labels/[labelName]();
+        if existingLabel is error {
+            if !isNotFound(existingLabel) {
+                return existingLabel;
+            }
+            oas:RepoLabelsBody newLabel = {name: labelName, color, description};
+            oas:Label _ = check self.genClient->/repos/[owner]/[repo]/labels.post(newLabel);
+        }
+        oas:IssueNumberLabelsBody addBody = {labels: [labelName]};
+        return self.genClient->/repos/[owner]/[repo]/issues/[issueNumber]/labels.post(addBody);
+    }
+
+    # Creates a repository webhook and immediately sends it a ping to verify delivery,
+    # instead of leaving verification as a separate manual step.
+    #
+    # + owner - The account owner of the repository
+    # + repo - The name of the repository
+    # + url - The URL the webhook should deliver events to
+    # + events - The events the webhook should trigger for
+    # + contentType - The webhook payload content type
+    # + return - The created webhook
+    resource isolated function post repos/[string owner]/[string repo]/webhooks\-verified(
+            string url, string[] events = ["push"], string contentType = "json") returns oas:Hook|error {
+        oas:RepoHooksBody body = {
+            name: "web",
+            events,
+            config: {url, contentType}
+        };
+        oas:Hook hook = check self.genClient->/repos/[owner]/[repo]/hooks.post(body);
+        error? pingResult = self.genClient->/repos/[owner]/[repo]/hooks/[hook.id]/pings.post();
+        if pingResult is error {
+            return error("Webhook created, but the verification ping failed: " + pingResult.message());
+        }
+        return hook;
+    }
+
+    # Creates a deployment and immediately sets its initial status - a deployment with
+    # no status is not meaningfully usable, so this is effectively always two calls
+    # in practice.
+    #
+    # + owner - The account owner of the repository
+    # + repo - The name of the repository
+    # + ref - The ref (branch, tag, or SHA) to deploy
+    # + environment - The target deployment environment
+    # + initialState - The initial status state to set
+    # + return - The status that was set on the new deployment
+    resource isolated function post repos/[string owner]/[string repo]/deployments\-with\-status(
+            string ref, string environment = "production",
+            "error"|"failure"|"inactive"|"in_progress"|"queued"|"pending"|"success" initialState = "in_progress")
+            returns oas:DeploymentStatus|error {
+        oas:RepoDeploymentsBody deploymentBody = {ref, environment};
+        oas:Deployment|oas:MergedBranchResponse deploymentResult =
+            check self.genClient->/repos/[owner]/[repo]/deployments.post(deploymentBody);
+        if deploymentResult is oas:MergedBranchResponse {
+            return error("Deployment could not be created directly - a merge commit was created instead");
+        }
+        // Explicit cast: Deployment and MergedBranchResponse overlap structurally enough
+        // that flow-typing narrowing after the guard above isn't reliably precise.
+        oas:Deployment deployment = <oas:Deployment>deploymentResult;
+        int deploymentId = deployment.id;
+        oas:DeploymentIdStatusesBody statusBody = {environment, state: initialState};
+        return self.genClient->/repos/[owner]/[repo]/deployments/[deploymentId]/statuses.post(statusBody);
+    }
+
+}
+
+// ============================================================
+// Module-level helpers for composite operations (hand-maintained
+// alongside scripts/composites.bal, spliced in here since Ballerina
+// does not allow top-level declarations inside a class body).
+// ============================================================
+
+# The combined CI status for a ref: legacy commit statuses plus Checks API runs.
+#
+# + statuses - The legacy combined commit status
+# + checkRuns - Check runs reported through the Checks API
+public type CombinedCiStatus record {|
+    oas:CombinedCommitStatus statuses;
+    oas:CheckRun[] checkRuns;
+|};
+
+# True if the given error represents an HTTP 404 response from the underlying client.
+isolated function isNotFound(error err) returns boolean {
+    map<anydata> detail = <map<anydata>> err.detail();
+    anydata statusCode = detail["statusCode"];
+    if statusCode is int {
+        return statusCode == 404;
+    }
+    return err.message().includes("404");
 }

@@ -329,8 +329,8 @@ dependencies = [
 
 [[package]]
 org = "daneshk"
-name = "github"
-version = "6.0.1"
+name = "githubx"
+version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "data.jsondata"},
@@ -340,6 +340,7 @@ dependencies = [
 	{org = "ballerina", name = "url"}
 ]
 modules = [
-	{org = "daneshk", packageName = "github", moduleName = "github"}
+	{org = "daneshk", packageName = "githubx", moduleName = "githubx"},
+	{org = "daneshk", packageName = "githubx", moduleName = "githubx.oas"}
 ]
 

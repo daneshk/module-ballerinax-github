@@ -2,6 +2,13 @@
   "schemaVersion": "1.0",
   "connector": "github",
   "commonTasks": [
+    "composite/upsert-file-content",
+    "composite/branches-from-default",
+    "composite/merge-and-delete-branch",
+    "composite/full-ci-status",
+    "composite/ensure-label",
+    "composite/webhooks-verified",
+    "composite/deployments-with-status",
     "repos/get",
     "repos/list-for-authenticated-user",
     "repos/create-for-authenticated-user",
@@ -5041,7 +5048,7 @@
       "description": "The parent and source objects are present when the repository is a fork. parent is the repository this repository was forked from, source is the ultimate source for the network.",
       "docsUrl": "https://docs.github.com/rest/repos/repos#get-a-repository",
       "recommended": true,
-      "rank": 1,
+      "rank": 8,
       "keywords": [
         "get repo",
         "repository details",
@@ -6402,7 +6409,7 @@
       "subgroup": "Branches",
       "docsUrl": "https://docs.github.com/rest/branches/branches#list-branches",
       "recommended": true,
-      "rank": 12,
+      "rank": 19,
       "keywords": [
         "list branches",
         "view branches",
@@ -7719,7 +7726,7 @@
       "description": "Signature verification object",
       "docsUrl": "https://docs.github.com/rest/commits/commits#list-commits",
       "recommended": true,
-      "rank": 11,
+      "rank": 18,
       "keywords": [
         "list commits",
         "commit history",
@@ -7914,7 +7921,7 @@
       "description": "Gets the contents of a file or directory in a repository. Specify the file path or directory in :path. If you omit :path, you will receive the contents of the repository's root directory.",
       "docsUrl": "https://docs.github.com/rest/repos/contents#get-repository-content",
       "recommended": true,
-      "rank": 13,
+      "rank": 20,
       "hint": "Returns file content (base64) or a directory listing for a path. For the rendered README use 'Get a repository README'; to download the whole repo use the tarball/zipball archive operations.",
       "keywords": [
         "read file",
@@ -7937,7 +7944,7 @@
       "description": "Creates a new file or replaces an existing file in a repository. You must authenticate using an access token with the repo scope to use this endpoint.",
       "docsUrl": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents",
       "recommended": true,
-      "rank": 14,
+      "rank": 21,
       "hint": "Creates a new file or replaces an existing one in a single commit. Updating an existing file requires its current blob SHA (get it via 'Get repository content').",
       "keywords": [
         "upload file",
@@ -8550,7 +8557,7 @@
       "description": "Create a fork for the authenticated user.",
       "docsUrl": "https://docs.github.com/rest/repos/forks#create-a-fork",
       "recommended": true,
-      "rank": 20,
+      "rank": 27,
       "keywords": [
         "fork repo",
         "copy repository",
@@ -9203,7 +9210,7 @@
       "description": "List issues in a repository. Only open issues will be listed.",
       "docsUrl": "https://docs.github.com/rest/issues/issues#list-repository-issues",
       "recommended": true,
-      "rank": 4,
+      "rank": 11,
       "keywords": [
         "list issues",
         "open issues",
@@ -9224,7 +9231,7 @@
       "description": "Any user with pull access to a repository can create an issue. If issues are disabled in the repository, the API returns a 410 Gone status.",
       "docsUrl": "https://docs.github.com/rest/issues/issues#create-an-issue",
       "recommended": true,
-      "rank": 5,
+      "rank": 12,
       "keywords": [
         "create issue",
         "new issue",
@@ -9402,7 +9409,7 @@
       "description": "Issue owners and users with push access can edit an issue.",
       "docsUrl": "https://docs.github.com/rest/issues/issues#update-an-issue",
       "recommended": true,
-      "rank": 6,
+      "rank": 13,
       "hint": "Also how you close or reopen an issue: set 'state' to closed/open. There is no separate close-issue operation. 'Lock an issue' only freezes the conversation, it does not close the issue.",
       "keywords": [
         "update issue",
@@ -9487,7 +9494,7 @@
       "description": "You can use the REST API to create comments on issues and pull requests. Every pull request is an issue, but not every issue is a pull request.",
       "docsUrl": "https://docs.github.com/rest/issues/comments#create-an-issue-comment",
       "recommended": true,
-      "rank": 7,
+      "rank": 14,
       "hint": "Works for both issues and pull requests (a PR is an issue). For inline review comments on a PR diff use the pulls review-comment operations.",
       "keywords": [
         "add comment",
@@ -10239,7 +10246,7 @@
       "description": "Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team\u2026",
       "docsUrl": "https://docs.github.com/rest/pulls/pulls#list-pull-requests",
       "recommended": true,
-      "rank": 8,
+      "rank": 15,
       "keywords": [
         "list PRs",
         "view pull requests",
@@ -10260,7 +10267,7 @@
       "description": "Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team\u2026",
       "docsUrl": "https://docs.github.com/rest/pulls/pulls#create-a-pull-request",
       "recommended": true,
-      "rank": 9,
+      "rank": 16,
       "keywords": [
         "create PR",
         "new pull request",
@@ -10535,7 +10542,7 @@
       "description": "Merges a pull request into the base branch. This endpoint triggers notifications. Creating content too quickly using this endpoint may result in secondary rate limiting.",
       "docsUrl": "https://docs.github.com/rest/pulls/pulls#merge-a-pull-request",
       "recommended": true,
-      "rank": 10,
+      "rank": 17,
       "hint": "Merges the PR into its base branch. Not to be confused with 'Update a pull request' (edits title/body/state) or 'Update a pull request branch' (pulls base changes INTO the PR branch).",
       "keywords": [
         "merge PR",
@@ -10795,7 +10802,7 @@
       "description": "Users with push access to the repository can create a release.",
       "docsUrl": "https://docs.github.com/rest/releases/releases#create-a-release",
       "recommended": true,
-      "rank": 15,
+      "rank": 22,
       "keywords": [
         "create release",
         "publish release",
@@ -10875,7 +10882,7 @@
       "description": "View the latest published full release for the repository.",
       "docsUrl": "https://docs.github.com/rest/releases/releases#get-the-latest-release",
       "recommended": true,
-      "rank": 16,
+      "rank": 23,
       "hint": "Returns the most recent non-prerelease, non-draft release. 'Get a release' fetches by release ID; 'Get a release by tag name' fetches by git tag (e.g. v1.2.0).",
       "keywords": [
         "latest release",
@@ -11978,7 +11985,7 @@
       "description": "Find issues by state and keyword. This method returns up to 100 results per page.",
       "docsUrl": "https://docs.github.com/rest/search/search#search-issues-and-pull-requests",
       "recommended": true,
-      "rank": 18,
+      "rank": 25,
       "keywords": [
         "search issues",
         "find issues",
@@ -12016,7 +12023,7 @@
       "description": "Find repositories via various criteria. This method returns up to 100 results per page.",
       "docsUrl": "https://docs.github.com/rest/search/search#search-repositories",
       "recommended": true,
-      "rank": 17,
+      "rank": 24,
       "keywords": [
         "search repos",
         "find repository",
@@ -12593,7 +12600,7 @@
       "description": "If the authenticated user is authenticated with an OAuth token with the user scope, then the response lists public and private profile information.",
       "docsUrl": "https://docs.github.com/rest/users/users#get-the-authenticated-user",
       "recommended": true,
-      "rank": 19,
+      "rank": 26,
       "hint": "Returns the profile of the token owner. To look up someone else by username use 'Get a user'.",
       "keywords": [
         "my profile",
@@ -13752,7 +13759,7 @@
       "description": "Lists repositories that the authenticated user has explicit permission (:read, :write, or :admin) to access.",
       "docsUrl": "https://docs.github.com/rest/repos/repos#list-repositories-for-the-authenticated-user",
       "recommended": true,
-      "rank": 2,
+      "rank": 9,
       "hint": "Lists repositories owned by the authenticated user (the token owner). To list another user's repos use 'List repositories for a user'; for an organization use 'List organization repositories'.",
       "keywords": [
         "my repos",
@@ -13773,7 +13780,7 @@
       "description": "Creates a new repository for the authenticated user.",
       "docsUrl": "https://docs.github.com/rest/repos/repos#create-a-repository-for-the-authenticated-user",
       "recommended": true,
-      "rank": 3,
+      "rank": 10,
       "hint": "Creates a repository under the authenticated user's account. To create one inside an organization use 'Create an organization repository'.",
       "keywords": [
         "create repo",
@@ -14569,6 +14576,113 @@
       "keywords": [
         "meta/get-zen"
       ]
+    },
+    "composite/upsert-file-content": {
+      "method": "POST",
+      "path": "repos/{}/{}/upsert-file-content",
+      "label": "Create or update file content (auto-detect)",
+      "group": "Files & Content",
+      "actionTags": [
+        "create",
+        "update"
+      ],
+      "operationId": "composite/upsert-file-content",
+      "description": "Creates a new file, or updates it if it already exists - resolves the required SHA automatically instead of surfacing a 409 conflict to the caller.",
+      "recommended": true,
+      "rank": 1,
+      "composite": true
+    },
+    "composite/branches-from-default": {
+      "method": "POST",
+      "path": "repos/{}/{}/branches-from-default",
+      "label": "Create a branch from the default branch",
+      "group": "Branches & Commits",
+      "actionTags": [
+        "create"
+      ],
+      "operationId": "composite/branches-from-default",
+      "description": "Creates a new branch from the tip of the repository's default branch, resolving the base branch name and its current commit SHA automatically.",
+      "recommended": true,
+      "rank": 2,
+      "composite": true,
+      "subgroup": "Branches"
+    },
+    "composite/merge-and-delete-branch": {
+      "method": "POST",
+      "path": "repos/{}/{}/pulls/{}/merge-and-delete-branch",
+      "label": "Merge a pull request and delete its branch",
+      "group": "Pull Requests",
+      "actionTags": [
+        "update",
+        "delete"
+      ],
+      "operationId": "composite/merge-and-delete-branch",
+      "description": "Merges a pull request and deletes its source branch in one step - the two operations most PR workflows always perform together.",
+      "recommended": true,
+      "rank": 3,
+      "composite": true,
+      "subgroup": "General"
+    },
+    "composite/full-ci-status": {
+      "method": "GET",
+      "path": "repos/{}/{}/commits/{}/full-ci-status",
+      "label": "Get full CI status (statuses + checks combined)",
+      "group": "Branches & Commits",
+      "actionTags": [
+        "read"
+      ],
+      "operationId": "composite/full-ci-status",
+      "description": "Combines GitHub's two independent CI status systems - legacy commit statuses and the Checks API - into one result, since a commit may report through either or both.",
+      "recommended": true,
+      "rank": 4,
+      "composite": true,
+      "subgroup": "Checks"
+    },
+    "composite/ensure-label": {
+      "method": "POST",
+      "path": "repos/{}/{}/issues/{}/ensure-label",
+      "label": "Ensure a label exists and apply it",
+      "group": "Issues",
+      "actionTags": [
+        "create",
+        "update"
+      ],
+      "operationId": "composite/ensure-label",
+      "description": "Creates a label if it doesn't already exist on the repository, then applies it to an issue or pull request in one step.",
+      "recommended": true,
+      "rank": 5,
+      "composite": true,
+      "subgroup": "Labels"
+    },
+    "composite/webhooks-verified": {
+      "method": "POST",
+      "path": "repos/{}/{}/webhooks-verified",
+      "label": "Create a webhook and verify delivery",
+      "group": "Repositories",
+      "actionTags": [
+        "create"
+      ],
+      "operationId": "composite/webhooks-verified",
+      "description": "Creates a repository webhook and immediately sends it a ping to verify delivery, instead of leaving verification as a separate manual step.",
+      "recommended": true,
+      "rank": 6,
+      "composite": true,
+      "subgroup": "Webhooks"
+    },
+    "composite/deployments-with-status": {
+      "method": "POST",
+      "path": "repos/{}/{}/deployments-with-status",
+      "label": "Create a deployment with initial status",
+      "group": "CI/CD (Actions)",
+      "actionTags": [
+        "create"
+      ],
+      "operationId": "composite/deployments-with-status",
+      "description": "Creates a deployment and immediately sets its initial status - a deployment with no status is not meaningfully usable, so this is effectively always two calls.",
+      "recommended": true,
+      "rank": 7,
+      "composite": true,
+      "subgroup": "Deployments & Environments"
     }
   }
 }

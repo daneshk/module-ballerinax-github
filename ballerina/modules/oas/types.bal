@@ -706,49 +706,6 @@ public type DeploymentBranchPolicy record {
     string nodeId?;
 };
 
-# A team's access to a project
-public type TeamProject record {
-    # The API URL to list the project's columns.
-    @jsondata:Name {value: "columns_url"}
-    string columnsUrl;
-    # The user who created this project.
-    SimpleUser creator;
-    # Whether the project is private or not. Only present when owner is an organization
-    boolean 'private?;
-    # The organization permission for this project. Only present when owner is an organization
-    @jsondata:Name {value: "organization_permission"}
-    string organizationPermission?;
-    # The timestamp when this project was created.
-    @jsondata:Name {value: "created_at"}
-    string createdAt;
-    # The description or body text of the project.
-    string? body;
-    # The API URL for this project.
-    string url;
-    # The API URL of the project's owner.
-    @jsondata:Name {value: "owner_url"}
-    string ownerUrl;
-    # The project number within the owner's namespace.
-    int number;
-    # The timestamp when this project was last updated.
-    @jsondata:Name {value: "updated_at"}
-    string updatedAt;
-    # The team's permissions for this project.
-    TeamProjectPermissions permissions;
-    # The HTML URL to view this project on GitHub.
-    @jsondata:Name {value: "html_url"}
-    string htmlUrl;
-    # The name of the project.
-    string name;
-    # The unique identifier of this project.
-    int id;
-    # The current state of the project (open or closed).
-    string state;
-    # The global node ID of this project.
-    @jsondata:Name {value: "node_id"}
-    string nodeId;
-};
-
 # Represents the Queries record for the operation: repos/list-commits
 public type ReposListCommitsQueries record {
     # Only commits containing this file path will be returned
@@ -1571,14 +1528,6 @@ public type KeySimple record {
     string 'key;
 };
 
-# Project Collaborator Permission
-public type ProjectCollaboratorPermission record {
-    # The permission level of the collaborator on the project.
-    string permission;
-    # The user associated with the collaborator permission.
-    NullableSimpleUser? user;
-};
-
 public type OrgsorgBody record {
     # Whether Dependabot security updates is automatically enabled for new repositories.
     # 
@@ -2029,13 +1978,6 @@ public type InstallationResponse record {
     int totalCount;
     # The list of GitHub App installations.
     Installation[] installations;
-};
-
-public type CardscardIdBody record {
-    # The project card's note
-    string? note?;
-    # Whether or not the card is archived
-    boolean archived?;
 };
 
 # A credit given to a user for a repository security advisory
@@ -6354,47 +6296,6 @@ public type ReviewCustomGatesStateRequired record {
     string environmentName;
 };
 
-# Projects are a way to organize columns and cards of work
-public type Project record {
-    # The API URL to list columns in this project.
-    @jsondata:Name {value: "columns_url"}
-    string columnsUrl;
-    # The GitHub user who created this project.
-    NullableSimpleUser? creator;
-    # Whether or not this project can be seen by everyone. Only present if owner is an organization
-    boolean 'private?;
-    # The baseline permission that all organization members have on this project. Only present if owner is an organization
-    @jsondata:Name {value: "organization_permission"}
-    "read"|"write"|"admin"|"none" organizationPermission?;
-    # The timestamp when this project was created.
-    @jsondata:Name {value: "created_at"}
-    string createdAt;
-    # Body of the project
-    string? body;
-    # The API URL for this project resource.
-    string url;
-    # The API URL of the project's owner resource.
-    @jsondata:Name {value: "owner_url"}
-    string ownerUrl;
-    # The sequential number identifying this project within its owner.
-    int number;
-    # The timestamp when this project was last updated.
-    @jsondata:Name {value: "updated_at"}
-    string updatedAt;
-    # The URL to view this project on GitHub.
-    @jsondata:Name {value: "html_url"}
-    string htmlUrl;
-    # Name of the project
-    string name;
-    # The unique numeric identifier for this project.
-    int id;
-    # State of the project; either 'open' or 'closed'
-    string state;
-    # The unique GraphQL node identifier for this project.
-    @jsondata:Name {value: "node_id"}
-    string nodeId;
-};
-
 # The billing plan for the organization
 public type TeamOrganizationPlan record {
     # The number of private repositories allowed under this plan.
@@ -6868,17 +6769,6 @@ public type PullRequestReviewCommentLinksSelf record {
 
 # Sets the state of the secret scanning alert. You must provide resolution when you set the state to resolved
 public type SecretScanningAlertState "open"|"resolved";
-
-# Represents the Queries record for the operation: projects/list-for-user
-public type ProjectsListForUserQueries record {
-    # The number of results per page (max 100)
-    @http:Query {name: "per_page"}
-    int perPage = 30;
-    # Indicates the state of the projects to return
-    "open"|"closed"|"all" state = "open";
-    # Page number of the results to fetch
-    int page = 1;
-};
 
 # Parameters to be used for the commit_message_pattern rule
 public type RepositoryRuleCommitMessagePattern record {
@@ -8133,8 +8023,6 @@ public type ReposGetAllEnvironmentsQueries record {
     int page = 1;
 };
 
-public type ColumnIdCardsBody ProjectscolumnscolumnIdcardsOneOf1|ProjectscolumnscolumnIdcardsprojectscolumnscolumnIdcardsOneOf12;
-
 public type ReposownerrepoissuesissueNumberlabelsLabels record {
     # The name of the label to add to the issue.
     string name;
@@ -8968,15 +8856,6 @@ public type NullableSimpleCommit record {
     string message;
     # Timestamp of the commit
     string timestamp;
-};
-
-public type ProjectscolumnscolumnIdcardsprojectscolumnscolumnIdcardsOneOf12 record {
-    # The piece of content associated with the card
-    @jsondata:Name {value: "content_type"}
-    string contentType;
-    # The unique identifier of the content associated with the card
-    @jsondata:Name {value: "content_id"}
-    int contentId;
 };
 
 # Represents the Queries record for the operation: actions/delete-actions-cache-by-key
@@ -10166,11 +10045,6 @@ public type GitTree record {
     string url;
 };
 
-public type ProjectscolumnscolumnIdcardsOneOf1 record {
-    # The project card's note
-    string? note;
-};
-
 public type StatusesshaBody record {
     # The target URL to associate with this status. This URL will be linked from the GitHub UI to allow users to easily see the source of the status.  
     # For example, if your continuous integration system is posting build status, you would want to provide the deep link for the build output for this specific SHA:  
@@ -10466,31 +10340,6 @@ public type CodeScanningDefaultSetupUpdate record {
     "configured"|"not-configured" state;
 };
 
-# Project columns contain cards of work
-public type ProjectColumn record {
-    # The date and time the project column was last updated.
-    @jsondata:Name {value: "updated_at"}
-    string updatedAt;
-    # The API URL to list cards in this column.
-    @jsondata:Name {value: "cards_url"}
-    string cardsUrl;
-    # Name of the project column
-    string name;
-    # The API URL of the project this column belongs to.
-    @jsondata:Name {value: "project_url"}
-    string projectUrl;
-    # The date and time the project column was created.
-    @jsondata:Name {value: "created_at"}
-    string createdAt;
-    # The unique identifier of the project column
-    int id;
-    # The API URL for this project column.
-    string url;
-    # The GraphQL node identifier of the project column.
-    @jsondata:Name {value: "node_id"}
-    string nodeId;
-};
-
 public type NullableCommunityHealthFile record {
     # The HTML URL of the community health file on GitHub.
     @jsondata:Name {value: "html_url"}
@@ -10774,17 +10623,6 @@ public type Devcontainers record {
     # The human-readable display name of the dev container.
     @jsondata:Name {value: "display_name"}
     string displayName?;
-};
-
-# Represents the Queries record for the operation: projects/list-collaborators
-public type ProjectsListCollaboratorsQueries record {
-    # The number of results per page (max 100)
-    @http:Query {name: "per_page"}
-    int perPage = 30;
-    # Filters the collaborators by their affiliation. outside means outside collaborators of a project that are not a member of the project's organization. direct means collaborators with permissions to a project, regardless of organization membership status. all means all collaborators the authenticated user can see
-    "outside"|"direct"|"all" affiliation = "all";
-    # Page number of the results to fetch
-    int page = 1;
 };
 
 # Parameters to be used for the branch_name_pattern rule
@@ -11590,15 +11428,6 @@ public type RepositoryRuleDetailedOneOf2 record {
     *RepositoryRuleRulesetInfo;
 };
 
-public type CardIdMovesBody record {
-    # The unique identifier of the column the card should be moved to
-    @jsondata:Name {value: "column_id"}
-    int columnId?;
-    # The position of the card in a column. Can be one of: top, bottom, or after:<card_id> to place after the specified card
-    @constraint:String {pattern: re `^(?:top|bottom|after:\d+)$`}
-    string position;
-};
-
 # Represents the Queries record for the operation: pulls/list-commits
 public type PullsListCommitsQueries record {
     # The number of results per page (max 100)
@@ -11769,13 +11598,6 @@ public type ManifestFile record {|
     @jsondata:Name {value: "source_location"}
     string sourceLocation?;
 |};
-
-public type UserProjectsBody record {
-    # Name of the project
-    string name;
-    # Body of the project
-    string? body?;
-};
 
 # A repository on GitHub
 public type Repository record {
@@ -12417,17 +12239,6 @@ public type RepositoryRuleDetailedOneOf7 record {
 # Starred Repository
 public type StarredRepositoryResponse StarredRepositoryResponseAnyOf1|StarredRepositoryResponseStarredRepositoryResponseAnyOf12;
 
-# Represents the Queries record for the operation: projects/list-for-repo
-public type ProjectsListForRepoQueries record {
-    # The number of results per page (max 100)
-    @http:Query {name: "per_page"}
-    int perPage = 30;
-    # Indicates the state of the projects to return
-    "open"|"closed"|"all" state = "open";
-    # Page number of the results to fetch
-    int page = 1;
-};
-
 public type RepositoryRuleDetailedOneOf8 record {
     *RepositoryRuleRequiredStatusChecks;
     *RepositoryRuleRulesetInfo;
@@ -12712,24 +12523,6 @@ public type ParticipationStats record {
     int[] all;
     # Weekly commit counts for the repository owner over the past year.
     int[] owner;
-};
-
-public type ColumnIdMovesBody record {
-    # The position of the column in a project. Can be one of: first, last, or after:<column_id> to place after the specified column
-    @constraint:String {pattern: re `^(?:first|last|after:\d+)$`}
-    string position;
-};
-
-# Represents the Queries record for the operation: projects/list-cards
-public type ProjectsListCardsQueries record {
-    # Filters the project cards that are returned by the card's state
-    @http:Query {name: "archived_state"}
-    "all"|"archived"|"not_archived" archivedState = "not_archived";
-    # The number of results per page (max 100)
-    @http:Query {name: "per_page"}
-    int perPage = 30;
-    # Page number of the results to fetch
-    int page = 1;
 };
 
 # Represents the Queries record for the operation: activity/list-events-for-authenticated-user
@@ -14955,17 +14748,6 @@ public type CodeScanningAlertRule record {
 # The type of credit the user is receiving
 public type SecurityAdvisoryCreditTypes "analyst"|"finder"|"reporter"|"coordinator"|"remediation_developer"|"remediation_reviewer"|"remediation_verifier"|"tool"|"sponsor"|"other";
 
-# Represents the Queries record for the operation: projects/list-for-org
-public type ProjectsListForOrgQueries record {
-    # The number of results per page (max 100)
-    @http:Query {name: "per_page"}
-    int perPage = 30;
-    # Indicates the state of the projects to return
-    "open"|"closed"|"all" state = "open";
-    # Page number of the results to fetch
-    int page = 1;
-};
-
 public type ProtectedBranchRequiredStatusCheckChecks record {
     # Name of the required status check context.
     string context;
@@ -15234,11 +15016,6 @@ public type AppsListReposAccessibleToInstallationQueries record {
     int page = 1;
 };
 
-public type ColumnscolumnIdBody record {
-    # Name of the project column
-    string name;
-};
-
 public type GistHistoryChangeStatus record {
     # The total number of lines changed in the gist revision.
     int total?;
@@ -15424,15 +15201,6 @@ public type TimelineCommittedEvent record {
     GitCommitParents[] parents;
 };
 
-# Represents the Queries record for the operation: projects/list-columns
-public type ProjectsListColumnsQueries record {
-    # The number of results per page (max 100)
-    @http:Query {name: "per_page"}
-    int perPage = 30;
-    # Page number of the results to fetch
-    int page = 1;
-};
-
 # The name of the package affected by the vulnerability
 public type RepositoryAdvisoryVulnerabilityPackage record {
     # The package ecosystem where the vulnerability exists.
@@ -15443,11 +15211,6 @@ public type RepositoryAdvisoryVulnerabilityPackage record {
 
 # The GUID of the tool used to generate the code scanning analysis, if provided in the uploaded SARIF data
 public type CodeScanningAnalysisToolGuid string?;
-
-public type CollaboratorsusernameBody record {
-    # The permission to grant the collaborator
-    "read"|"write"|"admin" permission = "write";
-};
 
 public type MilestonesmilestoneNumberBody record {
     # A description of the milestone
@@ -16802,20 +16565,6 @@ public type IssuesListForAuthenticatedUserQueries record {
     string since?;
 };
 
-public type ProjectsprojectIdBody1 record {
-    # Whether or not this project can be seen by everyone
-    boolean 'private?;
-    # The baseline permission that all organization members have on this project
-    @jsondata:Name {value: "organization_permission"}
-    "read"|"write"|"admin"|"none" organizationPermission?;
-    # Name of the project
-    string name?;
-    # State of the project; either 'open' or 'closed'
-    string state?;
-    # Body of the project
-    string? body?;
-};
-
 # Activity
 public type Activity record {
     # The user who performed the activity.
@@ -16836,11 +16585,6 @@ public type Activity record {
     string nodeId;
     # The time when the activity occurred
     string timestamp;
-};
-
-public type ProjectsprojectIdBody2 record {
-    # The permission to grant to the team for this project. Default: the team's permission attribute will be used to determine what permission to grant the team on this project. Note that, if you choose not to pass any parameters, you'll need to set Content-Length to zero when calling this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
-    "read"|"write"|"admin" permission?;
 };
 
 public type RepositoryTemplateRepositoryPermissions record {
@@ -17104,15 +16848,6 @@ public type GlobalAdvisory record {|
     # The CVSS score and vector string for the advisory.
     GlobalAdvisoryCvss? cvss;
 |};
-
-public type TeamProjectPermissions record {
-    # Whether the team has read permission on the project.
-    boolean read;
-    # Whether the team has admin permission on the project.
-    boolean admin;
-    # Whether the team has write permission on the project.
-    boolean write;
-};
 
 # Represents the Queries record for the operation: teams/list-for-authenticated-user
 public type TeamsListForAuthenticatedUserQueries record {
@@ -17525,11 +17260,6 @@ public type ActivityListRepoEventsQueries record {
 public type RepositoryRuleCreation record {
     # The rule type, always 'creation' for this rule.
     "creation" 'type;
-};
-
-public type ProjectsprojectIdBody record {
-    # The permission to grant to the team for this project. Default: the team's permission attribute will be used to determine what permission to grant the team on this project. Note that, if you choose not to pass any parameters, you'll need to set Content-Length to zero when calling this endpoint. For more information, see "[HTTP verbs](https://docs.github.com/rest/overview/resources-in-the-rest-api#http-verbs)."
-    "read"|"write"|"admin" permission?;
 };
 
 # User-defined metadata to store domain-specific information limited to 8 keys with scalar values
@@ -19384,44 +19114,6 @@ public type TeamFull record {
     string nodeId;
 };
 
-# Project cards represent a scope of work
-public type ProjectCard record {
-    # The API URL for the column this card belongs to.
-    @jsondata:Name {value: "column_url"}
-    string columnUrl;
-    # The text note content of the project card.
-    string? note;
-    # The user who created the project card.
-    NullableSimpleUser? creator;
-    # The name of the column this card belongs to.
-    @jsondata:Name {value: "column_name"}
-    string columnName?;
-    # The timestamp when the project card was created.
-    @jsondata:Name {value: "created_at"}
-    string createdAt;
-    # The API URL for the project containing this card.
-    @jsondata:Name {value: "project_url"}
-    string projectUrl;
-    # The API URL for this project card.
-    string url;
-    # Whether or not the card is archived
-    boolean archived?;
-    # The timestamp when the project card was last updated.
-    @jsondata:Name {value: "updated_at"}
-    string updatedAt;
-    # The identifier of the project containing this card.
-    @jsondata:Name {value: "project_id"}
-    string projectId?;
-    # The API URL for the issue or pull request linked to this card.
-    @jsondata:Name {value: "content_url"}
-    string contentUrl?;
-    # The project card's ID
-    int id;
-    # The GraphQL node identifier of the project card.
-    @jsondata:Name {value: "node_id"}
-    string nodeId;
-};
-
 public type PullNumberCodespacesBody record {
     # The geographic area for this codespace. If not specified, the value is assigned by IP. This property replaces location, which is being deprecated
     "EuropeWest"|"SoutheastAsia"|"UsEast"|"UsWest" geo?;
@@ -19623,13 +19315,6 @@ public type CommitSearchResultItemCommit record {
     string url;
     # The GPG signature verification status of the commit.
     Verification verification?;
-};
-
-public type OrgProjectsBody record {
-    # The name of the project
-    string name;
-    # The description of the project
-    string body?;
 };
 
 public type CombinedBillingUsage record {
@@ -20362,15 +20047,6 @@ public type Tag record {
     # The GraphQL node identifier for the tag.
     @jsondata:Name {value: "node_id"}
     string nodeId;
-};
-
-# Represents the Queries record for the operation: teams/list-projects-in-org
-public type TeamsListProjectsInOrgQueries record {
-    # The number of results per page (max 100)
-    @http:Query {name: "per_page"}
-    int perPage = 30;
-    # Page number of the results to fetch
-    int page = 1;
 };
 
 # Groups of organization members that gives permissions on specified repositories
@@ -21440,15 +21116,6 @@ public type ClassroomAssignment record {
     string? deadline;
     # Sluggified name of the assignment
     string slug;
-};
-
-# Represents the Queries record for the operation: teams/list-projects-legacy
-public type TeamsListProjectsLegacyQueries record {
-    # The number of results per page (max 100)
-    @http:Query {name: "per_page"}
-    int perPage = 30;
-    # Page number of the results to fetch
-    int page = 1;
 };
 
 # Represents the Queries record for the operation: repos/list-collaborators

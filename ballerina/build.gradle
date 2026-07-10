@@ -24,8 +24,8 @@ plugins {
 
 description = 'GitHub - Ballerina'
 
-def packageName = "github"
-def packageOrg = "ballerinax"
+def packageName = "githubx"
+def packageOrg = "daneshk"
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
 def ballerinaTomlFilePlaceHolder = new File("${project.rootDir}/build-config/resources/Ballerina.toml")
 def ballerinaTomlFile = new File("$project.projectDir/Ballerina.toml")
